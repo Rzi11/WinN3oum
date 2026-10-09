@@ -1,346 +1,357 @@
 """
-Win N3oum ? — modèle de dérive des méduses (lancé chaque nuit par GitHub Actions).
+Win N3oum ? — modèle méduses v0.2 (lancé chaque nuit par GitHub Actions).
 
-Principe :
-  1. On récupère les prévisions de courants de surface (Copernicus Marine, Méditerranée, ~4 km)
-     et de vent (Open-Meteo) pour les 3 prochains jours autour de Djerba.
-  2. On lâche des milliers de « méduses virtuelles » en mer, partout dans la zone.
-  3. On les fait dériver heure par heure : courant + une petite part du vent (les méduses
-     flottent près de la surface et « prennent » un peu le vent).
-  4. On compte combien arrivent sur chaque plage, jour par jour.
-  5. On combine avec la saison (les méduses ne sont pas là toute l'année) pour donner
-     un niveau de risque : Faible / Possible / Élevé.
+  python drift/run_drift.py            prévision normale (aujourd'hui + 2 jours)
+  python drift/run_drift.py --replay   rejoue le passé sur les observations réelles de Djerba (vérification)
+  python drift/run_drift.py --test     test hors ligne avec des données synthétiques
 
-Ce n'est PAS une prévision validée : c'est un indicateur de « poussée vers la plage ».
-Il faudra le régler avec les signalements de l'été (paramètres WINDAGE, K_ARRIVALS, SEASON).
-
-Si Copernicus ne répond pas, le script passe en mode secours « vent seul »
-(vent vers la plage sur 24 h), pour que l'app ait toujours quelque chose à afficher.
-
-Lancer en local pour tester sans connexion : python drift/run_drift.py --test
+Le risque combine :
+  dérive physique (courants surface + 15 m, vent, vagues, cycle jour/nuit de la pélagie, marée)
+  × eau favorable (température, salinité, chlorophylle, couche de surface)
+  × exposition de la plage (ouverture, profondeur, abri, oued)
+  + observations récentes (iNaturalist, GBIF, signalements, presse) comme points de départ et comme mémoire
+  + vent vers la plage des 3 derniers jours, saison, vent fort.
+C'est un indicateur, pas une prévision validée : les poids sont dans config.py et se règlent avec le rejeu.
 """
-import json, math, os, sys, datetime as dt
+import os, sys, json, math, datetime as dt
 import numpy as np
 
-# ------------------------------------------------------------------ réglages
-BOX = dict(lon_min=10.45, lon_max=11.45, lat_min=33.40, lat_max=34.15)   # Djerba + golfe de Gabès proche
-HOURS = 72                       # horizon de prévision
-DT = 1800                        # pas de temps : 30 min
-SEED_SPACING = 0.012             # ~1,2 km entre deux méduses virtuelles au départ
-WINDAGE = 0.012                  # part du vent ajoutée au courant (1,2 %) — à régler
-R_NEAR_KM = 3.0                  # une méduse à moins de 3 km d'une plage compte comme « arrivée »
-R_BEACHED_KM = 6.0               # méduse échouée sur la côte : rattachée à la plage la plus proche (< 6 km)
-K_ARRIVALS = 15.0                # nb d'arrivées/jour qui donne une « poussée » d'environ 63 % — à régler
-UTC_OFFSET = 1                   # Tunisie : UTC+1, sans heure d'été
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import config as C
+import sources as S
+import model as M
 
-# Présence saisonnière dans le sud tunisien (0 = absentes, 1 = pleine saison).
-# Hypothèse de départ tirée de la recherche (pélagie, méduse chou-fleur, Rhopilema) — à affiner.
-SEASON = {1: .15, 2: .15, 3: .2, 4: .3, 5: .5, 6: .7, 7: .85, 8: .9, 9: .8, 10: .55, 11: .3, 12: .2}
-
-# face = direction vers laquelle la plage regarde la mer (0 = Nord) — utilisé par le mode secours
-BEACHES = [
-    dict(id="rmel",       name="Ras R'mel",      lat=33.895, lon=10.925, face=0),
-    dict(id="seguia",     name="La Seguia",      lat=33.735, lon=11.005, face=125),
-    dict(id="mahrez",     name="Sidi Mahrez",    lat=33.858, lon=10.985, face=20),
-    dict(id="aghir",      name="Aghir",          lat=33.772, lon=11.025, face=100),
-    dict(id="taguermess", name="Ras Taguermess", lat=33.825, lon=11.055, face=65),
-    dict(id="kantara",    name="El Kantara",     lat=33.665, lon=10.955, face=155),
-    dict(id="jmour",      name="Sidi Jmour",     lat=33.848, lon=10.745, face=295),
-]
-
-# Jeux de données Copernicus essayés dans l'ordre (courants de surface, Méditerranée, prévision)
-# (le programme cherche aussi lui-même les jeux horaires / 15 min du produit, voir find_datasets)
-CMEMS_PRODUCT = "MEDSEA_ANALYSISFORECAST_PHY_006_013"
-CMEMS_DATASETS = [
-    "cmems_mod_med_phy-cur_anfc_4.2km-2D_PT1H-m",
-    "cmems_mod_med_phy_anfc_4.2km-2D_PT1H-m",
-    "cmems_mod_med_phy-cur_anfc_4.2km_PT15M-i",
-    "cmems_mod_med_phy-cur_anfc_4.2km_PT1H-m",
-    "cmems_mod_med_phy-cur_anfc_4.2km_P1D-m",       # secours : moyenne journalière (fonctionne)
-]
-
-OUT = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data", "meduses.json")
-M_PER_DEG = 111320.0
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DATA = os.path.join(ROOT, "data")
+P_OUT = os.path.join(DATA, "meduses.json")
+P_HIST = os.path.join(DATA, "historique.json")
+P_VERIF = os.path.join(DATA, "verification.json")
+P_REPLAY = os.path.join(DATA, "rejeu.json")
+P_REPORTS = os.path.join(DATA, "signalements.json")
 
 
-# ------------------------------------------------------------------ données
-def find_datasets(copernicusmarine):
-    """Liste les jeux du produit Méditerranée et met en tête ceux qui sont horaires ou au quart d'heure."""
-    found = []
+def jload(p, default):
     try:
-        cat = copernicusmarine.describe(product_id=CMEMS_PRODUCT)
-        for prod in getattr(cat, "products", []) or []:
-            for ds in getattr(prod, "datasets", []) or []:
-                found.append(ds.dataset_id)
-    except Exception as e:
-        print(f"[courants] catalogue indisponible : {e}")
-    print(f"[courants] jeux du produit : {found}")
-    def rank(d):
-        fast = "PT15M" in d or "PT1H" in d
-        return (0 if fast and "cur" in d else 1 if fast else 2)
-    auto = sorted([d for d in found if ("PT1H" in d or "PT15M" in d) and ("cur" in d or "2D" in d)], key=rank)
-    seen, order = set(), []
-    for d in auto + CMEMS_DATASETS:
-        if d not in seen:
-            seen.add(d); order.append(d)
-    return order
+        with open(p, encoding="utf-8") as f:
+            return json.load(f)
+    except Exception:
+        return default
 
 
-def load_currents(start, end):
-    """Retourne (times[datetime64], lats, lons, u[t,y,x], v[t,y,x]) en m/s, NaN sur la terre."""
-    import copernicusmarine
-    user = os.environ.get("COPERNICUSMARINE_SERVICE_USERNAME")
-    pwd = os.environ.get("COPERNICUSMARINE_SERVICE_PASSWORD")
-    if not user or not pwd:
-        raise RuntimeError("Identifiants Copernicus absents (secrets COPERNICUS_USER / COPERNICUS_PASSWORD)")
-    last = None
-    for ds_id in find_datasets(copernicusmarine):
+def jsave(p, obj):
+    os.makedirs(os.path.dirname(p), exist_ok=True)
+    with open(p, "w", encoding="utf-8") as f:
+        json.dump(obj, f, ensure_ascii=False, indent=1)
+
+
+def to_dt(t64):
+    return t64.astype("datetime64[s]").astype(dt.datetime)
+
+
+# ====================================================================== observations
+def gather_obs(t_from, t_to, status, with_news=True):
+    d1, d2 = str(t_from)[:10], str(t_to)[:10]
+    obs = []
+    for name, fn in (("iNaturalist", lambda: S.load_inaturalist(C.REGION_BOX, d1, d2)),
+                     ("GBIF", lambda: S.load_gbif(C.REGION_BOX, d1, d2)),
+                     ("signalements", lambda: S.load_reports(P_REPORTS, t_from))):
         try:
-            print(f"[courants] essai {ds_id} …")
-            ds = copernicusmarine.open_dataset(
-                dataset_id=ds_id, username=user, password=pwd,
-                variables=["uo", "vo"],
-                minimum_longitude=BOX["lon_min"] - 0.1, maximum_longitude=BOX["lon_max"] + 0.1,
-                minimum_latitude=BOX["lat_min"] - 0.1, maximum_latitude=BOX["lat_max"] + 0.1,
-                minimum_depth=0, maximum_depth=1.1,
-                start_datetime=start.strftime("%Y-%m-%dT%H:%M:%S"),
-                end_datetime=end.strftime("%Y-%m-%dT%H:%M:%S"),
-            )
-            if "depth" in ds.dims:
-                ds = ds.isel(depth=0)
-            ds = ds.load()
-            times = ds["time"].values
-            lats = ds["latitude"].values.astype(float)
-            lons = ds["longitude"].values.astype(float)
-            u = ds["uo"].values.astype(float)
-            v = ds["vo"].values.astype(float)
-            if "uo" not in ds or "vo" not in ds:
-                raise RuntimeError("pas de variables uo/vo dans ce jeu")
-            if len(times) < 2:
-                raise RuntimeError("moins de 2 pas de temps")
-            print(f"[courants] OK : {len(times)} pas de temps, grille {len(lats)}×{len(lons)}")
-            return times, lats, lons, u, v, ds_id
-        except Exception as e:  # on tente le jeu suivant
-            print(f"[courants] échec {ds_id} : {e}")
-            last = e
-    raise RuntimeError(f"aucun jeu de courants disponible ({last})")
-
-
-def load_wind(start):
-    """Vent à 10 m sur une grille 3×3 (Open-Meteo). Retourne (times, glats, glons, u[t,i,j], v[t,i,j]) en m/s."""
-    import requests
-    glats = np.linspace(BOX["lat_min"], BOX["lat_max"], 3)
-    glons = np.linspace(BOX["lon_min"], BOX["lon_max"], 3)
-    LA, LO = np.meshgrid(glats, glons, indexing="ij")
-    params = dict(latitude=",".join(f"{x:.3f}" for x in LA.ravel()),
-                  longitude=",".join(f"{x:.3f}" for x in LO.ravel()),
-                  hourly="wind_speed_10m,wind_direction_10m", wind_speed_unit="ms",
-                  timezone="GMT", past_days=1, forecast_days=4)
-    r = requests.get("https://api.open-meteo.com/v1/forecast", params=params, timeout=60)
-    r.raise_for_status()
-    js = r.json()
-    js = js if isinstance(js, list) else [js]
-    times = np.array(js[0]["hourly"]["time"], dtype="datetime64[m]")
-    nt = len(times)
-    U = np.zeros((nt, 3, 3)); V = np.zeros((nt, 3, 3))
-    for k, pt in enumerate(js):
-        i, j = divmod(k, 3)
-        s = np.array([x if x is not None else 0 for x in pt["hourly"]["wind_speed_10m"]], float)
-        d = np.radians(np.array([x if x is not None else 0 for x in pt["hourly"]["wind_direction_10m"]], float))
-        U[:, i, j] = -s * np.sin(d)   # direction = d'où vient le vent
-        V[:, i, j] = -s * np.cos(d)
-    print(f"[vent] OK : {nt} heures")
-    return times, glats, glons, U, V
-
-
-# ------------------------------------------------------------------ outils
-def km_between(lat1, lon1, lat2, lon2):
-    dy = (lat2 - lat1) * 111.32
-    dx = (lon2 - lon1) * 111.32 * np.cos(np.radians((lat1 + lat2) / 2))
-    return np.hypot(dx, dy)
-
-
-def bilinear(field, lats, lons, py, px):
-    """Interpolation bilinéaire d'un champ [y,x] ; NaN si un coin est sur la terre ou hors grille."""
-    fy = (py - lats[0]) / (lats[1] - lats[0])
-    fx = (px - lons[0]) / (lons[1] - lons[0])
-    iy = np.floor(fy).astype(int); ix = np.floor(fx).astype(int)
-    out = np.full(py.shape, np.nan)
-    ok = (iy >= 0) & (ix >= 0) & (iy < len(lats) - 1) & (ix < len(lons) - 1)
-    iy0, ix0 = iy[ok], ix[ok]
-    wy, wx = fy[ok] - iy0, fx[ok] - ix0
-    f00 = field[iy0, ix0]; f01 = field[iy0, ix0 + 1]; f10 = field[iy0 + 1, ix0]; f11 = field[iy0 + 1, ix0 + 1]
-    out[ok] = (f00 * (1 - wy) * (1 - wx) + f01 * (1 - wy) * wx + f10 * wy * (1 - wx) + f11 * wy * wx)
-    return out
-
-
-def local_date(t64):
-    t = t64.astype("datetime64[s]").astype(dt.datetime) + dt.timedelta(hours=UTC_OFFSET)
-    return t.date().isoformat()
-
-
-# ------------------------------------------------------------------ simulation
-def simulate(t0, cur, wind):
-    ctimes, clats, clons, cu, cv = cur
-    wtimes, wlats, wlons, wu, wv = wind
-    ctimes_h = ctimes.astype("datetime64[m]")
-
-    def cur_index(t):
-        # pas de temps courant le plus proche (données horaires ou journalières)
-        return int(np.argmin(np.abs(ctimes_h - t)))
-
-    def wind_at(t, py, px):
-        k = int(np.argmin(np.abs(wtimes - t)))
-        i = np.clip(np.rint((py - wlats[0]) / (wlats[1] - wlats[0])).astype(int), 0, 2)
-        j = np.clip(np.rint((px - wlons[0]) / (wlons[1] - wlons[0])).astype(int), 0, 2)
-        return wu[k, i, j], wv[k, i, j]
-
-    def velocity(t, py, px):
-        k = cur_index(t)
-        u = bilinear(cu[k], clats, clons, py, px)
-        v = bilinear(cv[k], clats, clons, py, px)
-        a, b = wind_at(t, py, px)
-        return u + WINDAGE * a, v + WINDAGE * b
-
-    # semis : toutes les cases de mer de la zone
-    sy = np.arange(BOX["lat_min"], BOX["lat_max"], SEED_SPACING)
-    sx = np.arange(BOX["lon_min"], BOX["lon_max"], SEED_SPACING)
-    PY, PX = np.meshgrid(sy, sx, indexing="ij")
-    py, px = PY.ravel(), PX.ravel()
-    u0, _ = velocity(t0, py, px)
-    sea = ~np.isnan(u0)
-    py, px = py[sea], px[sea]
-    alive = np.ones(py.shape, bool)
-    print(f"[dérive] {len(py)} méduses virtuelles lâchées")
-
-    blat = np.array([b["lat"] for b in BEACHES]); blon = np.array([b["lon"] for b in BEACHES])
-    arrivals = {}   # (beach_id, date) -> nb
-
-    def record(idx, t, radius):
-        if not len(idx):
-            return np.zeros(0, bool)
-        d = km_between(py[idx, None], px[idx, None], blat[None, :], blon[None, :])
-        nearest = np.argmin(d, axis=1)
-        hit = d[np.arange(len(idx)), nearest] <= radius
-        day = local_date(t)
-        for n in nearest[hit]:
-            key = (BEACHES[n]["id"], day)
-            arrivals[key] = arrivals.get(key, 0) + 1
-        return hit
-
-    steps = int(HOURS * 3600 / DT)
-    for s in range(steps):
-        t = t0 + np.timedelta64(int(s * DT / 60), "m")
-        tm = t + np.timedelta64(int(DT / 120), "m")
-        idx = np.where(alive)[0]
-        if not len(idx):
-            break
-        y, x = py[idx], px[idx]
-        u1, v1 = velocity(t, y, x)
-        coslat = np.cos(np.radians(y))
-        ym = y + v1 * DT / 2 / M_PER_DEG
-        xm = x + u1 * DT / 2 / (M_PER_DEG * coslat)
-        u2, v2 = velocity(tm, ym, xm)
-        u2 = np.where(np.isnan(u2), u1, u2); v2 = np.where(np.isnan(v2), v1, v2)
-        ny = y + v2 * DT / M_PER_DEG
-        nx = x + u2 * DT / (M_PER_DEG * coslat)
-        landed = np.isnan(u1) | np.isnan(bilinear(cu[cur_index(t)], clats, clons, ny, nx))
-        py[idx] = np.where(landed, y, ny)
-        px[idx] = np.where(landed, x, nx)
-        out_box = (py[idx] < BOX["lat_min"] - .2) | (py[idx] > BOX["lat_max"] + .2) | \
-                  (px[idx] < BOX["lon_min"] - .2) | (px[idx] > BOX["lon_max"] + .2)
-        # 1) échouées sur la côte → plage la plus proche
-        li = idx[landed]
-        record(li, t, R_BEACHED_KM)
-        alive[li] = False
-        # 2) passées tout près d'une plage → arrivée
-        fi = idx[~landed & ~out_box]
-        hit = record(fi, t, R_NEAR_KM)
-        alive[fi[hit]] = False
-        alive[idx[out_box]] = False
-    return arrivals, int(sea.sum())
-
-
-def wind_only(t0, wind):
-    """Mode secours : poussée du vent vers chaque plage (moyenne journalière de la composante « vers la plage »)."""
-    wtimes, wlats, wlons, wu, wv = wind
-    arrivals = {}
-    for b in BEACHES:
-        i = int(np.argmin(np.abs(wlats - b["lat"]))); j = int(np.argmin(np.abs(wlons - b["lon"])))
-        f = math.radians(b["face"])
-        # vecteur « de la mer vers la plage » = opposé de la direction où regarde la plage
-        ox, oy = -math.sin(f), -math.cos(f)
-        for k, t in enumerate(wtimes):
-            if t < t0 or t >= t0 + np.timedelta64(HOURS, "h"):
-                continue
-            push = max(0.0, wu[k, i, j] * ox + wv[k, i, j] * oy)       # m/s vers la plage
-            key = (b["id"], local_date(t))
-            arrivals[key] = arrivals.get(key, 0) + push * 0.6          # échelle grossière ≈ arrivées
-    return arrivals
-
-
-# ------------------------------------------------------------------ sortie
-def build_output(arrivals, t0, mode, detail):
-    days = sorted({local_date(t0 + np.timedelta64(h, "h")) for h in range(0, HOURS, 6)})[:3]
-    out = dict(generated=dt.datetime.utcnow().replace(microsecond=0).isoformat() + "Z",
-               mode=mode, detail=detail, method="v0.1 — dérive courant + 1,2 % du vent, non validée",
-               days=days, beaches={})
-    for b in BEACHES:
-        rows = []
-        for d in days:
-            n = float(arrivals.get((b["id"], d), 0))
-            drift = 1 - math.exp(-n / K_ARRIVALS)
-            base = SEASON[int(d[5:7])]
-            risk = base * (0.25 + 0.75 * drift)
-            level = "Faible" if risk < 0.2 else "Possible" if risk < 0.45 else "Élevé"
-            rows.append(dict(date=d, arrivals=round(n, 1), drift=round(drift, 2),
-                             season=base, risk=round(risk, 2), level=level))
-        out["beaches"][b["id"]] = dict(name=b["name"], days=rows)
-    return out
-
-
-def main():
-    test = "--test" in sys.argv
-    now = dt.datetime.utcnow().replace(minute=0, second=0, microsecond=0)
-    t0 = np.datetime64(now.replace(hour=0), "m")
-    end = now.replace(hour=0) + dt.timedelta(hours=HOURS + 1)
-
-    if test:
-        cur, wind = synthetic(t0)
-        arrivals, n = simulate(t0, cur, wind)
-        out = build_output(arrivals, t0, "test", f"données synthétiques, {n} méduses")
-    else:
-        wind = load_wind(t0)
-        try:
-            times, lats, lons, u, v, ds_id = load_currents(now.replace(hour=0), end)
-            arrivals, n = simulate(t0, (times, lats, lons, u, v), wind)
-            out = build_output(arrivals, t0, "derive", f"Copernicus {ds_id} + Open-Meteo, {n} méduses virtuelles")
+            got = fn(); obs += got; status[name] = f"ok ({len(got)})"
         except Exception as e:
-            print(f"[secours] dérive impossible ({e}) → mode vent seul")
-            out = build_output(wind_only(t0, wind), t0, "vent", f"vent seul (Copernicus indisponible : {e})"[:300])
+            status[name] = f"indisponible : {str(e)[:120]}"
+    articles = []
+    if with_news:
+        try:
+            got, articles = S.load_news(C.NEWS_PLACES, C.NEWS_QUERIES)
+            obs += got; status["presse"] = f"ok ({len(got)})"
+        except Exception as e:
+            status["presse"] = f"indisponible : {str(e)[:120]}"
+    obs = [o for o in obs if t_from <= o["time"] <= t_to]
+    return S.dedupe(obs), articles
 
-    os.makedirs(os.path.dirname(OUT), exist_ok=True)
-    with open(OUT, "w", encoding="utf-8") as f:
-        json.dump(out, f, ensure_ascii=False, indent=1)
-    print(f"[sortie] {OUT}")
+
+# ====================================================================== prévision
+def predict(t_now, obs, status, history=None, historical=False, loaders=None):
+    """Calcule le risque par plage pour 3 jours à partir de t_now (00:00 UTC)."""
+    L = loaders or S
+    t_end = t_now + np.timedelta64(C.FORECAST_HOURS, "h")
+    seeds_obs = [o for o in obs if not o.get("none_seen") and o["weight"] > 0 and o["time"] < t_now]
+    t_start = min([o["time"] for o in seeds_obs] + [t_now]) - np.timedelta64(3, "h")
+    t_start = max(t_start, t_now - np.timedelta64(C.LOOKBACK_DAYS, "D"))
+    s_dt, e_dt = to_dt(t_start), to_dt(t_end + np.timedelta64(1, "h"))
+    days = [M.local_date(t_now + np.timedelta64(h, "h")) for h in (2, 26, 50)]
+
+    # --- vent (obligatoire)
+    if historical:
+        wind = L.load_wind(C.REGION_BOX, 4, start_date=str(t_start - np.timedelta64(3, "D"))[:10], end_date=str(t_end)[:10])
+    else:
+        past = int((t_now - t_start) / np.timedelta64(1, "D")) + 4
+        wind = L.load_wind(C.REGION_BOX, 4, past_days=min(92, past), forecast_days=4)
+    status["vent"] = "ok"
+
+    # --- courants de surface (obligatoire pour la dérive, sinon mode secours)
+    mode = "derive"
+    try:
+        cur_s = M.ensure_ascending(L.load_currents_surface(C.REGION_BOX, s_dt, e_dt)); status["courants surface"] = cur_s.name
+    except Exception as e:
+        cur_s = None; mode = "vent"; status["courants surface"] = f"indisponible : {str(e)[:150]}"
+
+    def opt(key, fn):
+        try:
+            g = fn(); status[key] = getattr(g, "name", "ok"); return g
+        except Exception as e:
+            status[key] = f"indisponible : {str(e)[:120]}"; return None
+
+    cur_d = stokes = None
+    if cur_s is not None:
+        cur_d = opt("courants 15 m", lambda: M.ensure_ascending(L.load_currents_depth(C.REGION_BOX, s_dt, e_dt)))
+        stokes = opt("vagues", lambda: M.ensure_ascending(L.load_stokes(C.REGION_BOX, s_dt, e_dt)))
+    sea_level = opt("marée", lambda: M.ensure_ascending(L.load_sea_level(C.LOCAL_BOX, to_dt(t_now - np.timedelta64(1, "D")), e_dt)))
+    hab = {}
+    try:
+        hab = {k: M.ensure_ascending(g) for k, g in L.load_habitat(C.LOCAL_BOX, to_dt(t_now - np.timedelta64(1, "D")), e_dt).items()}
+    except Exception as e:
+        print(f"[habitat] {e}")
+    status["eau favorable"] = ", ".join(hab) if hab else "indisponible"
+    bathy = opt("fonds marins", lambda: M.ensure_ascending(L.load_bathymetry(C.LOCAL_BOX)))
+
+    # --- dérive
+    arrivals, n_bg, n_obs = {}, 0, 0
+    exposure = {}
+    if cur_s is not None:
+        drift = M.Drift(cur_s, cur_d, stokes, wind, sea_level)
+        seeds, n_bg, n_obs = M.make_seeds(drift, hab, obs, t_now)
+        arrivals = drift.run(t_now, t_end, seeds)
+        k = cur_s.tindex(t_now)
+        mask = (cur_s.lats, cur_s.lons, ~np.isnan(cur_s.data["uo"][k]))
+        for b in C.BEACHES:
+            exposure[b["id"]] = M.beach_exposure(mask, bathy, b)
+    else:
+        for b in C.BEACHES:
+            exposure[b["id"]] = (1.0 + 0.15 * b.get("shelter", 0) - 0.15 * b.get("wadi", 0), {})
+
+    # --- combinaison
+    out_beaches, raw_today = {}, {}
+    for bi, b in enumerate(C.BEACHES):
+        rows = []
+        hist = (history or {}).get(b["id"], {})
+        hvals = [v for d, v in sorted(hist.items()) if d < days[0]][-C.HISTORY_DAYS:]
+        for d in days:
+            t_day = np.datetime64(d + "T00:00", "m") - np.timedelta64(C.UTC_OFFSET, "h")
+            a = arrivals.get((b["id"], d), {"all": 0.0, "obs": 0.0})
+            raw = a["all"]
+            if mode == "vent":
+                push_day, _ = M.onshore_wind_past(wind, b, t_day + np.timedelta64(24, "h"), hours=24)
+                raw = push_day * 6
+            if d == days[0]:
+                raw_today[b["id"]] = raw
+            if len(hvals) >= C.HISTORY_MIN_RUNS:
+                med = float(np.median(hvals))
+                drift_f = 1 - math.exp(-(raw / (med + 0.5)) / 2)
+                drift_ref = f"comparé à sa médiane ({med:.1f})"
+            else:
+                drift_f = 1 - math.exp(-raw / C.K_ARRIVALS)
+                drift_ref = "échelle fixe (historique en construction)"
+            obs_f, signal = M.obs_persistence(obs, b, t_day)
+            push, _ = M.onshore_wind_past(wind, b, t_day, 72)
+            wind_f = float(np.clip(push / 5, 0, 1))
+            news_f = M.news_factor(obs, b, t_day)
+            hab_f, hab_det = M.habitat_scores(hab, b["lat"], b["lon"], t_day + np.timedelta64(12, "h")) if hab else (None, {})
+            ws = dict(C.W)
+            if hab_f is None:
+                ws.pop("habitat")
+            fac = dict(drift=drift_f, obs=obs_f, wind_past=wind_f, news=news_f)
+            if hab_f is not None:
+                fac["habitat"] = hab_f
+            P = sum(ws[k] * fac[k] for k in ws) / sum(ws.values())
+            # un banc qui arrive depuis une observation réelle pèse plus lourd que la seule physique
+            if a["obs"] > 0:
+                P = max(P, min(1.0, 0.35 + 0.5 * (1 - math.exp(-a["obs"] / 5))))
+            season = C.SEASON[int(d[5:7])]
+            E, E_det = exposure[b["id"]]
+            wspd = M.day_wind_speed(wind, b, d)
+            strong = 0.8 if wspd > C.STRONG_WIND_KMH else 1.0
+            moon = M.moon_age_days(t_day + np.timedelta64(12, "h"))
+            lunar = 1 + C.LUNAR_WEIGHT * math.cos(2 * math.pi * (moon - 23) / 29.53)
+            risk = float(np.clip(season * (0.25 + 0.75 * P) * E * strong * lunar, 0, 1))
+            level = "Faible" if risk < 0.2 else "Possible" if risk < 0.45 else "Élevé"
+            if signal and d in days[:2]:
+                level = "Signalé"
+            why = explain(fac, a, E, strong, season, mode)
+            rows.append(dict(date=d, level=level, risk=round(risk, 2), why=why,
+                             factors=dict({k: round(v, 2) for k, v in fac.items()}, arrivals=round(raw, 1),
+                                          from_obs=round(a["obs"], 1), drift_ref=drift_ref, exposure=round(E, 2),
+                                          season=season, strong_wind=strong < 1, wind_kmh=round(wspd),
+                                          moon_age=round(moon, 1), habitat_detail=hab_det)))
+        sst = rows[0]["factors"]["habitat_detail"].get("sst") if rows else None
+        out_beaches[b["id"]] = dict(name=b["name"], exposure=exposure[b["id"]][1], days=rows,
+                                    species=M.likely_species(int(days[0][5:7]), sst))
+    return dict(mode=mode, days=days, beaches=out_beaches, particles=dict(fond=n_bg, observations=n_obs)), raw_today
+
+
+def explain(f, a, E, strong, season, mode):
+    parts = []
+    if a["obs"] > 0:
+        parts.append("un banc observé récemment dérive vers la plage")
+    if f["obs"] > 0.4:
+        parts.append("méduses signalées tout près ces derniers jours")
+    if mode == "vent":
+        parts.append("estimation au vent seul")
+    elif f["drift"] >= 0.5:
+        parts.append("courant et vent poussent vers la plage")
+    elif f["drift"] >= 0.2:
+        parts.append("un peu de dérive vers la plage")
+    else:
+        parts.append("peu de dérive vers la plage")
+    if f["wind_past"] >= 0.5:
+        parts.append("vent de mer ces 3 derniers jours")
+    if f["news"] > 0:
+        parts.append("méduses dans la presse locale")
+    if f.get("habitat", 0.5) >= 0.75:
+        parts.append("eau très favorable")
+    if E >= 1.15:
+        parts.append("plage qui piège les méduses")
+    if strong < 1:
+        parts.append("vent fort : méduses brassées en profondeur")
+    if season <= 0.3:
+        parts.append("hors saison")
+    return parts[:3]
+
+
+# ====================================================================== historique & vérification
+def update_history(raw_today, day):
+    h = jload(P_HIST, {})
+    for bid, v in raw_today.items():
+        h.setdefault(bid, {})[day] = round(v, 2)
+        keep = sorted(h[bid])[-C.HISTORY_DAYS:]
+        h[bid] = {k: h[bid][k] for k in keep}
+    jsave(P_HIST, h)
+    return h
+
+
+def update_verification(out, obs, t_now):
+    v = jload(P_VERIF, {"predictions": {}, "observations": [], "stats": {}})
+    run = str(t_now)[:10]
     for bid, b in out["beaches"].items():
-        print(f"  {b['name']:<15} " + "  ".join(f"{r['date'][5:]}:{r['level']:<8}({r['arrivals']})" for r in b["days"]))
+        for r in b["days"][:2]:
+            v["predictions"][f"{r['date']}|{bid}"] = dict(level=r["level"], risk=r["risk"], run=run)
+    refs = {o["ref"] for o in v["observations"]}
+    lb = C.LOCAL_BOX
+    for o in obs:
+        if o["source"] == "presse" or o["ref"] in refs:
+            continue
+        if not (lb["lat_min"] - .05 <= o["lat"] <= lb["lat_max"] + .05 and lb["lon_min"] - .05 <= o["lon"] <= lb["lon_max"] + .05):
+            continue
+        d = [float(M.km_between(o["lat"], o["lon"], b["lat"], b["lon"])) for b in C.BEACHES]
+        k = int(np.argmin(d))
+        if d[k] > 8:
+            continue
+        v["observations"].append(dict(date=M.local_date(o["time"]), beach=C.BEACHES[k]["id"], km=round(d[k], 1),
+                                      source=o["source"], taxon=o.get("taxon", "?"), none_seen=bool(o.get("none_seen")), ref=o["ref"]))
+    st = {"Faible": 0, "Possible": 0, "Élevé": 0, "Signalé": 0, "sans prévision": 0}
+    for ob in v["observations"]:
+        if ob["none_seen"]:
+            continue
+        p = v["predictions"].get(f"{ob['date']}|{ob['beach']}")
+        st[p["level"] if p else "sans prévision"] += 1
+    v["stats"] = dict(observations_avec_meduses=st, note="Observations réelles comparées au niveau prévu ce jour-là sur la plage la plus proche.")
+    v["predictions"] = dict(sorted(v["predictions"].items())[-2000:])
+    jsave(P_VERIF, v)
 
 
-def synthetic(t0):
-    """Données factices pour tester sans réseau : île ronde au centre, courant vers l'est, vent d'est."""
-    lats = np.arange(BOX["lat_min"] - .1, BOX["lat_max"] + .1, 0.042)
-    lons = np.arange(BOX["lon_min"] - .1, BOX["lon_max"] + .1, 0.042)
-    times = np.array([t0 + np.timedelta64(h, "h") for h in range(HOURS + 2)])
-    LA, LO = np.meshgrid(lats, lons, indexing="ij")
-    land = ((LA - 33.78) / 0.13) ** 2 + ((LO - 10.90) / 0.16) ** 2 < 1
-    u = np.where(land, np.nan, 0.08) * np.ones((len(times), 1, 1))
-    v = np.where(land, np.nan, -0.03) * np.ones((len(times), 1, 1))
-    wtimes = times.astype("datetime64[m]")
-    wl, wo = np.linspace(BOX["lat_min"], BOX["lat_max"], 3), np.linspace(BOX["lon_min"], BOX["lon_max"], 3)
-    wu = -6.0 * np.ones((len(times), 3, 3)); wv = np.zeros((len(times), 3, 3))
-    return (times, lats, lons, u, v), (wtimes, wl, wo, wu, wv)
+# ====================================================================== modes
+def run_normal(loaders=None, test=False):
+    now = dt.datetime.utcnow()
+    t_now = np.datetime64(now.strftime("%Y-%m-%dT00:00"), "m")
+    status = {}
+    if test:
+        obs, articles = loaders.test_obs(t_now), []
+        status["observations"] = "synthétiques"
+    else:
+        obs, articles = gather_obs(t_now - np.timedelta64(C.LOOKBACK_DAYS, "D"), t_now + np.timedelta64(1, "D"), status)
+    history = jload(P_HIST, {})
+    res, raw_today = predict(t_now, obs, status, history=history, loaders=loaders)
+    out = dict(generated=now.replace(microsecond=0).isoformat() + "Z", version=C.VERSION, mode=res["mode"],
+               method="Dérive (courants surface + 15 m, vent, vagues, jour/nuit, marée) × eau favorable × exposition + observations, presse, vent passé, saison. Indicateur non validé.",
+               sources=status, particles=res["particles"], days=res["days"], beaches=res["beaches"],
+               observations=summarize_obs(obs), news=articles[:10])
+    jsave(P_OUT, out)
+    if not test:
+        update_history(raw_today, res["days"][0])
+        update_verification(out, obs, t_now)
+    print_table(out)
+
+
+def run_replay(loaders=None, max_events=8):
+    """Rejoue la veille de chaque observation réelle de méduses près de Djerba et regarde ce que le modèle aurait dit."""
+    now = dt.datetime.utcnow()
+    t_to = np.datetime64(now.strftime("%Y-%m-%dT00:00"), "m") - np.timedelta64(3, "D")
+    t_from = t_to - np.timedelta64(540, "D")
+    status = {}
+    lb = C.LOCAL_BOX
+    if loaders is not None and hasattr(loaders, "replay_obs"):
+        all_obs = loaders.replay_obs(t_to)
+    else:
+        all_obs, _ = gather_obs(t_from, t_to, status, with_news=False)
+    local = [o for o in all_obs if lb["lat_min"] - .05 <= o["lat"] <= lb["lat_max"] + .05 and lb["lon_min"] - .05 <= o["lon"] <= lb["lon_max"] + .05]
+    by_day = {}
+    for o in sorted(local, key=lambda x: x["time"], reverse=True):
+        by_day.setdefault(M.local_date(o["time"]), o)
+    events = list(by_day.items())[:max_events]
+    print(f"[rejeu] {len(local)} observations près de Djerba, {len(events)} jours rejoués")
+    results = []
+    for day, o in events:
+        t_now = np.datetime64(day + "T00:00", "m") - np.timedelta64(1, "D")
+        past_obs = [x for x in all_obs if x["time"] < t_now]
+        st = {}
+        try:
+            res, _ = predict(t_now, past_obs, st, historical=True, loaders=loaders)
+        except Exception as e:
+            print(f"  {day} : échec {e}")
+            results.append(dict(date=day, error=str(e)[:200])); continue
+        d = [float(M.km_between(o["lat"], o["lon"], b["lat"], b["lon"])) for b in C.BEACHES]
+        k = int(np.argmin(d)); bid = C.BEACHES[k]["id"]
+        levels = {x: res["beaches"][x]["days"][1] for x in res["beaches"]}
+        ranking = sorted(levels, key=lambda x: -levels[x]["risk"])
+        results.append(dict(date=day, observed_beach=bid, km=round(d[k], 1), taxon=o.get("taxon"), source=o["source"],
+                            predicted=levels[bid]["level"], risk=levels[bid]["risk"], rank=ranking.index(bid) + 1,
+                            of=len(ranking), all={x: levels[x]["level"] for x in ranking}, mode=res["mode"], sources=st))
+        print(f"  {day} {bid:<11} prévu {levels[bid]['level']:<8} rang {ranking.index(bid) + 1}/{len(ranking)} ({res['mode']})")
+    ok = [r for r in results if "predicted" in r]
+    summary = dict(events=len(ok),
+                   possible_ou_plus=sum(r["predicted"] != "Faible" for r in ok),
+                   rang_moyen=round(float(np.mean([r["rank"] for r in ok])), 2) if ok else None,
+                   note="Rang 1 = la plage observée était celle que le modèle jugeait la plus à risque. Au hasard, le rang moyen serait 4 sur 7.")
+    jsave(P_REPLAY, dict(generated=now.replace(microsecond=0).isoformat() + "Z", version=C.VERSION, summary=summary, results=results))
+    print(f"[rejeu] résumé : {json.dumps(summary, ensure_ascii=False)}")
+
+
+def summarize_obs(obs):
+    by = {}
+    for o in obs:
+        by[o["source"]] = by.get(o["source"], 0) + 1
+    recent = sorted(obs, key=lambda o: o["time"], reverse=True)[:15]
+    return dict(count=by, recent=[dict(date=str(o["time"])[:10], lat=round(o["lat"], 3), lon=round(o["lon"], 3),
+                                       source=o["source"], taxon=o.get("taxon", "?")) for o in recent])
+
+
+def print_table(out):
+    print(f"[sortie] mode {out['mode']} — sources :")
+    for k, v in out["sources"].items():
+        print(f"    {k:<18} {v}")
+    for bid, b in out["beaches"].items():
+        print(f"  {b['name']:<15} " + "  ".join(
+            f"{r['date'][5:]}:{r['level']:<8}({r['risk']:.2f})" for r in b["days"]) + f"  | {', '.join(b['days'][1]['why'])}")
 
 
 if __name__ == "__main__":
-    main()
+    if "--test" in sys.argv:
+        import synthetic
+        if "--replay" in sys.argv:
+            run_replay(loaders=synthetic, max_events=2)
+        else:
+            run_normal(loaders=synthetic, test=True)
+    elif "--replay" in sys.argv:
+        run_replay()
+    else:
+        run_normal()
