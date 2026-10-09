@@ -1,7 +1,7 @@
 {
- "generated": "2026-10-09T21:19:24Z",
+ "generated": "2026-10-09T21:23:51Z",
  "mode": "derive",
- "detail": "Copernicus cmems_mod_med_phy-cur_anfc_4.2km_P1D-m + Open-Meteo, 3290 méduses virtuelles",
+ "detail": "Copernicus cmems_mod_med_phy-cur_anfc_4.2km-2D_PT1H-m + Open-Meteo, 3290 méduses virtuelles",
  "method": "v0.1 — dérive courant + 1,2 % du vent, non validée",
  "days": [
   "2026-10-09",
@@ -22,18 +22,18 @@
     },
     {
      "date": "2026-10-10",
-     "arrivals": 36.0,
-     "drift": 0.91,
+     "arrivals": 34.0,
+     "drift": 0.9,
      "season": 0.55,
      "risk": 0.51,
      "level": "Élevé"
     },
     {
      "date": "2026-10-11",
-     "arrivals": 7.0,
-     "drift": 0.37,
+     "arrivals": 4.0,
+     "drift": 0.23,
      "season": 0.55,
-     "risk": 0.29,
+     "risk": 0.23,
      "level": "Possible"
     }
    ]
@@ -43,18 +43,18 @@
    "days": [
     {
      "date": "2026-10-09",
-     "arrivals": 9.0,
-     "drift": 0.45,
+     "arrivals": 7.0,
+     "drift": 0.37,
      "season": 0.55,
-     "risk": 0.32,
+     "risk": 0.29,
      "level": "Possible"
     },
     {
      "date": "2026-10-10",
-     "arrivals": 0.0,
-     "drift": 0.0,
+     "arrivals": 2.0,
+     "drift": 0.12,
      "season": 0.55,
-     "risk": 0.14,
+     "risk": 0.19,
      "level": "Faible"
     },
     {
@@ -72,26 +72,26 @@
    "days": [
     {
      "date": "2026-10-09",
-     "arrivals": 3.0,
-     "drift": 0.18,
+     "arrivals": 1.0,
+     "drift": 0.06,
      "season": 0.55,
-     "risk": 0.21,
-     "level": "Possible"
+     "risk": 0.16,
+     "level": "Faible"
     },
     {
      "date": "2026-10-10",
-     "arrivals": 11.0,
-     "drift": 0.52,
+     "arrivals": 8.0,
+     "drift": 0.41,
      "season": 0.55,
-     "risk": 0.35,
+     "risk": 0.31,
      "level": "Possible"
     },
     {
      "date": "2026-10-11",
-     "arrivals": 2.0,
-     "drift": 0.12,
+     "arrivals": 0.0,
+     "drift": 0.0,
      "season": 0.55,
-     "risk": 0.19,
+     "risk": 0.14,
      "level": "Faible"
     }
    ]
@@ -101,18 +101,18 @@
    "days": [
     {
      "date": "2026-10-09",
-     "arrivals": 7.0,
-     "drift": 0.37,
+     "arrivals": 6.0,
+     "drift": 0.33,
      "season": 0.55,
-     "risk": 0.29,
+     "risk": 0.27,
      "level": "Possible"
     },
     {
      "date": "2026-10-10",
-     "arrivals": 5.0,
-     "drift": 0.28,
+     "arrivals": 3.0,
+     "drift": 0.18,
      "season": 0.55,
-     "risk": 0.25,
+     "risk": 0.21,
      "level": "Possible"
     },
     {
@@ -130,27 +130,27 @@
    "days": [
     {
      "date": "2026-10-09",
-     "arrivals": 15.0,
-     "drift": 0.63,
+     "arrivals": 16.0,
+     "drift": 0.66,
      "season": 0.55,
-     "risk": 0.4,
+     "risk": 0.41,
      "level": "Possible"
     },
     {
      "date": "2026-10-10",
-     "arrivals": 17.0,
-     "drift": 0.68,
+     "arrivals": 25.0,
+     "drift": 0.81,
      "season": 0.55,
-     "risk": 0.42,
-     "level": "Possible"
+     "risk": 0.47,
+     "level": "Élevé"
     },
     {
      "date": "2026-10-11",
-     "arrivals": 3.0,
-     "drift": 0.18,
+     "arrivals": 1.0,
+     "drift": 0.06,
      "season": 0.55,
-     "risk": 0.21,
-     "level": "Possible"
+     "risk": 0.16,
+     "level": "Faible"
     }
    ]
   },
@@ -188,10 +188,10 @@
    "days": [
     {
      "date": "2026-10-09",
-     "arrivals": 0.0,
-     "drift": 0.0,
+     "arrivals": 2.0,
+     "drift": 0.12,
      "season": 0.55,
-     "risk": 0.14,
+     "risk": 0.19,
      "level": "Faible"
     },
     {
