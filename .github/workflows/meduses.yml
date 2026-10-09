@@ -4,14 +4,25 @@ on:
   schedule:
     - cron: "30 3 * * *"     # chaque nuit à 4h30 heure tunisienne
   workflow_dispatch:          # bouton « Run workflow » pour lancer à la main
+    inputs:
+      mode:
+        description: "normal = prévision du jour ; rejeu = vérifier le modèle sur le passé"
+        required: true
+        default: normal
+        type: choice
+        options: [normal, rejeu]
 
 permissions:
   contents: write
 
+concurrency:
+  group: meduses
+  cancel-in-progress: false
+
 jobs:
   derive:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
 
@@ -28,12 +39,18 @@ jobs:
         env:
           COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUS_USER }}
           COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUS_PASSWORD }}
-        run: python drift/run_drift.py
+        run: |
+          if [ "${{ github.event.inputs.mode }}" = "rejeu" ]; then
+            python drift/run_drift.py --replay
+          else
+            python drift/run_drift.py
+          fi
 
       - name: Enregistrer le résultat
         run: |
           git config user.name  "winn3oum-bot"
           git config user.email "winn3oum-bot@users.noreply.github.com"
-          git add data/meduses.json
+          git add data/
           git commit -m "Méduses : mise à jour du $(date -u +%Y-%m-%d)" || echo "Rien de nouveau"
+          git pull --rebase
           git push
