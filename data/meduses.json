@@ -1,5 +1,5 @@
 {
- "generated": "2026-10-09T21:13:04Z",
+ "generated": "2026-10-09T21:19:24Z",
  "mode": "derive",
  "detail": "Copernicus cmems_mod_med_phy-cur_anfc_4.2km_P1D-m + Open-Meteo, 3290 méduses virtuelles",
  "method": "v0.1 — dérive courant + 1,2 % du vent, non validée",
