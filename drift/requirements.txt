@@ -1,0 +1,4 @@
+copernicusmarine>=2.0
+numpy
+xarray
+requests

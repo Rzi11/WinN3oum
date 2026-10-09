@@ -1,0 +1,536 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Baignade Djerba">
+<meta name="theme-color" content="#1F5FBF">
+<title>Baignade Djerba</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+:root{
+  color-scheme: light;
+  --ground:#F2F6F7; --surface:#FFFFFF; --ink:#0F2A30; --muted:#5B7078; --line:#D6E1E4;
+  --door:#1F5FBF; --door-soft:#E3ECFA; --sand:#C9B48A; --turq:#11A3A0; --turq-ink:#0B6F6D;
+  --good:#1E8A5A; --ok:#7A9A1E; --warn:#C27A12; --bad:#C0392B;
+  --display:"Bricolage Grotesque", "Avenir Next", system-ui, sans-serif;
+  --body:"Atkinson Hyperlegible", system-ui, -apple-system, sans-serif;
+  --mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root{ color-scheme: dark;
+    --ground:#0B1A1E; --surface:#12262B; --ink:#E6F0F2; --muted:#93A9AF; --line:#23404A;
+    --door:#6FA0F2; --door-soft:#17304F; --sand:#B9A376; --turq:#3CC9C4; --turq-ink:#7FE0DC;
+    --good:#4CC38A; --ok:#A9C94A; --warn:#E3A13B; --bad:#EF6B5B; }
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0}
+body{background:var(--ground);color:var(--ink);font:16px/1.5 var(--body);
+  padding:calc(env(safe-area-inset-top,0px) + 16px) 16px calc(env(safe-area-inset-bottom,0px) + 32px);}
+.wrap{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+header h1{font:700 clamp(28px,7vw,40px)/1.05 var(--display);margin:0;letter-spacing:-.01em;text-wrap:balance}
+header h1 span{color:var(--door)}
+header p{margin:6px 0 0;color:var(--muted);font-size:15px}
+.label{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700}
+.tabs{display:grid;grid-template-columns:1fr 1fr;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:4px;gap:4px}
+.tab{border:0;background:transparent;color:var(--muted);font:700 15px var(--body);padding:10px;border-radius:10px;cursor:pointer}
+.tab[aria-selected="true"]{background:var(--door);color:#fff}
+.tab#tab-turq[aria-selected="true"]{background:var(--turq-ink);color:#fff}
+@media (prefers-color-scheme: dark){ .tab#tab-turq[aria-selected="true"]{background:var(--turq);color:#062624} }
+.when{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.chip{border:1px solid var(--line);background:var(--surface);color:var(--ink);font:600 15px var(--body);
+  padding:9px 14px;border-radius:999px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--door);border-color:var(--door);color:#fff}
+.turqpanel .chip[aria-pressed="true"]{background:var(--turq-ink);border-color:var(--turq-ink)}
+.chip:focus-visible,input:focus-visible,button:focus-visible{outline:3px solid var(--door);outline-offset:2px}
+input[type="datetime-local"]{font:15px var(--body);padding:8px 10px;border-radius:10px;border:1px solid var(--line);
+  background:var(--surface);color:var(--ink);max-width:100%}
+.panel{display:flex;flex-direction:column;gap:20px}
+.conditions{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px;
+  display:grid;grid-template-columns:120px 1fr;gap:16px;align-items:center}
+@media (max-width:420px){.conditions{grid-template-columns:96px 1fr}}
+.compass{width:100%;height:auto;display:block}
+.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 16px}
+.stat b{display:block;font:500 20px/1.2 var(--mono);font-variant-numeric:tabular-nums}
+.stat small{color:var(--muted);font-size:13px}
+.windname{grid-column:1/-1;font:700 20px/1.2 var(--display)}
+.windname em{font-style:normal;color:var(--muted);font-weight:500;font-size:15px}
+.best{border-radius:18px;padding:18px;background:var(--door);color:#fff}
+.best.turq{background:linear-gradient(135deg,#0B6F6D,#11A3A0)}
+.best .label{color:rgba(255,255,255,.85)}
+.best h2{font:700 30px/1.1 var(--display);margin:4px 0 6px;text-wrap:balance}
+.best .slot{font:500 18px/1.3 var(--mono);margin:0 0 8px}
+.best p{margin:0;font-size:15px;opacity:.95}
+.best ul{margin:8px 0 0;padding-left:18px;font-size:15px}
+.list{display:flex;flex-direction:column;gap:10px;margin:0;padding:0;list-style:none}
+.beach{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;
+  display:grid;grid-template-columns:52px 1fr auto;gap:12px;align-items:start}
+.score{font:500 20px/1 var(--mono);text-align:center;padding:10px 0;border-radius:10px;color:#fff}
+.beach h3{margin:0;font:700 18px/1.2 var(--display)}
+.beach .zone{color:var(--muted);font-size:13px}
+.beach ul{margin:6px 0 0;padding-left:18px;font-size:14px}
+.beach ul li{margin:2px 0}
+.rel{width:34px;height:34px}
+.maps{font-size:13px;color:var(--door);text-decoration:none;font-weight:700;display:inline-block;margin-top:6px}
+.status{font-size:14px;color:var(--muted)}
+.error{background:var(--surface);border:1px solid var(--bad);color:var(--ink);border-radius:14px;padding:14px;font-size:15px}
+.error code{font:13px var(--mono);color:var(--muted);word-break:break-word}
+.manual{display:flex;flex-wrap:wrap;gap:10px;align-items:end;margin-top:10px}
+.manual label{display:flex;flex-direction:column;font-size:13px;color:var(--muted);gap:4px}
+.manual input{font:15px var(--body);padding:8px;border-radius:8px;border:1px solid var(--line);background:var(--ground);color:var(--ink);width:110px}
+/* grille turquoise */
+.gridwrap{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px;overflow-x:auto}
+.hm{border-collapse:separate;border-spacing:2px;width:100%;font-size:12px}
+.hm th{font:500 11px var(--mono);color:var(--muted);font-weight:500;padding:2px 0}
+.hm th.b{text-align:left;font:700 13px var(--body);color:var(--ink);padding-right:6px;white-space:nowrap;max-width:110px;overflow:hidden;text-overflow:ellipsis}
+.hm td{height:28px;min-width:22px;border-radius:4px;cursor:pointer;padding:0}
+.hm td:hover,.hm td.sel{outline:2px solid var(--ink);outline-offset:-2px}
+.legend{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);margin-top:8px}
+.legend .ramp{height:10px;flex:0 0 120px;border-radius:3px;background:linear-gradient(90deg,var(--line),var(--turq))}
+.detail{font-size:14px;margin-top:10px;min-height:1.5em}
+.hint{font-size:14px;color:var(--muted);margin:0}
+footer{font-size:13px;color:var(--muted)}
+footer p{margin:4px 0}
+@media (prefers-reduced-motion:no-preference){ .arrow{transition:transform .5s ease} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Où nager à <span>Djerba</span>&nbsp;?</h1>
+    <p>Vent, vagues, soleil et nuages → la bonne plage au bon moment.</p>
+  </header>
+
+  <div class="tabs" role="tablist">
+    <button class="tab" id="tab-swim" role="tab" aria-selected="true">Mer calme</button>
+    <button class="tab" id="tab-turq" role="tab" aria-selected="false">Eau turquoise</button>
+  </div>
+
+  <div id="status" class="status">Chargement de la météo…</div>
+  <div id="error" hidden></div>
+
+  <!-- ===== Onglet 1 : mer calme ===== -->
+  <div class="panel" id="panel-swim">
+    <section aria-label="Choisir le moment">
+      <div class="label" style="margin-bottom:8px">Quand&nbsp;?</div>
+      <div class="when">
+        <button class="chip" id="btn-now" aria-pressed="true">Maintenant</button>
+        <button class="chip" id="btn-3h" aria-pressed="false">Dans 3 h</button>
+        <button class="chip" id="btn-tmr" aria-pressed="false">Demain 10 h</button>
+        <input type="datetime-local" id="dt" step="3600" aria-label="Date et heure">
+      </div>
+    </section>
+
+    <section class="conditions" id="cond" hidden aria-label="Conditions">
+      <svg class="compass" viewBox="0 0 120 120" role="img" aria-label="Direction du vent">
+        <circle cx="60" cy="60" r="52" fill="none" stroke="var(--line)" stroke-width="2"/>
+        <g font-family="JetBrains Mono, monospace" font-size="11" fill="var(--muted)" text-anchor="middle">
+          <text x="60" y="18">N</text><text x="106" y="64">E</text><text x="60" y="110">S</text><text x="14" y="64">O</text>
+        </g>
+        <g class="arrow" id="arrow" style="transform-origin:60px 60px">
+          <line x1="60" y1="28" x2="60" y2="86" stroke="var(--door)" stroke-width="5" stroke-linecap="round"/>
+          <path d="M60 96 L49 80 L71 80 Z" fill="var(--door)"/>
+        </g>
+      </svg>
+      <div class="stats">
+        <div class="windname" id="windname">—</div>
+        <div class="stat"><b id="s-wind">—</b><small>vent moyen</small></div>
+        <div class="stat"><b id="s-gust">—</b><small>rafales</small></div>
+        <div class="stat"><b id="s-air">—</b><small>air</small></div>
+        <div class="stat"><b id="s-sea">—</b><small>mer</small></div>
+        <div class="stat"><b id="s-cloud">—</b><small>nuages</small></div>
+        <div class="stat"><b id="s-uv">—</b><small>indice UV</small></div>
+      </div>
+    </section>
+
+    <section class="best" id="best" hidden aria-live="polite"></section>
+
+    <section aria-label="Classement des plages">
+      <div class="label" style="margin-bottom:8px">Toutes les plages</div>
+      <ol class="list" id="list"></ol>
+    </section>
+  </div>
+
+  <!-- ===== Onglet 2 : eau turquoise ===== -->
+  <div class="panel turqpanel" id="panel-turq" hidden>
+    <section aria-label="Choisir le jour">
+      <div class="label" style="margin-bottom:8px">Quel jour&nbsp;?</div>
+      <div class="when" id="days"></div>
+    </section>
+
+    <section class="best turq" id="tbest" hidden aria-live="polite"></section>
+
+    <section aria-label="Heure par heure">
+      <div class="label" style="margin-bottom:8px">Heure par heure · touche une case</div>
+      <div class="gridwrap">
+        <table class="hm" id="hm"></table>
+        <div class="legend"><span>terne</span><span class="ramp"></span><span>turquoise</span></div>
+        <div class="detail" id="hdetail"></div>
+      </div>
+    </section>
+    <p class="hint">Le calcul croise : hauteur du soleil, nuages (4 modèles météo), poussière du sirocco (Copernicus CAMS), mer d'huile ou non, vent de mer et houle sur 24 h, pluie sur 48 h, marée (plus importante sur les plages peu profondes), soleil dans ton dos et type de fond. Astuce : des lunettes polarisées enlèvent les reflets et révèlent le turquoise.</p>
+  </div>
+
+  <footer>
+    <p><b>Mer calme :</b> un vent qui souffle de la terre vers la mer aplatit l'eau près du bord ; un vent qui arrive de la mer lève vagues et clapot. L'app compare le vent à l'orientation de chaque plage, puis ajoute la houle.</p>
+    <p>Données via Open-Meteo : modèles ECMWF, DWD ICON, Météo-France et NOAA GFS ; houle et marée (modèles marins) ; poussière Copernicus CAMS. Coordonnées et notes « beauté » des plages approximatives. Indicatif seulement — regarde toujours les drapeaux et la mer sur place.</p>
+  </footer>
+</div>
+
+<script>
+// face = direction vers laquelle la plage regarde la mer (0 = Nord). beauty = potentiel turquoise de base (0-100)
+const BEACHES = [
+  {id:"rmel", shallow:true, name:"Ras R'mel (île aux flamants)", short:"Ras R'mel", zone:"Presqu'île nord, face à Houmt Souk", lat:33.895, lon:10.925, face:0, beauty:95,
+   note:"Accès surtout en bateau depuis Houmt Souk.", bnote:"Lagon peu profond, sable blanc : l'eau la plus turquoise de l'île."},
+  {id:"seguia", name:"La Seguia", short:"Seguia", zone:"Côte sud-est", lat:33.735, lon:11.005, face:125, beauty:88, note:"", bnote:"Sable clair, eau transparente quand c'est calme."},
+  {id:"mahrez", name:"Sidi Mahrez", short:"Sidi Mahrez", zone:"Zone touristique, côte nord-est", lat:33.858, lon:10.985, face:20, beauty:85,
+   note:"Longue plage de sable fin, bien équipée.", bnote:"Face au nord : le soleil est toujours dans ton dos."},
+  {id:"aghir", name:"Aghir", short:"Aghir", zone:"Côte est", lat:33.772, lon:11.025, face:100, beauty:85, note:"", bnote:"Plus belle l'après-midi, soleil dans le dos."},
+  {id:"taguermess", name:"Ras Taguermess", short:"Taguermess", zone:"Cap nord-est, près du phare", lat:33.825, lon:11.055, face:65, beauty:78,
+   note:"Très exposée : spot de kite quand ça souffle.", bnote:""},
+  {id:"kantara", shallow:true, name:"El Kantara", short:"El Kantara", zone:"Côte sud-est, chaussée romaine", lat:33.665, lon:10.955, face:155, beauty:65,
+   note:"Eau très peu profonde, idéal enfants.", bnote:"Fond parfois vaseux : moins turquoise."},
+  {id:"jmour", shallow:true, name:"Sidi Jmour", short:"Sidi Jmour", zone:"Côte ouest", lat:33.848, lon:10.745, face:295, beauty:58,
+   note:"Peu profonde, calme, couchers de soleil.", bnote:"Mieux pour le coucher de soleil que pour le turquoise."},
+];
+const CENTER = {lat:33.80, lon:10.92};
+const TZ = "Africa/Tunis", UTC_OFFSET = 1; // la Tunisie n'a pas d'heure d'été
+let WX = null, MARINE = null;
+
+const $ = id => document.getElementById(id);
+const pad = n => String(n).padStart(2,"0");
+const clamp = (x,a=0,b=1) => Math.max(a,Math.min(b,x));
+
+function tunisKey(date){
+  const x=new Date(date.getTime()+UTC_OFFSET*3600e3);
+  return `${x.getUTCFullYear()}-${pad(x.getUTCMonth()+1)}-${pad(x.getUTCDate())}T${pad(x.getUTCHours())}:00`;
+}
+function addHoursKey(key,h){
+  const [d,t]=key.split("T"); const [Y,M,D]=d.split("-").map(Number);
+  const x=new Date(Date.UTC(Y,M-1,D,+t.slice(0,2)+h));
+  return `${x.getUTCFullYear()}-${pad(x.getUTCMonth()+1)}-${pad(x.getUTCDate())}T${pad(x.getUTCHours())}:00`;
+}
+function keyToUTC(key){ const [d,t]=key.split("T"); const [Y,M,D]=d.split("-").map(Number); return Date.UTC(Y,M-1,D,+t.slice(0,2)-UTC_OFFSET); }
+function dayLabel(dateStr, withWeekday=true){
+  const [Y,M,D]=dateStr.split("-").map(Number);
+  const x=new Date(Date.UTC(Y,M-1,D,12));
+  return x.toLocaleDateString("fr-FR",{timeZone:"UTC",weekday:withWeekday?"long":undefined,day:"numeric",month:"long"});
+}
+let selectedKey = tunisKey(new Date());
+
+// Position du soleil (formules SunCalc)
+function sunPos(ms, lat, lon){
+  const rad=Math.PI/180, d=ms/86400000-0.5+2440588-2451545, e=rad*23.4397;
+  const M=rad*(357.5291+0.98560028*d);
+  const L=M+rad*(1.9148*Math.sin(M)+0.02*Math.sin(2*M)+0.0003*Math.sin(3*M))+rad*102.9372+Math.PI;
+  const dec=Math.asin(Math.sin(e)*Math.sin(L)), ra=Math.atan2(Math.sin(L)*Math.cos(e),Math.cos(L));
+  const H=rad*(280.16+360.9856235*d)+rad*lon-ra, phi=rad*lat;
+  const alt=Math.asin(Math.sin(phi)*Math.sin(dec)+Math.cos(phi)*Math.cos(dec)*Math.cos(H));
+  const az=Math.atan2(Math.sin(H),Math.cos(H)*Math.sin(phi)-Math.tan(dec)*Math.cos(phi));
+  return {alt:alt/rad, az:((az/rad)+180+360)%360};
+}
+
+const SECTORS=["Nord","Nord-Nord-Est","Nord-Est","Est-Nord-Est","Est","Est-Sud-Est","Sud-Est","Sud-Sud-Est",
+  "Sud","Sud-Sud-Ouest","Sud-Ouest","Ouest-Sud-Ouest","Ouest","Ouest-Nord-Ouest","Nord-Ouest","Nord-Nord-Ouest"];
+const sectorName = deg => SECTORS[Math.round((((deg%360)+360)%360)/22.5)%16];
+function localName(deg){ const d=((deg%360)+360)%360;
+  if(d>=315||d<45) return "bahri"; if(d<135) return "chergui"; if(d<225) return "guebli"; return "gharbi"; }
+const fmt=(v,u,dec=0)=> v==null||isNaN(v) ? "—" : `${v.toFixed(dec).replace(".",",")}${u}`;
+const relAngle=(a,b)=>((a-b+540)%360)-180;
+
+/* ---------- Mer calme ---------- */
+function scoreBeach(b,w,m){
+  const reasons=[]; let s=100;
+  const diff=relAngle(w.dir,b.face), rel=Math.cos(diff*Math.PI/180), spd=w.speed;
+  const kind= rel>0.5?"onshore":rel<-0.5?"offshore":"side";
+  if(spd<8){ reasons.push("Vent faible : mer calme partout"); }
+  else if(kind==="onshore"){ s-=Math.min(55,rel*spd*1.5); reasons.push(`Vent de face (de la mer) ${Math.round(spd)} km/h : vagues et clapot`); }
+  else if(kind==="offshore"){ s+=6; reasons.push("Vent de terre : eau plate près du bord");
+    if(spd>25){ s-=12; reasons.push("Vent de terre fort : attention matelas et paddle, ça dérive vers le large"); } }
+  else { s-=Math.max(0,rel)*spd*1.2+spd*0.35; reasons.push(`Vent latéral ${Math.round(spd)} km/h : un peu de clapot`); }
+  if(w.gust>45){ s-=10; reasons.push(`Rafales à ${Math.round(w.gust)} km/h`); }
+  if(m && m.wave!=null){
+    const wd=m.waveDir!=null?Math.cos(relAngle(m.waveDir,b.face)*Math.PI/180):1;
+    s-=Math.min(40,Math.max(0,m.wave-0.3)*55*Math.max(0.25,wd));
+    if(m.wave>=0.5&&wd>0.2) reasons.push(`Houle ~${m.wave.toFixed(1).replace(".",",")} m qui arrive sur la plage`);
+    else if(m.wave<0.3) reasons.push("Pas de houle");
+  }
+  if(b.note) reasons.push(b.note);
+  return {s:Math.max(0,Math.min(100,Math.round(s))), reasons, diff};
+}
+function verdict(s){
+  if(s>=80) return {t:"Excellent",c:"var(--good)"}; if(s>=60) return {t:"Bien",c:"var(--ok)"};
+  if(s>=40) return {t:"Moyen",c:"var(--warn)"}; return {t:"Déconseillé",c:"var(--bad)"};
+}
+
+/* ---------- Eau turquoise ---------- */
+function turqScore(bi, i){
+  const b=BEACHES[bi], H=WX.hourly, key=H.time[i];
+  const sun=sunPos(keyToUTC(key)+30*60e3, b.lat, b.lon);
+  if(sun.alt<8) return null;
+  // 1. Soleil : il faut > ~40° pour que la lumière entre dans l'eau
+  const sunS = sun.alt<15?0 : sun.alt<40 ? (sun.alt-15)/25*0.8 : sun.alt<50 ? 0.8+(sun.alt-40)/10*0.2 : 1;
+  // 2. Ciel : nuages (les bas comptent plus) + voile de poussière (aérosols)
+  const cloud=H.cloud_cover[i]??0, low=H.cloud_cover_low?.[i]??cloud;
+  const clear=clamp(1-(0.55*cloud+0.45*low)/100);
+  const aod=AIR?.aerosol_optical_depth?.[i], dust=AIR?.dust?.[i];
+  const haze = aod!=null ? clamp(1-(aod-0.15)/0.55) : dust!=null ? clamp(1-(dust-20)/200) : 1;
+  const sky=clear*(0.55+0.45*haze);
+  // 3. Clarté : vent de mer sur 24 h (récent = plus lourd), houle, pluie 48 h
+  let turb=0,wsum=0;
+  for(let k=Math.max(0,i-24);k<=i;k++){ const age=i-k, wgt=age<=6?1:age<=12?0.7:0.4;
+    const rel=Math.cos(relAngle(H.wind_direction_10m[k],b.face)*Math.PI/180);
+    turb+=wgt*(Math.max(0,rel)*H.wind_speed_10m[k]+0.15*H.wind_speed_10m[k]); wsum+=wgt; }
+  turb/=wsum;
+  const m=MARINE?.[bi]?.hourly, wave=m?m.wave_height[i]:null;
+  let clarity=clamp(1-(turb-6)/22);
+  if(wave!=null) clarity*=clamp(1-(wave-0.25)/0.9,0.2,1);
+  let rain48=0; for(let k=Math.max(0,i-48);k<=i;k++) rain48+=H.precipitation?.[k]||0;
+  clarity*=clamp(1-rain48/20,0.5,1);
+  // 4. Surface : sous 8 km/h, mer d'huile, on voit le fond
+  const wnow=H.wind_speed_10m[i], surface = wnow<=8?1:clamp(1-(wnow-8)/17,0.15,1);
+  // 5. Marée : niveau relatif dans la journée + force du courant de marée
+  let tideFrac=null, tideRising=null, tideMult=1;
+  const lv=m?.sea_level_height_msl;
+  if(lv && lv[i]!=null){
+    const day=key.slice(0,10), idx=H.time.map((t,k)=>k).filter(k=>H.time[k].slice(0,10)===day && lv[k]!=null);
+    const vals=idx.map(k=>lv[k]), lo=Math.min(...vals), hi=Math.max(...vals), range=hi-lo;
+    if(range>0.08){
+      tideFrac=(lv[i]-lo)/range;
+      const prev=lv[i-1]??lv[i], next=lv[i+1]??lv[i]; tideRising=next>prev;
+      const rate=Math.abs(next-prev)/2/range;             // ~0 à l'étale, ~0.3 à mi-marée
+      const tideS=clamp(0.55+0.45*tideFrac-0.5*Math.max(0,rate-0.15));
+      tideMult = b.shallow ? 0.65+0.35*tideS : 0.85+0.15*tideS;
+    }
+  }
+  // 6. Soleil dans le dos
+  const behind=(1+Math.cos(relAngle(sun.az,(b.face+180)%360)*Math.PI/180))/2;
+  const s=100*(0.27*sunS+0.25*sky+0.30*clarity+0.18*surface)*tideMult*(0.72+0.28*b.beauty/100)*(0.86+0.14*behind);
+  return {s:Math.round(s), sun, cloud, low, clarity, turb, wave, behind, key, aod, dust, haze, rain48, wnow, surface, tideFrac, tideRising, spread:H.cloud_spread?.[i]};
+}
+function reasonsTurq(r){
+  const out=[];
+  out.push(r.sun.alt>=45?`Soleil très haut (${Math.round(r.sun.alt)}°)`: r.sun.alt>=38?`Soleil haut (${Math.round(r.sun.alt)}°)`:`Soleil encore bas (${Math.round(r.sun.alt)}°) : moins de lumière dans l'eau`);
+  out.push(r.cloud<15?`Ciel dégagé (${Math.round(r.cloud)} % de nuages)`: r.cloud<50?`Quelques nuages (${Math.round(r.cloud)} %)`:`Ciel chargé (${Math.round(r.cloud)} %)`);
+  if(r.aod!=null) out.push(r.haze>0.8?"Air limpide, pas de poussière": r.haze>0.45?"Léger voile de poussière":"Voile de poussière (sirocco) : couleurs ternes");
+  out.push(r.surface>=0.95?`Mer d'huile (vent ${Math.round(r.wnow)} km/h) : on voit le fond`: r.surface>0.6?`Petites rides (vent ${Math.round(r.wnow)} km/h)`:`Surface agitée (vent ${Math.round(r.wnow)} km/h) : reflets`);
+  out.push(r.clarity>0.75?"Eau claire : peu de vent de mer depuis 24 h": r.clarity>0.45?"Eau un peu remuée ces dernières heures":"Eau troublée par le vent et les vagues");
+  if(r.rain48>3) out.push(`Pluie récente (${Math.round(r.rain48)} mm en 48 h) : eau possiblement trouble`);
+  if(r.tideFrac!=null) out.push(r.tideFrac>0.7?"Marée haute":r.tideFrac<0.3?`Marée basse${r.tideRising?", ça remonte":""}`:`Mi-marée, ${r.tideRising?"montante":"descendante"}`);
+  if(r.behind>0.7) out.push("Soleil dans ton dos face à la mer : couleurs au top");
+  else if(r.behind<0.3) out.push("Soleil face à toi : reflets, moins de couleur");
+  if(r.spread!=null && r.spread>25) out.push("⚠ Les modèles ne sont pas d'accord sur les nuages : prévision incertaine");
+  return out;
+}
+const hourOf = key => +key.slice(11,13);
+
+let turqDay=null, selCell=null;
+function renderTurq(){
+  if(!WX) return;
+  const H=WX.hourly, nowKey=tunisKey(new Date());
+  const dates=[...new Set(H.time.map(t=>t.slice(0,10)))].filter(d=>d>=nowKey.slice(0,10)).slice(0,3);
+  if(!turqDay||!dates.includes(turqDay)) turqDay=dates[0];
+  const names=["Aujourd'hui","Demain","Après-demain"];
+  const days=$("days"); days.innerHTML="";
+  dates.forEach((d,k)=>{ const b=document.createElement("button"); b.className="chip"; b.textContent=names[k];
+    b.setAttribute("aria-pressed", d===turqDay?"true":"false"); b.onclick=()=>{turqDay=d;selCell=null;renderTurq();}; days.appendChild(b); });
+
+  // heures de la journée choisie (7h–18h), en sautant le passé pour aujourd'hui
+  const idx=H.time.map((t,i)=>i).filter(i=>H.time[i].slice(0,10)===turqDay && hourOf(H.time[i])>=7 && hourOf(H.time[i])<=18);
+  const grid=BEACHES.map((b,bi)=>idx.map(i=> H.time[i]<nowKey.slice(0,13)+":00" ? {past:true} : turqScore(bi,i)));
+
+  // meilleur créneau de 2 h
+  let best=null;
+  grid.forEach((row,bi)=>{ for(let c=0;c<row.length-1;c++){ const a=row[c],z=row[c+1];
+    if(!a||!z||a.past||z.past) continue; const avg=(a.s+z.s)/2;
+    if(!best||avg>best.avg) best={bi,c,avg,r:a.s>=z.s?a:z}; } });
+  const tb=$("tbest"); tb.hidden=false;
+  const k=dates.indexOf(turqDay);
+  if(!best){ tb.innerHTML=`<div class="label">${names[k]}</div><h2>Plus de créneau aujourd'hui</h2><p>Le soleil est trop bas. Regarde demain.</p>`; }
+  else{
+    const b=BEACHES[best.bi], h1=hourOf(H.time[idx[best.c]]), h2=h1+2;
+    const lvl = best.avg>=75?"Conditions superbes": best.avg>=55?"Bonnes conditions": best.avg>=40?"Conditions moyennes":"Pas une grande journée pour le turquoise";
+    tb.innerHTML=`<div class="label">${names[k]} · ${dayLabel(turqDay)}</div><h2></h2><div class="slot">${pad(h1)}h – ${pad(h2)}h · ${Math.round(best.avg)}/100</div><p></p><ul></ul>
+      <a class="maps" style="color:#fff" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${b.lat},${b.lon}">Itinéraire →</a>`;
+    tb.querySelector("h2").textContent=b.name;
+    tb.querySelector("p").textContent=lvl+(b.bnote?` — ${b.bnote}`:"");
+    const ul=tb.querySelector("ul"); reasonsTurq(best.r).forEach(t=>{const li=document.createElement("li");li.textContent=t;ul.appendChild(li);});
+  }
+
+  // grille
+  const hm=$("hm"); hm.innerHTML="";
+  const thead=document.createElement("tr"); thead.innerHTML="<th></th>"+idx.map(i=>`<th>${hourOf(H.time[i])}</th>`).join("");
+  hm.appendChild(thead);
+  const all=grid.flat().filter(r=>r&&!r.past).map(r=>r.s);
+  const lo=Math.min(...all), hi=Math.max(...all);
+  grid.forEach((row,bi)=>{
+    const tr=document.createElement("tr"); const th=document.createElement("th"); th.className="b"; th.textContent=BEACHES[bi].short; tr.appendChild(th);
+    row.forEach((r,c)=>{ const td=document.createElement("td");
+      if(!r||r.past){ td.style.background="transparent"; td.style.cursor="default"; td.title=r&&r.past?"Passé":"Soleil trop bas"; }
+      else{ const p=0.08+0.92*clamp((r.s-lo)/((hi-lo)||1)); td.style.background=`color-mix(in oklab, var(--turq) ${Math.round(p*100)}%, var(--line))`;
+        td.title=`${BEACHES[bi].short} · ${hourOf(r.key)}h · ${r.s}/100`;
+        if(selCell&&selCell[0]===bi&&selCell[1]===c) td.classList.add("sel");
+        td.onclick=()=>{ selCell=[bi,c]; hm.querySelectorAll("td.sel").forEach(x=>x.classList.remove("sel")); td.classList.add("sel");
+          $("hdetail").textContent=`${BEACHES[bi].name} à ${hourOf(r.key)}h : ${r.s}/100 — ${reasonsTurq(r).join(" · ")}`; };
+      }
+      tr.appendChild(td); });
+    hm.appendChild(tr);
+  });
+  if(!selCell) $("hdetail").textContent="Touche une case pour voir le détail.";
+}
+
+/* ---------- Chargement ---------- */
+async function fetchJSON(url, tries=3){
+  let last;
+  for(let t=0;t<tries;t++){
+    let timer;
+    try{
+      const timeout=new Promise((_,rej)=>{ timer=setTimeout(()=>rej(new Error("délai dépassé")),15000); });
+      const r=await Promise.race([fetch(url), timeout]); clearTimeout(timer);
+      if(!r.ok) throw new Error("HTTP "+r.status); return await r.json(); }
+    catch(e){ clearTimeout(timer); last=e; await new Promise(res=>setTimeout(res,800*(t+1))); }
+  }
+  throw last;
+}
+// Plusieurs modèles météo croisés : européen (ECMWF), allemand (DWD ICON), français (Météo-France), américain (NOAA GFS)
+const MODELS=[["ecmwf_ifs025","ECMWF"],["icon_seamless","ICON"],["meteofrance_seamless","Météo-France"],["gfs_seamless","GFS"]];
+const WXVARS=["wind_speed_10m","wind_direction_10m","wind_gusts_10m","temperature_2m","uv_index","cloud_cover","cloud_cover_low","precipitation"];
+let MODELS_USED=[], AIR=null;
+
+function mergeModels(j){
+  const h=j.hourly, n=h.time.length, out={time:h.time}, used=new Set();
+  const vals=(v,m)=>h[`${v}_${m}`];
+  for(const v of WXVARS){
+    if(v==="wind_direction_10m") continue;
+    out[v]=Array.from({length:n},(_,i)=>{ const xs=MODELS.map(([m])=>vals(v,m)?.[i]).filter(x=>x!=null); return xs.length?xs.reduce((a,b)=>a+b,0)/xs.length:null; });
+  }
+  // direction : moyenne vectorielle pondérée par la vitesse
+  out.wind_direction_10m=Array.from({length:n},(_,i)=>{ let u=0,w=0;
+    MODELS.forEach(([m])=>{ const d=vals("wind_direction_10m",m)?.[i], s=vals("wind_speed_10m",m)?.[i];
+      if(d!=null&&s!=null){ u+=s*Math.sin(d*Math.PI/180); w+=s*Math.cos(d*Math.PI/180); used.add(m);} });
+    return (Math.atan2(u,w)*180/Math.PI+360)%360; });
+  // désaccord des modèles sur les nuages (écart-type)
+  out.cloud_spread=Array.from({length:n},(_,i)=>{ const xs=MODELS.map(([m])=>vals("cloud_cover",m)?.[i]).filter(x=>x!=null);
+    if(xs.length<2) return null; const mu=xs.reduce((a,b)=>a+b,0)/xs.length; return Math.sqrt(xs.reduce((a,b)=>a+(b-mu)**2,0)/xs.length); });
+  MODELS_USED=MODELS.filter(([m])=>used.has(m)).map(x=>x[1]);
+  if(!MODELS_USED.length) throw new Error("aucun modèle");
+  return {hourly:out};
+}
+function alignTo(times, src, keys){
+  const map=new Map(src.time.map((t,k)=>[t,k])), o={};
+  keys.forEach(k=>{ o[k]=times.map(t=>{ const i=map.get(t); return i==null?null:(src[k]?.[i]??null); }); });
+  return o;
+}
+async function load(){
+  const base=`latitude=${CENTER.lat}&longitude=${CENTER.lon}&timezone=${encodeURIComponent(TZ)}`;
+  const uMulti=`https://api.open-meteo.com/v1/forecast?${base}&hourly=${WXVARS.join(",")}&wind_speed_unit=kmh&past_days=2&forecast_days=7&models=${MODELS.map(m=>m[0]).join(",")}`;
+  const uSingle=`https://api.open-meteo.com/v1/forecast?${base}&hourly=${WXVARS.join(",")}&wind_speed_unit=kmh&past_days=2&forecast_days=7`;
+  const uMarine=`https://marine-api.open-meteo.com/v1/marine?latitude=${BEACHES.map(b=>b.lat).join(",")}&longitude=${BEACHES.map(b=>b.lon).join(",")}&hourly=wave_height,wave_direction,sea_surface_temperature,sea_level_height_msl&timezone=${encodeURIComponent(TZ)}&past_days=2&forecast_days=7`;
+  const uAir=`https://air-quality-api.open-meteo.com/v1/air-quality?${base}&hourly=dust,aerosol_optical_depth&past_days=2&forecast_days=5`;
+
+  try{ WX=mergeModels(await fetchJSON(uMulti,2)); }
+  catch(e){
+    try{ WX=await fetchJSON(uSingle); MODELS_USED=["modèle auto"]; WX.hourly.cloud_spread=WX.hourly.time.map(()=>null); }
+    catch(e2){ showError(e2); return; }
+  }
+  const T=WX.hourly.time;
+  const [mar, air] = await Promise.allSettled([fetchJSON(uMarine,2), fetchJSON(uAir,2)]);
+  if(mar.status==="fulfilled"){ const j=mar.value; MARINE=(Array.isArray(j)?j:[j]).map(mm=>({hourly:alignTo(T,mm.hourly,["wave_height","wave_direction","sea_surface_temperature","sea_level_height_msl"])})); }
+  else MARINE=null;
+  AIR = air.status==="fulfilled" ? alignTo(T,air.value.hourly,["dust","aerosol_optical_depth"]) : null;
+
+  const nowK=tunisKey(new Date()), dt=$("dt");
+  dt.min=nowK.slice(0,11)+"00:00"; dt.max=T[T.length-1].slice(0,16);
+  const src=["Météo : "+MODELS_USED.join(" + ")];
+  src.push(MARINE?"houle + marée ✓":"houle/marée indisponibles");
+  src.push(AIR?"poussière (CAMS) ✓":"poussière indisponible");
+  $("status").textContent=src.join(" · ");
+  render(); renderTurq();
+}
+function showError(e){
+  $("status").hidden=true;
+  const box=$("error"); box.hidden=false; box.className="error";
+  const offline = navigator.onLine===false;
+  box.innerHTML=`<b>La météo n'a pas pu être chargée.</b><br>
+  ${offline?"Ton téléphone semble hors connexion.":"Cause la plus fréquente : la page est ouverte dans un aperçu (l'app Claude, l'app Fichiers, WhatsApp…) qui bloque internet. Ouvre-la depuis son lien web dans Safari ou Chrome."}
+  <br><code>${String(e&&e.message||e)}</code>
+  <div style="margin-top:8px"><button class="chip" id="retry">Réessayer</button></div>
+  <form class="manual" id="manual">
+    <label for="m-dir">Vent venant de (°)<input id="m-dir" type="number" min="0" max="359" value="90"></label>
+    <label for="m-spd">Vitesse (km/h)<input id="m-spd" type="number" min="0" max="120" value="20"></label>
+    <button class="chip" type="submit">Calculer à la main</button>
+  </form>`;
+  $("retry").onclick=()=>{ box.hidden=true; $("status").hidden=false; $("status").textContent="Nouvel essai…"; load(); };
+  $("manual").addEventListener("submit",ev=>{ev.preventDefault();
+    renderWith({dir:+$("m-dir").value||0,speed:+$("m-spd").value||0,gust:null},null,null);});
+}
+
+function render(){
+  if(!WX) return;
+  const H=WX.hourly; let i=H.time.indexOf(selectedKey);
+  if(i<0){ i = selectedKey<H.time[0]?0:H.time.length-1; selectedKey=H.time[i]; }
+  $("dt").value=selectedKey.slice(0,16);
+  const w={dir:H.wind_direction_10m[i],speed:H.wind_speed_10m[i],gust:H.wind_gusts_10m[i],air:H.temperature_2m[i],uv:H.uv_index?.[i],cloud:H.cloud_cover?.[i]};
+  const marine=MARINE?MARINE.map(mm=>({wave:mm.hourly.wave_height[i],waveDir:mm.hourly.wave_direction[i],sst:mm.hourly.sea_surface_temperature[i]})):null;
+  renderWith(w,marine,selectedKey);
+}
+function renderWith(w,marine,key){
+  $("cond").hidden=false;
+  $("arrow").style.transform=`rotate(${w.dir}deg)`;
+  $("windname").innerHTML=`Vent de ${sectorName(w.dir)} <em>· ${localName(w.dir)} · ${Math.round(w.dir)}°</em>`;
+  $("s-wind").textContent=`${Math.round(w.speed)} km/h`;
+  $("s-gust").textContent=w.gust==null?"—":`${Math.round(w.gust)} km/h`;
+  $("s-air").textContent=fmt(w.air,"°C");
+  const ssts=(marine||[]).map(m=>m&&m.sst).filter(v=>v!=null);
+  $("s-sea").textContent=ssts.length?fmt(ssts.reduce((a,b)=>a+b,0)/ssts.length,"°C",1):"—";
+  $("s-cloud").textContent=w.cloud==null?"—":`${Math.round(w.cloud)} %`;
+  $("s-uv").textContent=w.uv==null?"—":fmt(w.uv,"",0);
+
+  const ranked=BEACHES.map((b,k)=>({b,...scoreBeach(b,w,marine?marine[k]:null)})).sort((a,c)=>c.s-a.s);
+  const top=ranked[0], v=verdict(top.s);
+  const when = key ? `${dayLabel(key.slice(0,10))} à ${hourOf(key)}h` : "vent saisi à la main";
+  const best=$("best"); best.hidden=false;
+  best.innerHTML=`<div class="label">Meilleur choix · ${when}</div><h2></h2><p></p>`;
+  best.querySelector("h2").textContent=top.b.name;
+  best.querySelector("p").textContent=`${v.t} (${top.s}/100) — ${top.reasons[0]}.`;
+
+  const list=$("list"); list.innerHTML="";
+  ranked.forEach(r=>{
+    const vv=verdict(r.s), li=document.createElement("li"); li.className="beach";
+    const icon=`<svg class="rel" viewBox="0 0 34 34" aria-hidden="true">
+      <rect x="0" y="22" width="34" height="12" fill="var(--sand)" rx="3"/><rect x="0" y="0" width="34" height="22" fill="var(--door-soft)" rx="3"/>
+      <g transform="rotate(${r.diff} 17 17)"><line x1="17" y1="5" x2="17" y2="25" stroke="var(--door)" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M17 29 L12 22 L22 22 Z" fill="var(--door)"/></g></svg>`;
+    li.innerHTML=`<div class="score" style="background:${vv.c}" title="${vv.t}">${r.s}</div>
+      <div><h3></h3><div class="zone"></div><ul></ul>
+      <a class="maps" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${r.b.lat},${r.b.lon}">Itinéraire →</a></div>${icon}`;
+    li.querySelector("h3").textContent=r.b.name;
+    li.querySelector(".zone").textContent=`${r.b.zone} · ${vv.t}`;
+    const ul=li.querySelector("ul"); r.reasons.forEach(t=>{const x=document.createElement("li");x.textContent=t;ul.appendChild(x);});
+    list.appendChild(li);
+  });
+}
+
+function setChip(id){ ["btn-now","btn-3h","btn-tmr"].forEach(b=>$(b).setAttribute("aria-pressed",b===id?"true":"false")); }
+$("btn-now").onclick=()=>{ selectedKey=tunisKey(new Date()); setChip("btn-now"); render(); };
+$("btn-3h").onclick=()=>{ selectedKey=addHoursKey(tunisKey(new Date()),3); setChip("btn-3h"); render(); };
+$("btn-tmr").onclick=()=>{ selectedKey=addHoursKey(tunisKey(new Date()),24).slice(0,11)+"10:00"; setChip("btn-tmr"); render(); };
+$("dt").addEventListener("change",e=>{ if(!e.target.value) return; selectedKey=e.target.value.slice(0,13)+":00"; setChip(null); render(); });
+
+function showTab(which){
+  const turq = which==="turq";
+  $("tab-swim").setAttribute("aria-selected",String(!turq)); $("tab-turq").setAttribute("aria-selected",String(turq));
+  $("panel-swim").hidden=turq; $("panel-turq").hidden=!turq;
+  try{ localStorage.setItem("djerba-tab",which); }catch(e){}
+}
+$("tab-swim").onclick=()=>showTab("swim"); $("tab-turq").onclick=()=>showTab("turq");
+try{ if(localStorage.getItem("djerba-tab")==="turq") showTab("turq"); }catch(e){}
+
+load();
+</script>
+</body>
+</html>
