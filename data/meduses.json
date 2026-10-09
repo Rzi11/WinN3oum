@@ -1,0 +1,216 @@
+{
+ "generated": "2026-10-09T21:13:04Z",
+ "mode": "derive",
+ "detail": "Copernicus cmems_mod_med_phy-cur_anfc_4.2km_P1D-m + Open-Meteo, 3290 méduses virtuelles",
+ "method": "v0.1 — dérive courant + 1,2 % du vent, non validée",
+ "days": [
+  "2026-10-09",
+  "2026-10-10",
+  "2026-10-11"
+ ],
+ "beaches": {
+  "rmel": {
+   "name": "Ras R'mel",
+   "days": [
+    {
+     "date": "2026-10-09",
+     "arrivals": 0.0,
+     "drift": 0.0,
+     "season": 0.55,
+     "risk": 0.14,
+     "level": "Faible"
+    },
+    {
+     "date": "2026-10-10",
+     "arrivals": 36.0,
+     "drift": 0.91,
+     "season": 0.55,
+     "risk": 0.51,
+     "level": "Élevé"
+    },
+    {
+     "date": "2026-10-11",
+     "arrivals": 7.0,
+     "drift": 0.37,
+     "season": 0.55,
+     "risk": 0.29,
+     "level": "Possible"
+    }
+   ]
+  },
+  "seguia": {
+   "name": "La Seguia",
+   "days": [
+    {
+     "date": "2026-10-09",
+     "arrivals": 9.0,
+     "drift": 0.45,
+     "season": 0.55,
+     "risk": 0.32,
+     "level": "Possible"
+    },
+    {
+     "date": "2026-10-10",
+     "arrivals": 0.0,
+     "drift": 0.0,
+     "season": 0.55,
+     "risk": 0.14,
+     "level": "Faible"
+    },
+    {
+     "date": "2026-10-11",
+     "arrivals": 0.0,
+     "drift": 0.0,
+     "season": 0.55,
+     "risk": 0.14,
+     "level": "Faible"
+    }
+   ]
+  },
+  "mahrez": {
+   "name": "Sidi Mahrez",
+   "days": [
+    {
+     "date": "2026-10-09",
+     "arrivals": 3.0,
+     "drift": 0.18,
+     "season": 0.55,
+     "risk": 0.21,
+     "level": "Possible"
+    },
+    {
+     "date": "2026-10-10",
+     "arrivals": 11.0,
+     "drift": 0.52,
+     "season": 0.55,
+     "risk": 0.35,
+     "level": "Possible"
+    },
+    {
+     "date": "2026-10-11",
+     "arrivals": 2.0,
+     "drift": 0.12,
+     "season": 0.55,
+     "risk": 0.19,
+     "level": "Faible"
+    }
+   ]
+  },
+  "aghir": {
+   "name": "Aghir",
+   "days": [
+    {
+     "date": "2026-10-09",
+     "arrivals": 7.0,
+     "drift": 0.37,
+     "season": 0.55,
+     "risk": 0.29,
+     "level": "Possible"
+    },
+    {
+     "date": "2026-10-10",
+     "arrivals": 5.0,
+     "drift": 0.28,
+     "season": 0.55,
+     "risk": 0.25,
+     "level": "Possible"
+    },
+    {
+     "date": "2026-10-11",
+     "arrivals": 0.0,
+     "drift": 0.0,
+     "season": 0.55,
+     "risk": 0.14,
+     "level": "Faible"
+    }
+   ]
+  },
+  "taguermess": {
+   "name": "Ras Taguermess",
+   "days": [
+    {
+     "date": "2026-10-09",
+     "arrivals": 15.0,
+     "drift": 0.63,
+     "season": 0.55,
+     "risk": 0.4,
+     "level": "Possible"
+    },
+    {
+     "date": "2026-10-10",
+     "arrivals": 17.0,
+     "drift": 0.68,
+     "season": 0.55,
+     "risk": 0.42,
+     "level": "Possible"
+    },
+    {
+     "date": "2026-10-11",
+     "arrivals": 3.0,
+     "drift": 0.18,
+     "season": 0.55,
+     "risk": 0.21,
+     "level": "Possible"
+    }
+   ]
+  },
+  "kantara": {
+   "name": "El Kantara",
+   "days": [
+    {
+     "date": "2026-10-09",
+     "arrivals": 0.0,
+     "drift": 0.0,
+     "season": 0.55,
+     "risk": 0.14,
+     "level": "Faible"
+    },
+    {
+     "date": "2026-10-10",
+     "arrivals": 0.0,
+     "drift": 0.0,
+     "season": 0.55,
+     "risk": 0.14,
+     "level": "Faible"
+    },
+    {
+     "date": "2026-10-11",
+     "arrivals": 0.0,
+     "drift": 0.0,
+     "season": 0.55,
+     "risk": 0.14,
+     "level": "Faible"
+    }
+   ]
+  },
+  "jmour": {
+   "name": "Sidi Jmour",
+   "days": [
+    {
+     "date": "2026-10-09",
+     "arrivals": 0.0,
+     "drift": 0.0,
+     "season": 0.55,
+     "risk": 0.14,
+     "level": "Faible"
+    },
+    {
+     "date": "2026-10-10",
+     "arrivals": 0.0,
+     "drift": 0.0,
+     "season": 0.55,
+     "risk": 0.14,
+     "level": "Faible"
+    },
+    {
+     "date": "2026-10-11",
+     "arrivals": 0.0,
+     "drift": 0.0,
+     "season": 0.55,
+     "risk": 0.14,
+     "level": "Faible"
+    }
+   ]
+  }
+ }
+}
