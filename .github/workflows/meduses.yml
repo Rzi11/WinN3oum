@@ -1,0 +1,39 @@
+name: Méduses — dérive de la nuit
+
+on:
+  schedule:
+    - cron: "30 3 * * *"     # chaque nuit à 4h30 heure tunisienne
+  workflow_dispatch:          # bouton « Run workflow » pour lancer à la main
+
+permissions:
+  contents: write
+
+jobs:
+  derive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: drift/requirements.txt
+
+      - name: Installer les outils
+        run: pip install -r drift/requirements.txt
+
+      - name: Calculer la dérive des méduses
+        env:
+          COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUS_USER }}
+          COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUS_PASSWORD }}
+        run: python drift/run_drift.py
+
+      - name: Enregistrer le résultat
+        run: |
+          git config user.name  "winn3oum-bot"
+          git config user.email "winn3oum-bot@users.noreply.github.com"
+          git add data/meduses.json
+          git commit -m "Méduses : mise à jour du $(date -u +%Y-%m-%d)" || echo "Rien de nouveau"
+          git push
