@@ -49,9 +49,14 @@ BEACHES = [
 ]
 
 # Jeux de données Copernicus essayés dans l'ordre (courants de surface, Méditerranée, prévision)
+# (le programme cherche aussi lui-même les jeux horaires / 15 min du produit, voir find_datasets)
+CMEMS_PRODUCT = "MEDSEA_ANALYSISFORECAST_PHY_006_013"
 CMEMS_DATASETS = [
+    "cmems_mod_med_phy-cur_anfc_4.2km-2D_PT1H-m",
+    "cmems_mod_med_phy_anfc_4.2km-2D_PT1H-m",
+    "cmems_mod_med_phy-cur_anfc_4.2km_PT15M-i",
     "cmems_mod_med_phy-cur_anfc_4.2km_PT1H-m",
-    "cmems_mod_med_phy-cur_anfc_4.2km_P1D-m",
+    "cmems_mod_med_phy-cur_anfc_4.2km_P1D-m",       # secours : moyenne journalière (fonctionne)
 ]
 
 OUT = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "data", "meduses.json")
@@ -59,6 +64,28 @@ M_PER_DEG = 111320.0
 
 
 # ------------------------------------------------------------------ données
+def find_datasets(copernicusmarine):
+    """Liste les jeux du produit Méditerranée et met en tête ceux qui sont horaires ou au quart d'heure."""
+    found = []
+    try:
+        cat = copernicusmarine.describe(product_id=CMEMS_PRODUCT)
+        for prod in getattr(cat, "products", []) or []:
+            for ds in getattr(prod, "datasets", []) or []:
+                found.append(ds.dataset_id)
+    except Exception as e:
+        print(f"[courants] catalogue indisponible : {e}")
+    print(f"[courants] jeux du produit : {found}")
+    def rank(d):
+        fast = "PT15M" in d or "PT1H" in d
+        return (0 if fast and "cur" in d else 1 if fast else 2)
+    auto = sorted([d for d in found if ("PT1H" in d or "PT15M" in d) and ("cur" in d or "2D" in d)], key=rank)
+    seen, order = set(), []
+    for d in auto + CMEMS_DATASETS:
+        if d not in seen:
+            seen.add(d); order.append(d)
+    return order
+
+
 def load_currents(start, end):
     """Retourne (times[datetime64], lats, lons, u[t,y,x], v[t,y,x]) en m/s, NaN sur la terre."""
     import copernicusmarine
@@ -67,7 +94,7 @@ def load_currents(start, end):
     if not user or not pwd:
         raise RuntimeError("Identifiants Copernicus absents (secrets COPERNICUS_USER / COPERNICUS_PASSWORD)")
     last = None
-    for ds_id in CMEMS_DATASETS:
+    for ds_id in find_datasets(copernicusmarine):
         try:
             print(f"[courants] essai {ds_id} …")
             ds = copernicusmarine.open_dataset(
@@ -75,7 +102,7 @@ def load_currents(start, end):
                 variables=["uo", "vo"],
                 minimum_longitude=BOX["lon_min"] - 0.1, maximum_longitude=BOX["lon_max"] + 0.1,
                 minimum_latitude=BOX["lat_min"] - 0.1, maximum_latitude=BOX["lat_max"] + 0.1,
-                minimum_depth=0, maximum_depth=2,
+                minimum_depth=0, maximum_depth=1.1,
                 start_datetime=start.strftime("%Y-%m-%dT%H:%M:%S"),
                 end_datetime=end.strftime("%Y-%m-%dT%H:%M:%S"),
             )
@@ -87,6 +114,8 @@ def load_currents(start, end):
             lons = ds["longitude"].values.astype(float)
             u = ds["uo"].values.astype(float)
             v = ds["vo"].values.astype(float)
+            if "uo" not in ds or "vo" not in ds:
+                raise RuntimeError("pas de variables uo/vo dans ce jeu")
             if len(times) < 2:
                 raise RuntimeError("moins de 2 pas de temps")
             print(f"[courants] OK : {len(times)} pas de temps, grille {len(lats)}×{len(lons)}")
