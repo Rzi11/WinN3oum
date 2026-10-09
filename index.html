@@ -5,181 +5,215 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Baignade Djerba">
-<meta name="theme-color" content="#1F5FBF">
-<title>Baignade Djerba</title>
+<meta name="apple-mobile-web-app-title" content="Win N3oum">
+<meta name="theme-color" content="#1450A3">
+<title>Win N3oum</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%231450A3'/%3E%3Ctext x='32' y='44' text-anchor='middle' font-family='Arial Black,Arial' font-weight='900' font-size='46' fill='%2314B8A6' transform='rotate(-90 32 32)'%3E3%3C/text%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
 <style>
 :root{
   color-scheme: light;
-  --ground:#F2F6F7; --surface:#FFFFFF; --ink:#0F2A30; --muted:#5B7078; --line:#D6E1E4;
-  --door:#1F5FBF; --door-soft:#E3ECFA; --sand:#C9B48A; --turq:#11A3A0; --turq-ink:#0B6F6D;
-  --good:#1E8A5A; --ok:#7A9A1E; --warn:#C27A12; --bad:#C0392B;
-  --display:"Bricolage Grotesque", "Avenir Next", system-ui, sans-serif;
+  --blue:#1450A3; --blue-deep:#0E3C7D; --turq:#14B8A6; --turq-light:#7FE3D6; --turq-ink:#0B7F74;
+  --chaux:#F7F5F0; --sand:#E8D5B0; --harissa:#E4473C; --card:#FFFFFF;
+  --ink:#0F2440; --muted:#5A6A80; --line:#E6E0D2;
+  --good:#1E8A5A; --good-bg:#DDF2E7; --good-ink:#1E6E49;
+  --warn:#B86A0A; --warn-bg:#FBEBD3; --warn-ink:#8A4E05;
+  --bad:#C9362C;  --bad-bg:#FBDEDB;  --bad-ink:#9E2A22;
+  --display:"Baloo 2", "Arial Rounded MT Bold", system-ui, sans-serif;
   --body:"Atkinson Hyperlegible", system-ui, -apple-system, sans-serif;
-  --mono:"JetBrains Mono", ui-monospace, Menlo, monospace;
-}
-@media (prefers-color-scheme: dark){
-  :root{ color-scheme: dark;
-    --ground:#0B1A1E; --surface:#12262B; --ink:#E6F0F2; --muted:#93A9AF; --line:#23404A;
-    --door:#6FA0F2; --door-soft:#17304F; --sand:#B9A376; --turq:#3CC9C4; --turq-ink:#7FE0DC;
-    --good:#4CC38A; --ok:#A9C94A; --warn:#E3A13B; --bad:#EF6B5B; }
 }
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 html,body{margin:0}
-body{background:var(--ground);color:var(--ink);font:16px/1.5 var(--body);
-  padding:calc(env(safe-area-inset-top,0px) + 16px) 16px calc(env(safe-area-inset-bottom,0px) + 32px);}
-.wrap{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
-header h1{font:700 clamp(28px,7vw,40px)/1.05 var(--display);margin:0;letter-spacing:-.01em;text-wrap:balance}
-header h1 span{color:var(--door)}
-header p{margin:6px 0 0;color:var(--muted);font-size:15px}
-.label{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);font-weight:700}
-.tabs{display:grid;grid-template-columns:1fr 1fr;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:4px;gap:4px}
-.tab{border:0;background:transparent;color:var(--muted);font:700 15px var(--body);padding:10px;border-radius:10px;cursor:pointer}
-.tab[aria-selected="true"]{background:var(--door);color:#fff}
-.tab#tab-turq[aria-selected="true"]{background:var(--turq-ink);color:#fff}
-@media (prefers-color-scheme: dark){ .tab#tab-turq[aria-selected="true"]{background:var(--turq);color:#062624} }
+body{background:var(--chaux);color:var(--ink);font:16px/1.45 var(--body);
+  padding:calc(env(safe-area-inset-top,0px) + 14px) 16px calc(env(safe-area-inset-bottom,0px) + 96px);}
+.wrap{max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+button,a{font-family:inherit}
+:focus-visible{outline:3px solid var(--turq);outline-offset:2px}
+
+/* En-tête */
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.logo{font:800 28px/1 var(--display);color:var(--blue);letter-spacing:-.01em;margin:0}
+.logo .three{color:var(--turq)} .logo .q{color:var(--harissa)}
+.region{border:0;background:var(--card);color:var(--ink);font:700 15px var(--body);padding:10px 14px;border-radius:999px;
+  display:flex;align-items:center;gap:6px;min-height:44px}
+.status{font-size:13px;color:var(--muted)}
+
+/* Carte héro */
+.hero{background:var(--blue);color:#fff;border-radius:28px;padding:22px;display:flex;flex-direction:column;gap:12px}
+.hero.turq{background:var(--turq-ink)}
+.eyebrow{font-size:13px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;opacity:.88}
+.hero h2{font:800 clamp(40px,11vw,52px)/.95 var(--display);margin:0;text-wrap:balance}
+.hero .slot{font:600 22px/1.15 var(--display);color:var(--turq-light)}
+.hero .why{margin:0;font-size:16px;opacity:.95}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{background:rgba(255,255,255,.16);padding:6px 12px;border-radius:999px;font-size:14px;font-weight:700}
+.go{margin-top:4px;background:var(--turq);color:#06302C;text-decoration:none;font-weight:700;font-size:17px;border-radius:16px;
+  padding:14px;text-align:center;display:block}
+.hero.turq .go{background:#fff;color:var(--turq-ink)}
+.hero ul{margin:0;padding-left:18px;font-size:15px}
+.hero ul li{margin:2px 0}
+
+/* Choix du moment */
 .when{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-.chip{border:1px solid var(--line);background:var(--surface);color:var(--ink);font:600 15px var(--body);
-  padding:9px 14px;border-radius:999px;cursor:pointer}
-.chip[aria-pressed="true"]{background:var(--door);border-color:var(--door);color:#fff}
-.turqpanel .chip[aria-pressed="true"]{background:var(--turq-ink);border-color:var(--turq-ink)}
-.chip:focus-visible,input:focus-visible,button:focus-visible{outline:3px solid var(--door);outline-offset:2px}
-input[type="datetime-local"]{font:15px var(--body);padding:8px 10px;border-radius:10px;border:1px solid var(--line);
-  background:var(--surface);color:var(--ink);max-width:100%}
-.panel{display:flex;flex-direction:column;gap:20px}
-.conditions{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:16px;
-  display:grid;grid-template-columns:120px 1fr;gap:16px;align-items:center}
-@media (max-width:420px){.conditions{grid-template-columns:96px 1fr}}
+.chip{border:0;background:var(--card);color:var(--ink);font:700 15px var(--body);padding:10px 16px;border-radius:999px;cursor:pointer;min-height:44px}
+.chip[aria-pressed="true"]{background:var(--blue);color:#fff}
+#panel-turq .chip[aria-pressed="true"]{background:var(--turq-ink)}
+input[type="datetime-local"]{font:15px var(--body);padding:10px 12px;border-radius:14px;border:0;background:var(--card);color:var(--ink);max-width:100%;min-height:44px}
+
+/* Conditions */
+.section-title{font:800 22px/1.1 var(--display);margin:0}
+.conditions{background:var(--card);border-radius:22px;padding:16px;display:grid;grid-template-columns:96px 1fr;gap:16px;align-items:center}
 .compass{width:100%;height:auto;display:block}
-.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 16px}
-.stat b{display:block;font:500 20px/1.2 var(--mono);font-variant-numeric:tabular-nums}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px 12px}
+.stat b{display:block;font:800 18px/1.15 var(--display);font-variant-numeric:tabular-nums;white-space:nowrap}
 .stat small{color:var(--muted);font-size:13px}
-.windname{grid-column:1/-1;font:700 20px/1.2 var(--display)}
-.windname em{font-style:normal;color:var(--muted);font-weight:500;font-size:15px}
-.best{border-radius:18px;padding:18px;background:var(--door);color:#fff}
-.best.turq{background:linear-gradient(135deg,#0B6F6D,#11A3A0)}
-.best .label{color:rgba(255,255,255,.85)}
-.best h2{font:700 30px/1.1 var(--display);margin:4px 0 6px;text-wrap:balance}
-.best .slot{font:500 18px/1.3 var(--mono);margin:0 0 8px}
-.best p{margin:0;font-size:15px;opacity:.95}
-.best ul{margin:8px 0 0;padding-left:18px;font-size:15px}
+.windname{grid-column:1/-1;font:800 19px/1.2 var(--display)}
+.windname em{font-style:normal;color:var(--muted);font:700 14px var(--body)}
+@media (max-width:360px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* Liste des plages */
 .list{display:flex;flex-direction:column;gap:10px;margin:0;padding:0;list-style:none}
-.beach{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px;
-  display:grid;grid-template-columns:52px 1fr auto;gap:12px;align-items:start}
-.score{font:500 20px/1 var(--mono);text-align:center;padding:10px 0;border-radius:10px;color:#fff}
-.beach h3{margin:0;font:700 18px/1.2 var(--display)}
-.beach .zone{color:var(--muted);font-size:13px}
-.beach ul{margin:6px 0 0;padding-left:18px;font-size:14px}
-.beach ul li{margin:2px 0}
-.rel{width:34px;height:34px}
-.maps{font-size:13px;color:var(--door);text-decoration:none;font-weight:700;display:inline-block;margin-top:6px}
-.status{font-size:14px;color:var(--muted)}
-.error{background:var(--surface);border:1px solid var(--bad);color:var(--ink);border-radius:14px;padding:14px;font-size:15px}
-.error code{font:13px var(--mono);color:var(--muted);word-break:break-word}
+.beach{background:var(--card);border-radius:18px}
+.beach summary{list-style:none;display:flex;align-items:center;gap:12px;padding:12px 14px;cursor:pointer;min-height:68px}
+.beach summary::-webkit-details-marker{display:none}
+.score{width:46px;height:46px;flex-shrink:0;border-radius:14px;color:#fff;font:800 20px/1 var(--display);display:flex;align-items:center;justify-content:center}
+.bname{flex-grow:1;min-width:0}
+.bname b{display:block;font-size:16px}
+.bname span{display:block;font-size:14px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pill{font-size:13px;font-weight:700;padding:5px 10px;border-radius:999px;flex-shrink:0}
+.pill.good{color:var(--good-ink);background:var(--good-bg)} .pill.warn{color:var(--warn-ink);background:var(--warn-bg)} .pill.bad{color:var(--bad-ink);background:var(--bad-bg)}
+.more{padding:0 14px 14px 72px;display:flex;flex-direction:column;gap:8px}
+.more ul{margin:0;padding-left:18px;font-size:14px}
+.more .zone{font-size:13px;color:var(--muted)}
+.maps{align-self:flex-start;background:var(--chaux);color:var(--blue);text-decoration:none;font-weight:700;font-size:14px;padding:10px 14px;border-radius:12px;min-height:44px;display:flex;align-items:center}
+
+/* Erreur */
+.error{background:var(--card);border:2px solid var(--harissa);border-radius:18px;padding:16px;font-size:15px}
+.error code{font:13px ui-monospace,Menlo,monospace;color:var(--muted);word-break:break-word}
 .manual{display:flex;flex-wrap:wrap;gap:10px;align-items:end;margin-top:10px}
 .manual label{display:flex;flex-direction:column;font-size:13px;color:var(--muted);gap:4px}
-.manual input{font:15px var(--body);padding:8px;border-radius:8px;border:1px solid var(--line);background:var(--ground);color:var(--ink);width:110px}
-/* grille turquoise */
-.gridwrap{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:12px;overflow-x:auto}
-.hm{border-collapse:separate;border-spacing:2px;width:100%;font-size:12px}
-.hm th{font:500 11px var(--mono);color:var(--muted);font-weight:500;padding:2px 0}
-.hm th.b{text-align:left;font:700 13px var(--body);color:var(--ink);padding-right:6px;white-space:nowrap;max-width:110px;overflow:hidden;text-overflow:ellipsis}
-.hm td{height:28px;min-width:22px;border-radius:4px;cursor:pointer;padding:0}
+.manual input{font:15px var(--body);padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--chaux);color:var(--ink);width:110px}
+.error .chip{background:var(--chaux)}
+
+/* Grille turquoise */
+.gridwrap{background:var(--card);border-radius:22px;padding:14px;overflow-x:auto}
+.hm{border-collapse:separate;border-spacing:3px;width:100%;font-size:12px}
+.hm th{font:700 11px var(--body);color:var(--muted);padding:2px 0}
+.hm th.b{text-align:left;font:700 13px var(--body);color:var(--ink);padding-right:6px;white-space:nowrap}
+.hm td{height:30px;min-width:22px;border-radius:6px;cursor:pointer;padding:0}
 .hm td:hover,.hm td.sel{outline:2px solid var(--ink);outline-offset:-2px}
-.legend{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);margin-top:8px}
-.legend .ramp{height:10px;flex:0 0 120px;border-radius:3px;background:linear-gradient(90deg,var(--line),var(--turq))}
+.legend{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);margin-top:10px}
+.legend .ramp{height:10px;flex:0 0 120px;border-radius:4px;background:linear-gradient(90deg,var(--line),var(--turq))}
 .detail{font-size:14px;margin-top:10px;min-height:1.5em}
 .hint{font-size:14px;color:var(--muted);margin:0}
-footer{font-size:13px;color:var(--muted)}
-footer p{margin:4px 0}
+
+/* Barre du bas */
+.tabbar{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);
+  padding:8px 16px calc(env(safe-area-inset-bottom,0px) + 8px);display:flex;justify-content:center;gap:8px;z-index:5}
+.tab{flex:0 1 200px;border:0;background:transparent;color:var(--muted);font:700 13px var(--body);display:flex;flex-direction:column;align-items:center;gap:2px;
+  padding:6px;border-radius:14px;cursor:pointer;min-height:52px}
+.tab[aria-selected="true"]{color:var(--blue);background:#E8EFF9}
+#tab-turq[aria-selected="true"]{color:var(--turq-ink);background:#DDF4F1}
+
+footer{font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:6px}
+footer p{margin:0}
+footer .slogan{font:800 20px/1.2 var(--display);color:var(--blue)}
 @media (prefers-reduced-motion:no-preference){ .arrow{transition:transform .5s ease} }
 </style>
 </head>
 <body>
 <div class="wrap">
-  <header>
-    <h1>Où nager à <span>Djerba</span>&nbsp;?</h1>
-    <p>Vent, vagues, soleil et nuages → la bonne plage au bon moment.</p>
+  <header class="top">
+    <h1 class="logo">Win N<span class="three">3</span>oum<span class="q"> ?</span></h1>
+    <button class="region" type="button" title="Les autres régions arrivent bientôt">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1450A3" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>
+      Djerba
+    </button>
   </header>
 
-  <div class="tabs" role="tablist">
-    <button class="tab" id="tab-swim" role="tab" aria-selected="true">Mer calme</button>
-    <button class="tab" id="tab-turq" role="tab" aria-selected="false">Eau turquoise</button>
-  </div>
-
-  <div id="status" class="status">Chargement de la météo…</div>
+  <div id="status" class="status">Ena nchouf el bhar… (chargement de la météo)</div>
   <div id="error" hidden></div>
 
-  <!-- ===== Onglet 1 : mer calme ===== -->
-  <div class="panel" id="panel-swim">
-    <section aria-label="Choisir le moment">
-      <div class="label" style="margin-bottom:8px">Quand&nbsp;?</div>
-      <div class="when">
-        <button class="chip" id="btn-now" aria-pressed="true">Maintenant</button>
-        <button class="chip" id="btn-3h" aria-pressed="false">Dans 3 h</button>
-        <button class="chip" id="btn-tmr" aria-pressed="false">Demain 10 h</button>
-        <input type="datetime-local" id="dt" step="3600" aria-label="Date et heure">
-      </div>
+  <!-- ===== Lyoum : mer calme ===== -->
+  <div id="panel-swim" style="display:flex;flex-direction:column;gap:18px">
+    <section class="hero" id="best" aria-live="polite">
+      <div class="eyebrow">Lyoum, win n3oum ?</div>
+      <h2>…</h2>
+      <p class="why">On regarde le vent, les vagues et la marée.</p>
+    </section>
+
+    <section aria-label="Choisir le moment" class="when">
+      <button class="chip" id="btn-now" aria-pressed="true">Maintenant</button>
+      <button class="chip" id="btn-3h" aria-pressed="false">Dans 3 h</button>
+      <button class="chip" id="btn-tmr" aria-pressed="false">Demain 10 h</button>
+      <input type="datetime-local" id="dt" step="3600" aria-label="Choisir une date et une heure">
     </section>
 
     <section class="conditions" id="cond" hidden aria-label="Conditions">
       <svg class="compass" viewBox="0 0 120 120" role="img" aria-label="Direction du vent">
-        <circle cx="60" cy="60" r="52" fill="none" stroke="var(--line)" stroke-width="2"/>
-        <g font-family="JetBrains Mono, monospace" font-size="11" fill="var(--muted)" text-anchor="middle">
-          <text x="60" y="18">N</text><text x="106" y="64">E</text><text x="60" y="110">S</text><text x="14" y="64">O</text>
+        <circle cx="60" cy="60" r="52" fill="#F7F5F0" stroke="#E6E0D2" stroke-width="2"/>
+        <g font-family="Atkinson Hyperlegible, sans-serif" font-weight="700" font-size="12" fill="#5A6A80" text-anchor="middle">
+          <text x="60" y="20">N</text><text x="104" y="64">E</text><text x="60" y="108">S</text><text x="16" y="64">O</text>
         </g>
         <g class="arrow" id="arrow" style="transform-origin:60px 60px">
-          <line x1="60" y1="28" x2="60" y2="86" stroke="var(--door)" stroke-width="5" stroke-linecap="round"/>
-          <path d="M60 96 L49 80 L71 80 Z" fill="var(--door)"/>
+          <line x1="60" y1="30" x2="60" y2="84" stroke="#1450A3" stroke-width="6" stroke-linecap="round"/>
+          <path d="M60 96 L48 79 L72 79 Z" fill="#1450A3"/>
         </g>
       </svg>
       <div class="stats">
         <div class="windname" id="windname">—</div>
-        <div class="stat"><b id="s-wind">—</b><small>vent moyen</small></div>
-        <div class="stat"><b id="s-gust">—</b><small>rafales</small></div>
+        <div class="stat"><b id="s-wind">—</b><small>vent km/h</small></div>
+        <div class="stat"><b id="s-gust">—</b><small>rafales km/h</small></div>
+        <div class="stat"><b id="s-sea">—</b><small>eau</small></div>
         <div class="stat"><b id="s-air">—</b><small>air</small></div>
-        <div class="stat"><b id="s-sea">—</b><small>mer</small></div>
         <div class="stat"><b id="s-cloud">—</b><small>nuages</small></div>
-        <div class="stat"><b id="s-uv">—</b><small>indice UV</small></div>
+        <div class="stat"><b id="s-uv">—</b><small>UV</small></div>
       </div>
     </section>
 
-    <section class="best" id="best" hidden aria-live="polite"></section>
-
-    <section aria-label="Classement des plages">
-      <div class="label" style="margin-bottom:8px">Toutes les plages</div>
+    <section aria-label="Classement des plages" style="display:flex;flex-direction:column;gap:10px">
+      <h2 class="section-title">Les autres plages</h2>
       <ol class="list" id="list"></ol>
     </section>
   </div>
 
-  <!-- ===== Onglet 2 : eau turquoise ===== -->
-  <div class="panel turqpanel" id="panel-turq" hidden>
-    <section aria-label="Choisir le jour">
-      <div class="label" style="margin-bottom:8px">Quel jour&nbsp;?</div>
-      <div class="when" id="days"></div>
+  <!-- ===== Turquoise ===== -->
+  <div id="panel-turq" hidden style="display:flex;flex-direction:column;gap:18px">
+    <section class="hero turq" id="tbest" aria-live="polite">
+      <div class="eyebrow">L'eau la plus belle</div>
+      <h2>…</h2>
     </section>
-
-    <section class="best turq" id="tbest" hidden aria-live="polite"></section>
-
-    <section aria-label="Heure par heure">
-      <div class="label" style="margin-bottom:8px">Heure par heure · touche une case</div>
+    <section aria-label="Choisir le jour" class="when" id="days"></section>
+    <section aria-label="Heure par heure" style="display:flex;flex-direction:column;gap:10px">
+      <h2 class="section-title">Heure par heure</h2>
       <div class="gridwrap">
         <table class="hm" id="hm"></table>
         <div class="legend"><span>terne</span><span class="ramp"></span><span>turquoise</span></div>
         <div class="detail" id="hdetail"></div>
       </div>
     </section>
-    <p class="hint">Le calcul croise : hauteur du soleil, nuages (4 modèles météo), poussière du sirocco (Copernicus CAMS), mer d'huile ou non, vent de mer et houle sur 24 h, pluie sur 48 h, marée (plus importante sur les plages peu profondes), soleil dans ton dos et type de fond. Astuce : des lunettes polarisées enlèvent les reflets et révèlent le turquoise.</p>
+    <p class="hint">Le calcul croise : hauteur du soleil, nuages (4 modèles météo), poussière du sirocco, mer d'huile ou non, vent de mer et houle sur 24 h, pluie sur 48 h, marée, soleil dans ton dos et type de fond. Astuce : des lunettes polarisées enlèvent les reflets.</p>
   </div>
 
   <footer>
-    <p><b>Mer calme :</b> un vent qui souffle de la terre vers la mer aplatit l'eau près du bord ; un vent qui arrive de la mer lève vagues et clapot. L'app compare le vent à l'orientation de chaque plage, puis ajoute la houle.</p>
-    <p>Données via Open-Meteo : modèles ECMWF, DWD ICON, Météo-France et NOAA GFS ; houle et marée (modèles marins) ; poussière Copernicus CAMS. Coordonnées et notes « beauté » des plages approximatives. Indicatif seulement — regarde toujours les drapeaux et la mer sur place.</p>
+    <p class="slogan">La bonne plage, au bon moment.</p>
+    <p>Vent de terre = eau plate près du bord. Vent de mer = vagues et clapot. On compare le vent à l'orientation de chaque plage, puis on ajoute houle et marée.</p>
+    <p>Données Open-Meteo : ECMWF, DWD ICON, Météo-France, NOAA GFS, modèles marins, Copernicus CAMS, courants Copernicus Marine (méduses, modèle de dérive expérimental). Indicatif seulement : respecte toujours les drapeaux et la mer sur place.</p>
   </footer>
 </div>
+
+<nav class="tabbar" role="tablist" aria-label="Sections">
+  <button class="tab" id="tab-swim" role="tab" aria-selected="true">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+    Lyoum
+  </button>
+  <button class="tab" id="tab-turq" role="tab" aria-selected="false">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M2 9c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2 2.5 2 5 2M2 15c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2 2.5 2 5 2"/></svg>
+    Turquoise
+  </button>
+</nav>
 
 <script>
 // face = direction vers laquelle la plage regarde la mer (0 = Nord). beauty = potentiel turquoise de base (0-100)
@@ -263,9 +297,17 @@ function scoreBeach(b,w,m){
   return {s:Math.max(0,Math.min(100,Math.round(s))), reasons, diff};
 }
 function verdict(s){
-  if(s>=80) return {t:"Excellent",c:"var(--good)"}; if(s>=60) return {t:"Bien",c:"var(--ok)"};
-  if(s>=40) return {t:"Moyen",c:"var(--warn)"}; return {t:"Déconseillé",c:"var(--bad)"};
+  if(s>=65) return {t:"Calme",cls:"good",c:"var(--good)"};
+  if(s>=40) return {t:"Agitée",cls:"warn",c:"var(--warn)"};
+  return {t:"Déconseillé",cls:"bad",c:"var(--bad)"};
 }
+function vibe(s){
+  if(s>=85) return "Mer d'huile, yalla !";
+  if(s>=65) return "Bonne baignade.";
+  if(s>=40) return "Ça bouge un peu partout aujourd'hui.";
+  return "Grosse journée de vent : prudence, ou terrasse.";
+}
+const mapsUrl = b => `https://www.google.com/maps/dir/?api=1&destination=${b.lat},${b.lon}`;
 
 /* ---------- Eau turquoise ---------- */
 function turqScore(bi, i){
@@ -348,16 +390,16 @@ function renderTurq(){
   grid.forEach((row,bi)=>{ for(let c=0;c<row.length-1;c++){ const a=row[c],z=row[c+1];
     if(!a||!z||a.past||z.past) continue; const avg=(a.s+z.s)/2;
     if(!best||avg>best.avg) best={bi,c,avg,r:a.s>=z.s?a:z}; } });
-  const tb=$("tbest"); tb.hidden=false;
+  const tb=$("tbest");
   const k=dates.indexOf(turqDay);
-  if(!best){ tb.innerHTML=`<div class="label">${names[k]}</div><h2>Plus de créneau aujourd'hui</h2><p>Le soleil est trop bas. Regarde demain.</p>`; }
+  if(!best){ tb.innerHTML=`<div class="eyebrow">${names[k]}</div><h2>C'est fini pour lyoum</h2><p class="why">Le soleil est trop bas. Regarde demain.</p>`; }
   else{
     const b=BEACHES[best.bi], h1=hourOf(H.time[idx[best.c]]), h2=h1+2;
     const lvl = best.avg>=75?"Conditions superbes": best.avg>=55?"Bonnes conditions": best.avg>=40?"Conditions moyennes":"Pas une grande journée pour le turquoise";
-    tb.innerHTML=`<div class="label">${names[k]} · ${dayLabel(turqDay)}</div><h2></h2><div class="slot">${pad(h1)}h – ${pad(h2)}h · ${Math.round(best.avg)}/100</div><p></p><ul></ul>
-      <a class="maps" style="color:#fff" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${b.lat},${b.lon}">Itinéraire →</a>`;
+    tb.innerHTML=`<div class="eyebrow">${names[k]} · ${dayLabel(turqDay)}</div><h2></h2><div class="slot">${pad(h1)}h – ${pad(h2)}h · ${Math.round(best.avg)}/100</div><p class="why"></p><ul></ul>
+      <a class="go" target="_blank" rel="noopener" href="${mapsUrl(b)}">Y aller →</a>`;
     tb.querySelector("h2").textContent=b.name;
-    tb.querySelector("p").textContent=lvl+(b.bnote?` — ${b.bnote}`:"");
+    tb.querySelector(".why").textContent=lvl+(b.bnote?` — ${b.bnote}`:"");
     const ul=tb.querySelector("ul"); reasonsTurq(best.r).forEach(t=>{const li=document.createElement("li");li.textContent=t;ul.appendChild(li);});
   }
 
@@ -399,7 +441,19 @@ async function fetchJSON(url, tries=3){
 // Plusieurs modèles météo croisés : européen (ECMWF), allemand (DWD ICON), français (Météo-France), américain (NOAA GFS)
 const MODELS=[["ecmwf_ifs025","ECMWF"],["icon_seamless","ICON"],["meteofrance_seamless","Météo-France"],["gfs_seamless","GFS"]];
 const WXVARS=["wind_speed_10m","wind_direction_10m","wind_gusts_10m","temperature_2m","uv_index","cloud_cover","cloud_cover_low","precipitation"];
-let MODELS_USED=[], AIR=null;
+let MODELS_USED=[], AIR=null, MED=null;
+async function loadMeduses(){
+  try{ const r=await fetch("data/meduses.json",{cache:"no-store"}); if(r.ok){ MED=await r.json(); render(); } }catch(e){ MED=null; }
+}
+function medFor(id, key){
+  if(!MED||!MED.beaches||!MED.beaches[id]) return null;
+  const day=(key||tunisKey(new Date())).slice(0,10);
+  return MED.beaches[id].days.find(d=>d.date===day)||null;
+}
+function medText(m){
+  const why = m.drift>=0.5 ? "courant et vent poussent vers la plage" : m.drift>=0.2 ? "un peu de dérive vers la plage" : "peu de dérive vers la plage";
+  return `Méduses : ${m.level.toLowerCase()} — ${why}${MED.mode==="vent"?" (estimation vent seul)":""}`;
+}
 
 function mergeModels(j){
   const h=j.hourly, n=h.time.length, out={time:h.time}, used=new Set();
@@ -481,35 +535,43 @@ function render(){
 function renderWith(w,marine,key){
   $("cond").hidden=false;
   $("arrow").style.transform=`rotate(${w.dir}deg)`;
-  $("windname").innerHTML=`Vent de ${sectorName(w.dir)} <em>· ${localName(w.dir)} · ${Math.round(w.dir)}°</em>`;
-  $("s-wind").textContent=`${Math.round(w.speed)} km/h`;
-  $("s-gust").textContent=w.gust==null?"—":`${Math.round(w.gust)} km/h`;
-  $("s-air").textContent=fmt(w.air,"°C");
+  $("windname").innerHTML=`Vent de ${sectorName(w.dir)} <em>· ${localName(w.dir)}</em>`;
+  $("s-wind").textContent=`${Math.round(w.speed)}`;
+  $("s-gust").textContent=w.gust==null?"—":`${Math.round(w.gust)}`;
+  $("s-air").textContent=fmt(w.air,"°");
   const ssts=(marine||[]).map(m=>m&&m.sst).filter(v=>v!=null);
-  $("s-sea").textContent=ssts.length?fmt(ssts.reduce((a,b)=>a+b,0)/ssts.length,"°C",1):"—";
+  const sea=ssts.length?ssts.reduce((a,b)=>a+b,0)/ssts.length:null;
+  $("s-sea").textContent=sea==null?"—":fmt(sea,"°",0);
   $("s-cloud").textContent=w.cloud==null?"—":`${Math.round(w.cloud)} %`;
   $("s-uv").textContent=w.uv==null?"—":fmt(w.uv,"",0);
 
-  const ranked=BEACHES.map((b,k)=>({b,...scoreBeach(b,w,marine?marine[k]:null)})).sort((a,c)=>c.s-a.s);
+  const ranked=BEACHES.map((b,k)=>{ const r={b,...scoreBeach(b,w,marine?marine[k]:null)}; const m=medFor(b.id,key); r.med=m;
+    if(m){ r.reasons.splice(1,0,medText(m)); if(m.level==="Élevé") r.s=Math.max(0,r.s-15); else if(m.level==="Possible") r.s=Math.max(0,r.s-4); }
+    return r; }).sort((a,c)=>c.s-a.s);
   const top=ranked[0], v=verdict(top.s);
-  const when = key ? `${dayLabel(key.slice(0,10))} à ${hourOf(key)}h` : "vent saisi à la main";
-  const best=$("best"); best.hidden=false;
-  best.innerHTML=`<div class="label">Meilleur choix · ${when}</div><h2></h2><p></p>`;
+  const isNow = key && key===tunisKey(new Date());
+  const when = !key ? "Vent saisi à la main" : isNow ? "Lyoum, win n3oum ?" : `${dayLabel(key.slice(0,10))} · ${hourOf(key)}h`;
+  const best=$("best");
+  best.innerHTML=`<div class="eyebrow"></div><h2></h2><p class="why"></p><div class="tags"></div>
+    <a class="go" target="_blank" rel="noopener" href="${mapsUrl(top.b)}">Y aller →</a>`;
+  best.querySelector(".eyebrow").textContent=when;
   best.querySelector("h2").textContent=top.b.name;
-  best.querySelector("p").textContent=`${v.t} (${top.s}/100) — ${top.reasons[0]}.`;
+  best.querySelector(".why").textContent=`${vibe(top.s)} ${top.reasons[0]}.`;
+  const tags=[`${v.t} · ${top.s}/100`, `Vent ${Math.round(w.speed)} km/h`]; if(sea!=null) tags.push(`Eau ${Math.round(sea)} °C`); if(top.med) tags.push(`Méduses : ${top.med.level.toLowerCase()}`);
+  const tg=best.querySelector(".tags"); tags.forEach(t=>{const x=document.createElement("span");x.className="tag";x.textContent=t;tg.appendChild(x);});
 
   const list=$("list"); list.innerHTML="";
-  ranked.forEach(r=>{
-    const vv=verdict(r.s), li=document.createElement("li"); li.className="beach";
-    const icon=`<svg class="rel" viewBox="0 0 34 34" aria-hidden="true">
-      <rect x="0" y="22" width="34" height="12" fill="var(--sand)" rx="3"/><rect x="0" y="0" width="34" height="22" fill="var(--door-soft)" rx="3"/>
-      <g transform="rotate(${r.diff} 17 17)"><line x1="17" y1="5" x2="17" y2="25" stroke="var(--door)" stroke-width="2.5" stroke-linecap="round"/>
-      <path d="M17 29 L12 22 L22 22 Z" fill="var(--door)"/></g></svg>`;
-    li.innerHTML=`<div class="score" style="background:${vv.c}" title="${vv.t}">${r.s}</div>
-      <div><h3></h3><div class="zone"></div><ul></ul>
-      <a class="maps" target="_blank" rel="noopener" href="https://www.google.com/maps/search/?api=1&query=${r.b.lat},${r.b.lon}">Itinéraire →</a></div>${icon}`;
-    li.querySelector("h3").textContent=r.b.name;
-    li.querySelector(".zone").textContent=`${r.b.zone} · ${vv.t}`;
+  ranked.slice(1).forEach(r=>{
+    const vv=verdict(r.s), li=document.createElement("li");
+    li.innerHTML=`<details class="beach"><summary>
+        <span class="score" style="background:${vv.c}">${r.s}</span>
+        <span class="bname"><b></b><span></span></span>
+        <span class="pill ${vv.cls}">${vv.t}</span></summary>
+      <div class="more"><div class="zone"></div><ul></ul>
+        <a class="maps" target="_blank" rel="noopener" href="${mapsUrl(r.b)}">Itinéraire →</a></div></details>`;
+    li.querySelector(".bname b").textContent=r.b.name;
+    li.querySelector(".bname span").textContent=r.reasons[0];
+    li.querySelector(".zone").textContent=r.b.zone;
     const ul=li.querySelector("ul"); r.reasons.forEach(t=>{const x=document.createElement("li");x.textContent=t;ul.appendChild(x);});
     list.appendChild(li);
   });
@@ -525,12 +587,12 @@ function showTab(which){
   const turq = which==="turq";
   $("tab-swim").setAttribute("aria-selected",String(!turq)); $("tab-turq").setAttribute("aria-selected",String(turq));
   $("panel-swim").hidden=turq; $("panel-turq").hidden=!turq;
-  try{ localStorage.setItem("djerba-tab",which); }catch(e){}
+  try{ localStorage.setItem("winn3oum-tab",which); }catch(e){}
 }
-$("tab-swim").onclick=()=>showTab("swim"); $("tab-turq").onclick=()=>showTab("turq");
-try{ if(localStorage.getItem("djerba-tab")==="turq") showTab("turq"); }catch(e){}
+$("tab-swim").onclick=()=>{showTab("swim");window.scrollTo(0,0);}; $("tab-turq").onclick=()=>{showTab("turq");window.scrollTo(0,0);};
+try{ if(localStorage.getItem("winn3oum-tab")==="turq") showTab("turq"); }catch(e){}
 
 load();
+loadMeduses();
 </script>
 </body>
-</html>
