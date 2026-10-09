@@ -1,0 +1,85 @@
+{
+ "predictions": {
+  "2026-10-09|aghir": {
+   "level": "Possible",
+   "risk": 0.31,
+   "run": "2026-10-09"
+  },
+  "2026-10-09|jmour": {
+   "level": "Possible",
+   "risk": 0.21,
+   "run": "2026-10-09"
+  },
+  "2026-10-09|kantara": {
+   "level": "Possible",
+   "risk": 0.25,
+   "run": "2026-10-09"
+  },
+  "2026-10-09|mahrez": {
+   "level": "Possible",
+   "risk": 0.22,
+   "run": "2026-10-09"
+  },
+  "2026-10-09|rmel": {
+   "level": "Possible",
+   "risk": 0.24,
+   "run": "2026-10-09"
+  },
+  "2026-10-09|seguia": {
+   "level": "Possible",
+   "risk": 0.33,
+   "run": "2026-10-09"
+  },
+  "2026-10-09|taguermess": {
+   "level": "Possible",
+   "risk": 0.35,
+   "run": "2026-10-09"
+  },
+  "2026-10-10|aghir": {
+   "level": "Possible",
+   "risk": 0.26,
+   "run": "2026-10-09"
+  },
+  "2026-10-10|jmour": {
+   "level": "Faible",
+   "risk": 0.19,
+   "run": "2026-10-09"
+  },
+  "2026-10-10|kantara": {
+   "level": "Possible",
+   "risk": 0.25,
+   "run": "2026-10-09"
+  },
+  "2026-10-10|mahrez": {
+   "level": "Possible",
+   "risk": 0.34,
+   "run": "2026-10-09"
+  },
+  "2026-10-10|rmel": {
+   "level": "Possible",
+   "risk": 0.44,
+   "run": "2026-10-09"
+  },
+  "2026-10-10|seguia": {
+   "level": "Possible",
+   "risk": 0.23,
+   "run": "2026-10-09"
+  },
+  "2026-10-10|taguermess": {
+   "level": "Possible",
+   "risk": 0.37,
+   "run": "2026-10-09"
+  }
+ },
+ "observations": [],
+ "stats": {
+  "observations_avec_meduses": {
+   "Faible": 0,
+   "Possible": 0,
+   "Élevé": 0,
+   "Signalé": 0,
+   "sans prévision": 0
+  },
+  "note": "Observations réelles comparées au niveau prévu ce jour-là sur la plage la plus proche."
+ }
+}
