@@ -154,10 +154,40 @@ def beach_exposure(mask_grid, bathy, b):
 
 # ====================================================================== dérive
 class Drift:
-    def __init__(self, cur_s, cur_d, stokes, wind, sea_level):
+    def __init__(self, cur_s, cur_d, stokes, wind, sea_level, beaches=None):
         self.cs, self.cd, self.st, self.w, self.sl = cur_s, cur_d, stokes, wind, sea_level
-        self.blat = np.array([b["lat"] for b in C.BEACHES]); self.blon = np.array([b["lon"] for b in C.BEACHES])
+        self.beaches = beaches or C.BEACHES
+        self.blat = np.array([b["lat"] for b in self.beaches]); self.blon = np.array([b["lon"] for b in self.beaches])
         self.tide_cache = {}
+        # carte des cases « proches d'une plage » : on ne teste la distance aux plages que là (rapide)
+        g = self.cs
+        LA, LO = np.meshgrid(g.lats, g.lons, indexing="ij")
+        near = np.zeros(LA.shape, bool)
+        rad = (C.R_NEAR_KM + 6) / 111.32
+        for la, lo in zip(self.blat, self.blon):
+            near |= (np.abs(LA - la) < rad) & (np.abs(LO - lo) < rad / math.cos(math.radians(la)))
+        self.near_raster = near
+
+    def near_beach(self, py, px):
+        g = self.cs
+        iy = np.clip(np.rint((py - g.lats[0]) / (g.lats[1] - g.lats[0])).astype(int), 0, len(g.lats) - 1)
+        ix = np.clip(np.rint((px - g.lons[0]) / (g.lons[1] - g.lons[0])).astype(int), 0, len(g.lons) - 1)
+        return self.near_raster[iy, ix]
+
+    def nearest_sea(self, t, lat, lon, max_km=15):
+        """Case de mer la plus proche d'un point (pour décaler une observation faite trop près du rivage)."""
+        g = self.cs; k = g.tindex(t)
+        sea = ~np.isnan(g.data["uo"][k])
+        iy = int(np.argmin(np.abs(g.lats - lat))); ix = int(np.argmin(np.abs(g.lons - lon)))
+        best, bd = None, 1e9
+        r = int(max_km / 4) + 2
+        for y in range(max(1, iy - r), min(len(g.lats) - 1, iy + r + 1)):
+            for x in range(max(1, ix - r), min(len(g.lons) - 1, ix + r + 1)):
+                if sea[y, x] and sea[y - 1:y + 2, x - 1:x + 2].all():      # case de mer « pleine » (pas en bord de côte)
+                    d = float(km_between(lat, lon, g.lats[y], g.lons[x]))
+                    if d < bd and d <= max_km:
+                        best, bd = (float(g.lats[y]), float(g.lons[x])), d
+        return best
 
     # ---- champs
     def _cur(self, g, t, py, px):
@@ -194,26 +224,47 @@ class Drift:
         k = self.cs.tindex(t)
         return ~np.isnan(bilinear(self.cs.data["uo"][k], self.cs.lats, self.cs.lons, py, px))
 
+    def _tide_cell(self, bi):
+        """Case de mer la plus proche de la plage sur la grille de hauteur de mer (calculée une fois)."""
+        key = ("cell", bi)
+        if key not in self.tide_cache:
+            g = self.sl
+            z = g.data["zos"]
+            f = np.where(np.isfinite(z).any(axis=0), 0.0, np.nan) if z.ndim == 3 else z
+            iy = int(np.argmin(np.abs(g.lats - self.blat[bi]))); ix = int(np.argmin(np.abs(g.lons - self.blon[bi])))
+            best, bd = None, 1e9
+            for y in range(max(0, iy - 3), min(len(g.lats), iy + 4)):
+                for x in range(max(0, ix - 3), min(len(g.lons), ix + 4)):
+                    if np.isfinite(f[y, x]):
+                        d = float(km_between(self.blat[bi], self.blon[bi], g.lats[y], g.lons[x]))
+                        if d < bd and d <= 12:
+                            best, bd = (y, x), d
+            self.tide_cache[key] = best
+        return self.tide_cache[key]
+
     def tide_mult(self, bi, t):
         """Arrivée à marée haute = plus d'échouages. 0,85 (basse) → 1,15 (haute)."""
         if self.sl is None:
             return 1.0
+        cell = self._tide_cell(bi)
+        if cell is None:
+            return 1.0
         day = local_date(t)
         key = (bi, day)
+        g = self.sl
         if key not in self.tide_cache:
-            g = self.sl
-            idx = [k for k, tt in enumerate(g.times) if local_date(tt) == day]
-            series = [nearest(g.lats, g.lons, g.data["zos"][k], self.blat[bi], self.blon[bi], 10) for k in idx]
-            series = [(g.times[k], s) for k, s in zip(idx, series) if s is not None]
-            self.tide_cache[key] = series
-        series = self.tide_cache[key]
-        if len(series) < 3:
+            idx = np.array([k for k, tt in enumerate(g.times) if local_date(tt) == day], int)
+            vals = g.data["zos"][idx, cell[0], cell[1]] if len(idx) else np.array([])
+            ok = np.isfinite(vals)
+            self.tide_cache[key] = (g.times[idx][ok], vals[ok])
+        times, vals = self.tide_cache[key]
+        if len(vals) < 3:
             return 1.0
-        vals = np.array([s for _, s in series]); lo, hi = vals.min(), vals.max()
+        lo, hi = vals.min(), vals.max()
         if hi - lo < 0.05:
             return 1.0
-        k = int(np.argmin([abs((tt - t) / np.timedelta64(1, "m")) for tt, _ in series]))
-        return 0.85 + 0.30 * (series[k][1] - lo) / (hi - lo)
+        k = int(np.argmin(np.abs((times - t) / np.timedelta64(1, "m"))))
+        return float(0.85 + 0.30 * (vals[k] - lo) / (hi - lo))
 
     # ---- simulation
     def run(self, t_now, t_end, seeds):
@@ -227,7 +278,7 @@ class Drift:
         arrivals = {}
         t = t0.min() if len(t0) else t_now
         step = np.timedelta64(C.DT // 60, "m")
-        bids = [b["id"] for b in C.BEACHES]
+        bids = [b["id"] for b in self.beaches]
 
         def record(idx, t, radius):
             if not len(idx):
@@ -265,10 +316,7 @@ class Drift:
                 li = act[landed]
                 record(li, t, C.R_BEACHED_KM); alive[li] = False
                 fi = act[~landed & ~out]
-                # on ne teste la proximité des plages que pour les méduses déjà proches de Djerba (rapide)
-                lb = C.LOCAL_BOX
-                near = fi[(py[fi] > lb["lat_min"] - .1) & (py[fi] < lb["lat_max"] + .1) &
-                          (px[fi] > lb["lon_min"] - .1) & (px[fi] < lb["lon_max"] + .1)]
+                near = fi[self.near_beach(py[fi], px[fi])]
                 hit = record(near, t, C.R_NEAR_KM)
                 alive[near[hit]] = False
                 alive[act[out]] = False
@@ -277,11 +325,13 @@ class Drift:
 
 
 # ====================================================================== semis (points de départ)
-def make_seeds(drift, hab, obs, t_now):
+def make_seeds(drift, hab, obs, t_now, box=None, spacing=None, lookback_days=None):
     rng = np.random.default_rng(42)
-    lb = C.LOCAL_BOX
-    sy = np.arange(lb["lat_min"], lb["lat_max"], C.SEED_SPACING)
-    sx = np.arange(lb["lon_min"], lb["lon_max"], C.SEED_SPACING)
+    lb = box or C.LOCAL_BOX
+    spacing = spacing or C.SEED_SPACING
+    lookback_days = lookback_days or C.LOOKBACK_DAYS
+    sy = np.arange(lb["lat_min"], lb["lat_max"], spacing)
+    sx = np.arange(lb["lon_min"], lb["lon_max"], spacing)
     PY, PX = np.meshgrid(sy, sx, indexing="ij")
     py, px = PY.ravel(), PX.ravel()
     sea = drift.is_sea(t_now, py, px)
@@ -296,14 +346,23 @@ def make_seeds(drift, hab, obs, t_now):
         if not (C.REGION_BOX["lat_min"] <= o["lat"] <= C.REGION_BOX["lat_max"] and C.REGION_BOX["lon_min"] <= o["lon"] <= C.REGION_BOX["lon_max"]):
             continue
         age_d = (t_now - o["time"]) / np.timedelta64(1, "D")
-        if age_d < 0 or age_d > C.LOOKBACK_DAYS:
+        if age_d < 0 or age_d > lookback_days:
             continue
         n = C.PARTICLES_PER_OBS
         r = o.get("spread_km", C.OBS_SPREAD_KM)
+        cy, cx = o["lat"], o["lon"]
         dy = rng.normal(0, r, n) / 111.32
-        dx = rng.normal(0, r, n) / (111.32 * math.cos(math.radians(o["lat"])))
-        ly, lx = o["lat"] + dy, o["lon"] + dx
-        ok = drift.is_sea(o["time"], ly, lx)
+        dx = rng.normal(0, r, n) / (111.32 * math.cos(math.radians(cy)))
+        ok = drift.is_sea(o["time"], cy + dy, cx + dx)
+        if ok.sum() < n / 2:
+            # observation faite depuis la plage : la grille (4 km) la voit « à terre » → on repart de la mer la plus proche
+            ns = drift.nearest_sea(o["time"], cy, cx)
+            if ns is not None:
+                cy, cx = ns
+                dy = rng.normal(0, min(r, 2.0), n) / 111.32
+                dx = rng.normal(0, min(r, 2.0), n) / (111.32 * math.cos(math.radians(cy)))
+                ok = drift.is_sea(o["time"], cy + dy, cx + dx)
+        ly, lx = cy + dy, cx + dx
         if not ok.any():
             continue
         ly, lx = ly[ok], lx[ok]

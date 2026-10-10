@@ -3,7 +3,8 @@ Win N3oum ? — modèle méduses v0.2 (lancé chaque nuit par GitHub Actions).
 
   python drift/run_drift.py            prévision normale (aujourd'hui + 2 jours)
   python drift/run_drift.py --replay   rejoue le passé sur les observations réelles de Djerba (vérification)
-  python drift/run_drift.py --test     test hors ligne avec des données synthétiques
+  python drift/run_drift.py --validate validation sur ~100 observations de toute la région (points témoins)
+  python drift/run_drift.py --test     test hors ligne (ajouter --replay ou --validate pour tester ces modes)
 
 Le risque combine :
   dérive physique (courants surface + 15 m, vent, vagues, cycle jour/nuit de la pélagie, marée)
@@ -71,13 +72,17 @@ def gather_obs(t_from, t_to, status, with_news=True):
 
 
 # ====================================================================== prévision
-def predict(t_now, obs, status, history=None, historical=False, loaders=None):
+def predict(t_now, obs, status, history=None, historical=False, loaders=None,
+            beaches=None, box=None, spacing=None, lookback_days=None):
     """Calcule le risque par plage pour 3 jours à partir de t_now (00:00 UTC)."""
     L = loaders or S
+    beaches = beaches or C.BEACHES
+    box = box or C.LOCAL_BOX
+    lookback_days = lookback_days or C.LOOKBACK_DAYS
     t_end = t_now + np.timedelta64(C.FORECAST_HOURS, "h")
-    seeds_obs = [o for o in obs if not o.get("none_seen") and o["weight"] > 0 and o["time"] < t_now]
+    seeds_obs = [o for o in obs if not o.get("none_seen") and o["weight"] > 0 and
+                 t_now - np.timedelta64(lookback_days, "D") <= o["time"] < t_now]
     t_start = min([o["time"] for o in seeds_obs] + [t_now]) - np.timedelta64(3, "h")
-    t_start = max(t_start, t_now - np.timedelta64(C.LOOKBACK_DAYS, "D"))
     s_dt, e_dt = to_dt(t_start), to_dt(t_end + np.timedelta64(1, "h"))
     days = [M.local_date(t_now + np.timedelta64(h, "h")) for h in (2, 26, 50)]
 
@@ -106,33 +111,33 @@ def predict(t_now, obs, status, history=None, historical=False, loaders=None):
     if cur_s is not None:
         cur_d = opt("courants 15 m", lambda: M.ensure_ascending(L.load_currents_depth(C.REGION_BOX, s_dt, e_dt)))
         stokes = opt("vagues", lambda: M.ensure_ascending(L.load_stokes(C.REGION_BOX, s_dt, e_dt)))
-    sea_level = opt("marée", lambda: M.ensure_ascending(L.load_sea_level(C.LOCAL_BOX, to_dt(t_now - np.timedelta64(1, "D")), e_dt)))
+    sea_level = opt("marée", lambda: M.ensure_ascending(L.load_sea_level(box, to_dt(t_now - np.timedelta64(1, "D")), e_dt)))
     hab = {}
     try:
-        hab = {k: M.ensure_ascending(g) for k, g in L.load_habitat(C.LOCAL_BOX, to_dt(t_now - np.timedelta64(1, "D")), e_dt).items()}
+        hab = {k: M.ensure_ascending(g) for k, g in L.load_habitat(box, to_dt(t_now - np.timedelta64(1, "D")), e_dt).items()}
     except Exception as e:
         print(f"[habitat] {e}")
     status["eau favorable"] = ", ".join(hab) if hab else "indisponible"
-    bathy = opt("fonds marins", lambda: M.ensure_ascending(L.load_bathymetry(C.LOCAL_BOX)))
+    bathy = opt("fonds marins", lambda: M.ensure_ascending(L.load_bathymetry(box)))
 
     # --- dérive
     arrivals, n_bg, n_obs = {}, 0, 0
     exposure = {}
     if cur_s is not None:
-        drift = M.Drift(cur_s, cur_d, stokes, wind, sea_level)
-        seeds, n_bg, n_obs = M.make_seeds(drift, hab, obs, t_now)
+        drift = M.Drift(cur_s, cur_d, stokes, wind, sea_level, beaches)
+        seeds, n_bg, n_obs = M.make_seeds(drift, hab, obs, t_now, box, spacing, lookback_days)
         arrivals = drift.run(t_now, t_end, seeds)
         k = cur_s.tindex(t_now)
         mask = (cur_s.lats, cur_s.lons, ~np.isnan(cur_s.data["uo"][k]))
-        for b in C.BEACHES:
+        for b in beaches:
             exposure[b["id"]] = M.beach_exposure(mask, bathy, b)
     else:
-        for b in C.BEACHES:
+        for b in beaches:
             exposure[b["id"]] = (1.0 + 0.15 * b.get("shelter", 0) - 0.15 * b.get("wadi", 0), {})
 
     # --- combinaison
     out_beaches, raw_today = {}, {}
-    for bi, b in enumerate(C.BEACHES):
+    for bi, b in enumerate(beaches):
         rows = []
         hist = (history or {}).get(b["id"], {})
         hvals = [v for d, v in sorted(hist.items()) if d < days[0]][-C.HISTORY_DAYS:]
@@ -158,12 +163,12 @@ def predict(t_now, obs, status, history=None, historical=False, loaders=None):
             news_f = M.news_factor(obs, b, t_day)
             hab_f, hab_det = M.habitat_scores(hab, b["lat"], b["lon"], t_day + np.timedelta64(12, "h")) if hab else (None, {})
             ws = dict(C.W)
-            if hab_f is None:
-                ws.pop("habitat")
             fac = dict(drift=drift_f, obs=obs_f, wind_past=wind_f, news=news_f)
+            P = sum(ws[k] * fac[k] for k in ws) / sum(ws.values())
+            hm = 1.0
             if hab_f is not None:
                 fac["habitat"] = hab_f
-            P = sum(ws[k] * fac[k] for k in ws) / sum(ws.values())
+                hm = C.HABITAT_MULT[0] + (C.HABITAT_MULT[1] - C.HABITAT_MULT[0]) * hab_f
             # un banc qui arrive depuis une observation réelle pèse plus lourd que la seule physique
             if a["obs"] > 0:
                 P = max(P, min(1.0, 0.35 + 0.5 * (1 - math.exp(-a["obs"] / 5))))
@@ -173,8 +178,8 @@ def predict(t_now, obs, status, history=None, historical=False, loaders=None):
             strong = 0.8 if wspd > C.STRONG_WIND_KMH else 1.0
             moon = M.moon_age_days(t_day + np.timedelta64(12, "h"))
             lunar = 1 + C.LUNAR_WEIGHT * math.cos(2 * math.pi * (moon - 23) / 29.53)
-            risk = float(np.clip(season * (0.25 + 0.75 * P) * E * strong * lunar, 0, 1))
-            level = "Faible" if risk < 0.2 else "Possible" if risk < 0.45 else "Élevé"
+            risk = float(np.clip(season * (C.BASE_PRESENCE + (1 - C.BASE_PRESENCE) * P) * E * hm * strong * lunar, 0, 1))
+            level = "Faible" if risk < C.LEVELS[0] else "Possible" if risk < C.LEVELS[1] else "Élevé"
             if signal and d in days[:2]:
                 level = "Signalé"
             why = explain(fac, a, E, strong, season, mode)
@@ -207,7 +212,7 @@ def explain(f, a, E, strong, season, mode):
         parts.append("vent de mer ces 3 derniers jours")
     if f["news"] > 0:
         parts.append("méduses dans la presse locale")
-    if f.get("habitat", 0.5) >= 0.75:
+    if f.get("habitat", 0.5) >= 0.85 and f["drift"] >= 0.2:
         parts.append("eau très favorable")
     if E >= 1.15:
         parts.append("plage qui piège les méduses")
@@ -344,14 +349,18 @@ def print_table(out):
             f"{r['date'][5:]}:{r['level']:<8}({r['risk']:.2f})" for r in b["days"]) + f"  | {', '.join(b['days'][1]['why'])}")
 
 
+P_VALID = os.path.join(DATA, "validation.json")
+
+
 if __name__ == "__main__":
-    if "--test" in sys.argv:
-        import synthetic
-        if "--replay" in sys.argv:
-            run_replay(loaders=synthetic, max_events=2)
-        else:
-            run_normal(loaders=synthetic, test=True)
+    test = "--test" in sys.argv
+    loaders = None
+    if test:
+        import synthetic as loaders
+    if "--validate" in sys.argv:
+        import validate
+        validate.run_validation(predict, gather_obs, jsave, P_VALID, loaders=loaders)
     elif "--replay" in sys.argv:
-        run_replay()
+        run_replay(loaders=loaders, max_events=2 if test else 8)
     else:
-        run_normal()
+        run_normal(loaders=loaders, test=test)

@@ -113,3 +113,16 @@ def replay_obs(t_to):
         dict(lat=33.88, lon=10.87, time=t_to - 30 * 24 * h, taxon="Rhizostoma pulmo", source="iNaturalist", weight=1.0, spread_km=2, ref="r1"),
         dict(lat=33.86, lon=10.99, time=t_to - 60 * 24 * h, taxon="Rhizostoma pulmo", source="iNaturalist", weight=1.0, spread_km=2, ref="r2"),
     ]
+
+
+def validation_obs(t_to):
+    """Observations factices réparties sur la région (côte est tunisienne, Djerba, Malte)."""
+    rng = np.random.default_rng(1)
+    h = np.timedelta64(1, "h")
+    spots = [(35.77, 10.86), (35.50, 11.10), (33.86, 10.99), (35.92, 14.50), (34.72, 11.25), (33.55, 11.15)]
+    out = []
+    for k in range(18):
+        la, lo = spots[k % len(spots)]
+        out.append(dict(lat=la + rng.normal(0, .02), lon=lo + rng.normal(0, .02), time=t_to - int(rng.integers(5, 200)) * 24 * h,
+                        taxon="Pelagia noctiluca", source="iNaturalist", weight=1.0, spread_km=2, ref=f"v{k}"))
+    return out

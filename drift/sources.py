@@ -7,7 +7,25 @@ import numpy as np
 import xml.etree.ElementTree as ET
 from email.utils import parsedate_to_datetime
 
-UA = {"User-Agent": "WinN3oum/0.2 (app baignade Tunisie; contact via github.com/Rzi11)"}
+UA = {"User-Agent": "WinN3oum/0.3 (app baignade Tunisie; contact via github.com/Rzi11)"}
+
+
+def http_get(url, params=None, timeout=90, tries=4):
+    """GET avec réessais (le service de vent historique est parfois lent)."""
+    import requests, time
+    last = None
+    for k in range(tries):
+        try:
+            r = requests.get(url, params=params, timeout=timeout, headers=UA)
+            if r.status_code in (429, 500, 502, 503, 504):
+                raise RuntimeError(f"HTTP {r.status_code}")
+            r.raise_for_status()
+            return r
+        except Exception as e:
+            last = e
+            print(f"[réseau] essai {k + 1}/{tries} échoué ({str(e)[:80]}), nouvel essai…")
+            time.sleep(5 * (k + 1))
+    raise last
 
 
 class Grid:
@@ -152,8 +170,7 @@ def load_wind(box, n=3, start_date=None, end_date=None, past_days=3, forecast_da
     else:
         url = "https://api.open-meteo.com/v1/forecast"
         params.update(past_days=past_days, forecast_days=forecast_days)
-    r = requests.get(url, params=params, timeout=90, headers=UA)
-    r.raise_for_status()
+    r = http_get(url, params=params, timeout=120)
     js = r.json()
     js = js if isinstance(js, list) else [js]
     times = np.array(js[0]["hourly"]["time"], dtype="datetime64[m]")
@@ -170,8 +187,7 @@ def load_wind(box, n=3, start_date=None, end_date=None, past_days=3, forecast_da
 # ====================================================================== observations
 def _inat_taxon_id(name, rank):
     import requests
-    r = requests.get("https://api.inaturalist.org/v1/taxa", params=dict(q=name, rank=rank, per_page=5), headers=UA, timeout=30)
-    r.raise_for_status()
+    r = http_get("https://api.inaturalist.org/v1/taxa", params=dict(q=name, rank=rank, per_page=5), timeout=30)
     for t in r.json().get("results", []):
         if t.get("name", "").lower() == name.lower():
             return t["id"]
@@ -187,10 +203,9 @@ def load_inaturalist(box, d1, d2):
         raise RuntimeError("taxons iNaturalist introuvables")
     obs, page = [], 1
     while page <= 5:
-        r = requests.get("https://api.inaturalist.org/v1/observations", headers=UA, timeout=60, params=dict(
+        r = http_get("https://api.inaturalist.org/v1/observations", timeout=60, params=dict(
             taxon_id=",".join(map(str, ids)), swlat=box["lat_min"], swlng=box["lon_min"], nelat=box["lat_max"],
             nelng=box["lon_max"], d1=d1, d2=d2, per_page=200, page=page, order_by="observed_on"))
-        r.raise_for_status()
         res = r.json().get("results", [])
         for o in res:
             loc = o.get("location")
@@ -201,7 +216,7 @@ def load_inaturalist(box, d1, d2):
             obs.append(dict(lat=la, lon=lo, time=np.datetime64(when[:16].replace(" ", "T"), "m"),
                             taxon=(o.get("taxon") or {}).get("name", "?"), source="iNaturalist", weight=1.0,
                             spread_km=2.0, ref=f"inat:{o.get('id')}"))
-        if len(res) < 200:
+        if len(res) < 100:
             break
         page += 1
     print(f"[iNaturalist] {len(obs)} observations")
@@ -212,11 +227,10 @@ def load_gbif(box, d1, d2):
     import requests
     obs = []
     for class_key in (352,):                      # 352 = Scyphozoa (méduses vraies)
-        r = requests.get("https://api.gbif.org/v1/occurrence/search", headers=UA, timeout=60, params=dict(
+        r = http_get("https://api.gbif.org/v1/occurrence/search", timeout=60, params=dict(
             classKey=class_key, decimalLatitude=f"{box['lat_min']},{box['lat_max']}",
             decimalLongitude=f"{box['lon_min']},{box['lon_max']}", eventDate=f"{d1},{d2}",
             hasCoordinate="true", limit=300))
-        r.raise_for_status()
         for o in r.json().get("results", []):
             if "decimalLatitude" not in o or not o.get("eventDate"):
                 continue
