@@ -1,6 +1,6 @@
 {
- "generated": "2026-10-09T23:55:19Z",
- "version": "v0.2",
+ "generated": "2026-10-10T00:35:29Z",
+ "version": "v0.3",
  "mode": "derive",
  "method": "Dérive (courants surface + 15 m, vent, vagues, jour/nuit, marée) × eau favorable × exposition + observations, presse, vent passé, saison. Indicateur non validé.",
  "sources": {
@@ -21,9 +21,9 @@
   "observations": 1
  },
  "days": [
-  "2026-10-09",
   "2026-10-10",
-  "2026-10-11"
+  "2026-10-11",
+  "2026-10-12"
  ],
  "beaches": {
   "rmel": {
@@ -34,52 +34,20 @@
    },
    "days": [
     {
-     "date": "2026-10-09",
-     "level": "Possible",
-     "risk": 0.24,
-     "why": [
-      "peu de dérive vers la plage",
-      "eau très favorable",
-      "plage qui piège les méduses"
-     ],
-     "factors": {
-      "drift": 0.11,
-      "obs": 0.0,
-      "wind_past": 0.0,
-      "news": 0.0,
-      "habitat": 0.81,
-      "arrivals": 1.8,
-      "from_obs": 0.0,
-      "drift_ref": "échelle fixe (historique en construction)",
-      "exposure": 1.23,
-      "season": 0.55,
-      "strong_wind": false,
-      "wind_kmh": 13,
-      "moon_age": 27.6,
-      "habitat_detail": {
-       "sst": 27.4,
-       "chl": 0.071,
-       "sal": 37.89,
-       "mld": 6.4
-      }
-     }
-    },
-    {
      "date": "2026-10-10",
      "level": "Possible",
      "risk": 0.44,
      "why": [
       "courant et vent poussent vers la plage",
-      "eau très favorable",
       "plage qui piège les méduses"
      ],
      "factors": {
-      "drift": 0.98,
+      "drift": 0.99,
       "obs": 0.0,
       "wind_past": 0.15,
       "news": 0.0,
       "habitat": 0.8,
-      "arrivals": 55.6,
+      "arrivals": 66.2,
       "from_obs": 0.0,
       "drift_ref": "échelle fixe (historique en construction)",
       "exposure": 1.23,
@@ -98,19 +66,18 @@
     {
      "date": "2026-10-11",
      "level": "Possible",
-     "risk": 0.33,
+     "risk": 0.3,
      "why": [
-      "un peu de dérive vers la plage",
-      "eau très favorable",
+      "courant et vent poussent vers la plage",
       "plage qui piège les méduses"
      ],
      "factors": {
-      "drift": 0.43,
+      "drift": 0.52,
       "obs": 0.0,
       "wind_past": 0.41,
       "news": 0.0,
       "habitat": 0.8,
-      "arrivals": 8.4,
+      "arrivals": 11.2,
       "from_obs": 0.0,
       "drift_ref": "échelle fixe (historique en construction)",
       "exposure": 1.23,
@@ -122,6 +89,36 @@
        "sst": 27.0,
        "chl": 0.063,
        "sal": 37.95,
+       "mld": 6.5
+      }
+     }
+    },
+    {
+     "date": "2026-10-12",
+     "level": "Faible",
+     "risk": 0.13,
+     "why": [
+      "peu de dérive vers la plage",
+      "plage qui piège les méduses"
+     ],
+     "factors": {
+      "drift": 0.0,
+      "obs": 0.0,
+      "wind_past": 0.47,
+      "news": 0.0,
+      "habitat": 0.8,
+      "arrivals": 0.0,
+      "from_obs": 0.0,
+      "drift_ref": "échelle fixe (historique en construction)",
+      "exposure": 1.23,
+      "season": 0.55,
+      "strong_wind": false,
+      "wind_kmh": 6,
+      "moon_age": 1.1,
+      "habitat_detail": {
+       "sst": 26.9,
+       "chl": 0.06,
+       "sal": 37.97,
        "mld": 6.5
       }
      }
@@ -150,50 +147,19 @@
    },
    "days": [
     {
-     "date": "2026-10-09",
-     "level": "Possible",
-     "risk": 0.33,
-     "why": [
-      "courant et vent poussent vers la plage",
-      "eau très favorable"
-     ],
-     "factors": {
-      "drift": 0.63,
-      "obs": 0.0,
-      "wind_past": 0.45,
-      "news": 0.0,
-      "habitat": 0.79,
-      "arrivals": 14.8,
-      "from_obs": 0.0,
-      "drift_ref": "échelle fixe (historique en construction)",
-      "exposure": 1.09,
-      "season": 0.55,
-      "strong_wind": false,
-      "wind_kmh": 18,
-      "moon_age": 27.6,
-      "habitat_detail": {
-       "sst": 27.1,
-       "chl": 0.082,
-       "sal": 38.24,
-       "mld": 6.4
-      }
-     }
-    },
-    {
      "date": "2026-10-10",
-     "level": "Possible",
-     "risk": 0.23,
+     "level": "Faible",
+     "risk": 0.16,
      "why": [
-      "peu de dérive vers la plage",
-      "eau très favorable"
+      "peu de dérive vers la plage"
      ],
      "factors": {
-      "drift": 0.13,
+      "drift": 0.14,
       "obs": 0.0,
       "wind_past": 0.43,
       "news": 0.0,
       "habitat": 0.78,
-      "arrivals": 2.2,
+      "arrivals": 2.3,
       "from_obs": 0.0,
       "drift_ref": "échelle fixe (historique en construction)",
       "exposure": 1.09,
@@ -211,11 +177,10 @@
     },
     {
      "date": "2026-10-11",
-     "level": "Possible",
-     "risk": 0.2,
+     "level": "Faible",
+     "risk": 0.11,
      "why": [
-      "peu de dérive vers la plage",
-      "eau très favorable"
+      "peu de dérive vers la plage"
      ],
      "factors": {
       "drift": 0.0,
@@ -238,9 +203,42 @@
        "mld": 6.5
       }
      }
+    },
+    {
+     "date": "2026-10-12",
+     "level": "Faible",
+     "risk": 0.11,
+     "why": [
+      "peu de dérive vers la plage"
+     ],
+     "factors": {
+      "drift": 0.0,
+      "obs": 0.0,
+      "wind_past": 0.24,
+      "news": 0.0,
+      "habitat": 0.78,
+      "arrivals": 0.0,
+      "from_obs": 0.0,
+      "drift_ref": "échelle fixe (historique en construction)",
+      "exposure": 1.09,
+      "season": 0.55,
+      "strong_wind": false,
+      "wind_kmh": 9,
+      "moon_age": 1.1,
+      "habitat_detail": {
+       "sst": 26.7,
+       "chl": 0.065,
+       "sal": 38.29,
+       "mld": 6.5
+      }
+     }
     }
    ],
    "species": [
+    {
+     "name": "Pélagie (Pelagia noctiluca)",
+     "sting": "forte"
+    },
     {
      "name": "Méduse chou-fleur (Rhizostoma pulmo)",
      "sting": "faible"
@@ -263,50 +261,19 @@
    },
    "days": [
     {
-     "date": "2026-10-09",
-     "level": "Possible",
-     "risk": 0.22,
-     "why": [
-      "peu de dérive vers la plage",
-      "eau très favorable"
-     ],
-     "factors": {
-      "drift": 0.19,
-      "obs": 0.0,
-      "wind_past": 0.0,
-      "news": 0.0,
-      "habitat": 0.8,
-      "arrivals": 3.2,
-      "from_obs": 0.0,
-      "drift_ref": "échelle fixe (historique en construction)",
-      "exposure": 1.08,
-      "season": 0.55,
-      "strong_wind": false,
-      "wind_kmh": 18,
-      "moon_age": 27.6,
-      "habitat_detail": {
-       "sst": 27.6,
-       "chl": 0.071,
-       "sal": 38.03,
-       "mld": 9.7
-      }
-     }
-    },
-    {
      "date": "2026-10-10",
      "level": "Possible",
-     "risk": 0.34,
+     "risk": 0.32,
      "why": [
-      "courant et vent poussent vers la plage",
-      "eau très favorable"
+      "courant et vent poussent vers la plage"
      ],
      "factors": {
-      "drift": 0.77,
+      "drift": 0.76,
       "obs": 0.0,
       "wind_past": 0.06,
       "news": 0.0,
       "habitat": 0.79,
-      "arrivals": 22.0,
+      "arrivals": 21.6,
       "from_obs": 0.0,
       "drift_ref": "échelle fixe (historique en construction)",
       "exposure": 1.08,
@@ -324,20 +291,19 @@
     },
     {
      "date": "2026-10-11",
-     "level": "Possible",
-     "risk": 0.24,
+     "level": "Faible",
+     "risk": 0.18,
      "why": [
       "peu de dérive vers la plage",
-      "vent de mer ces 3 derniers jours",
-      "eau très favorable"
+      "vent de mer ces 3 derniers jours"
      ],
      "factors": {
-      "drift": 0.12,
+      "drift": 0.2,
       "obs": 0.0,
       "wind_past": 0.58,
       "news": 0.0,
       "habitat": 0.79,
-      "arrivals": 2.0,
+      "arrivals": 3.3,
       "from_obs": 0.0,
       "drift_ref": "échelle fixe (historique en construction)",
       "exposure": 1.08,
@@ -348,6 +314,36 @@
       "habitat_detail": {
        "sst": 27.3,
        "chl": 0.062,
+       "sal": 38.04,
+       "mld": 9.7
+      }
+     }
+    },
+    {
+     "date": "2026-10-12",
+     "level": "Faible",
+     "risk": 0.13,
+     "why": [
+      "peu de dérive vers la plage",
+      "vent de mer ces 3 derniers jours"
+     ],
+     "factors": {
+      "drift": 0.0,
+      "obs": 0.0,
+      "wind_past": 0.8,
+      "news": 0.0,
+      "habitat": 0.79,
+      "arrivals": 0.0,
+      "from_obs": 0.0,
+      "drift_ref": "échelle fixe (historique en construction)",
+      "exposure": 1.08,
+      "season": 0.55,
+      "strong_wind": false,
+      "wind_kmh": 9,
+      "moon_age": 1.1,
+      "habitat_detail": {
+       "sst": 27.2,
+       "chl": 0.059,
        "sal": 38.04,
        "mld": 9.7
       }
@@ -377,50 +373,19 @@
    },
    "days": [
     {
-     "date": "2026-10-09",
-     "level": "Possible",
-     "risk": 0.31,
-     "why": [
-      "courant et vent poussent vers la plage",
-      "eau très favorable"
-     ],
-     "factors": {
-      "drift": 0.57,
-      "obs": 0.0,
-      "wind_past": 0.22,
-      "news": 0.0,
-      "habitat": 0.79,
-      "arrivals": 12.8,
-      "from_obs": 0.0,
-      "drift_ref": "échelle fixe (historique en construction)",
-      "exposure": 1.08,
-      "season": 0.55,
-      "strong_wind": false,
-      "wind_kmh": 18,
-      "moon_age": 27.6,
-      "habitat_detail": {
-       "sst": 27.1,
-       "chl": 0.082,
-       "sal": 38.24,
-       "mld": 6.4
-      }
-     }
-    },
-    {
      "date": "2026-10-10",
      "level": "Possible",
-     "risk": 0.26,
+     "risk": 0.25,
      "why": [
-      "un peu de dérive vers la plage",
-      "eau très favorable"
+      "un peu de dérive vers la plage"
      ],
      "factors": {
-      "drift": 0.33,
+      "drift": 0.49,
       "obs": 0.0,
       "wind_past": 0.28,
       "news": 0.0,
       "habitat": 0.78,
-      "arrivals": 6.0,
+      "arrivals": 10.0,
       "from_obs": 0.0,
       "drift_ref": "échelle fixe (historique en construction)",
       "exposure": 1.08,
@@ -439,10 +404,9 @@
     {
      "date": "2026-10-11",
      "level": "Faible",
-     "risk": 0.2,
+     "risk": 0.11,
      "why": [
-      "peu de dérive vers la plage",
-      "eau très favorable"
+      "peu de dérive vers la plage"
      ],
      "factors": {
       "drift": 0.0,
@@ -465,9 +429,42 @@
        "mld": 6.5
       }
      }
+    },
+    {
+     "date": "2026-10-12",
+     "level": "Faible",
+     "risk": 0.15,
+     "why": [
+      "peu de dérive vers la plage"
+     ],
+     "factors": {
+      "drift": 0.15,
+      "obs": 0.0,
+      "wind_past": 0.25,
+      "news": 0.0,
+      "habitat": 0.78,
+      "arrivals": 2.5,
+      "from_obs": 0.0,
+      "drift_ref": "échelle fixe (historique en construction)",
+      "exposure": 1.08,
+      "season": 0.55,
+      "strong_wind": false,
+      "wind_kmh": 9,
+      "moon_age": 1.1,
+      "habitat_detail": {
+       "sst": 26.7,
+       "chl": 0.065,
+       "sal": 38.29,
+       "mld": 6.5
+      }
+     }
     }
    ],
    "species": [
+    {
+     "name": "Pélagie (Pelagia noctiluca)",
+     "sting": "forte"
+    },
     {
      "name": "Méduse chou-fleur (Rhizostoma pulmo)",
      "sting": "faible"
@@ -490,50 +487,19 @@
    },
    "days": [
     {
-     "date": "2026-10-09",
-     "level": "Possible",
-     "risk": 0.35,
-     "why": [
-      "courant et vent poussent vers la plage",
-      "eau très favorable"
-     ],
-     "factors": {
-      "drift": 0.89,
-      "obs": 0.0,
-      "wind_past": 0.04,
-      "news": 0.0,
-      "habitat": 0.79,
-      "arrivals": 32.8,
-      "from_obs": 0.0,
-      "drift_ref": "échelle fixe (historique en construction)",
-      "exposure": 1.05,
-      "season": 0.55,
-      "strong_wind": false,
-      "wind_kmh": 18,
-      "moon_age": 27.6,
-      "habitat_detail": {
-       "sst": 27.4,
-       "chl": 0.082,
-       "sal": 38.17,
-       "mld": 7.0
-      }
-     }
-    },
-    {
      "date": "2026-10-10",
      "level": "Possible",
      "risk": 0.37,
      "why": [
-      "courant et vent poussent vers la plage",
-      "eau très favorable"
+      "courant et vent poussent vers la plage"
      ],
      "factors": {
-      "drift": 0.97,
+      "drift": 0.96,
       "obs": 0.0,
       "wind_past": 0.13,
       "news": 0.0,
       "habitat": 0.79,
-      "arrivals": 52.3,
+      "arrivals": 49.6,
       "from_obs": 0.0,
       "drift_ref": "échelle fixe (historique en construction)",
       "exposure": 1.05,
@@ -552,18 +518,17 @@
     {
      "date": "2026-10-11",
      "level": "Possible",
-     "risk": 0.27,
+     "risk": 0.24,
      "why": [
-      "un peu de dérive vers la plage",
-      "eau très favorable"
+      "un peu de dérive vers la plage"
      ],
      "factors": {
-      "drift": 0.38,
+      "drift": 0.46,
       "obs": 0.0,
       "wind_past": 0.42,
       "news": 0.0,
       "habitat": 0.79,
-      "arrivals": 7.2,
+      "arrivals": 9.3,
       "from_obs": 0.0,
       "drift_ref": "échelle fixe (historique en construction)",
       "exposure": 1.05,
@@ -575,6 +540,35 @@
        "sst": 27.1,
        "chl": 0.067,
        "sal": 38.15,
+       "mld": 7.1
+      }
+     }
+    },
+    {
+     "date": "2026-10-12",
+     "level": "Possible",
+     "risk": 0.2,
+     "why": [
+      "un peu de dérive vers la plage"
+     ],
+     "factors": {
+      "drift": 0.33,
+      "obs": 0.0,
+      "wind_past": 0.39,
+      "news": 0.0,
+      "habitat": 0.79,
+      "arrivals": 6.0,
+      "from_obs": 0.0,
+      "drift_ref": "échelle fixe (historique en construction)",
+      "exposure": 1.05,
+      "season": 0.55,
+      "strong_wind": false,
+      "wind_kmh": 9,
+      "moon_age": 1.1,
+      "habitat_detail": {
+       "sst": 27.0,
+       "chl": 0.063,
+       "sal": 38.16,
        "mld": 7.1
       }
      }
@@ -603,44 +597,13 @@
    },
    "days": [
     {
-     "date": "2026-10-09",
-     "level": "Possible",
-     "risk": 0.25,
-     "why": [
-      "peu de dérive vers la plage",
-      "vent de mer ces 3 derniers jours",
-      "eau très favorable"
-     ],
-     "factors": {
-      "drift": 0.0,
-      "obs": 0.0,
-      "wind_past": 0.69,
-      "news": 0.0,
-      "habitat": 0.78,
-      "arrivals": 0.0,
-      "from_obs": 0.0,
-      "drift_ref": "échelle fixe (historique en construction)",
-      "exposure": 1.27,
-      "season": 0.55,
-      "strong_wind": false,
-      "wind_kmh": 18,
-      "moon_age": 27.6,
-      "habitat_detail": {
-       "sst": 27.0,
-       "chl": 0.081,
-       "sal": 38.33,
-       "mld": 6.4
-      }
-     }
-    },
-    {
      "date": "2026-10-10",
-     "level": "Possible",
-     "risk": 0.25,
+     "level": "Faible",
+     "risk": 0.14,
      "why": [
       "peu de dérive vers la plage",
       "vent de mer ces 3 derniers jours",
-      "eau très favorable"
+      "plage qui piège les méduses"
      ],
      "factors": {
       "drift": 0.0,
@@ -666,11 +629,10 @@
     },
     {
      "date": "2026-10-11",
-     "level": "Possible",
-     "risk": 0.24,
+     "level": "Faible",
+     "risk": 0.13,
      "why": [
       "peu de dérive vers la plage",
-      "eau très favorable",
       "plage qui piège les méduses"
      ],
      "factors": {
@@ -691,6 +653,36 @@
        "sst": 26.7,
        "chl": 0.069,
        "sal": 38.35,
+       "mld": 6.5
+      }
+     }
+    },
+    {
+     "date": "2026-10-12",
+     "level": "Faible",
+     "risk": 0.12,
+     "why": [
+      "peu de dérive vers la plage",
+      "plage qui piège les méduses"
+     ],
+     "factors": {
+      "drift": 0.0,
+      "obs": 0.0,
+      "wind_past": 0.25,
+      "news": 0.0,
+      "habitat": 0.77,
+      "arrivals": 0.0,
+      "from_obs": 0.0,
+      "drift_ref": "échelle fixe (historique en construction)",
+      "exposure": 1.27,
+      "season": 0.55,
+      "strong_wind": false,
+      "wind_kmh": 9,
+      "moon_age": 1.1,
+      "habitat_detail": {
+       "sst": 26.5,
+       "chl": 0.065,
+       "sal": 38.37,
        "mld": 6.5
       }
      }
@@ -723,42 +715,11 @@
    },
    "days": [
     {
-     "date": "2026-10-09",
-     "level": "Possible",
-     "risk": 0.21,
-     "why": [
-      "peu de dérive vers la plage",
-      "eau très favorable"
-     ],
-     "factors": {
-      "drift": 0.08,
-      "obs": 0.0,
-      "wind_past": 0.31,
-      "news": 0.0,
-      "habitat": 0.77,
-      "arrivals": 1.2,
-      "from_obs": 0.0,
-      "drift_ref": "échelle fixe (historique en construction)",
-      "exposure": 1.07,
-      "season": 0.55,
-      "strong_wind": false,
-      "wind_kmh": 13,
-      "moon_age": 27.6,
-      "habitat_detail": {
-       "sst": 27.1,
-       "chl": 0.081,
-       "sal": 38.5,
-       "mld": 6.4
-      }
-     }
-    },
-    {
      "date": "2026-10-10",
      "level": "Faible",
-     "risk": 0.19,
+     "risk": 0.1,
      "why": [
-      "peu de dérive vers la plage",
-      "eau très favorable"
+      "peu de dérive vers la plage"
      ],
      "factors": {
       "drift": 0.0,
@@ -784,19 +745,18 @@
     },
     {
      "date": "2026-10-11",
-     "level": "Possible",
-     "risk": 0.2,
+     "level": "Faible",
+     "risk": 0.16,
      "why": [
-      "peu de dérive vers la plage",
-      "eau très favorable"
+      "un peu de dérive vers la plage"
      ],
      "factors": {
-      "drift": 0.07,
+      "drift": 0.21,
       "obs": 0.0,
       "wind_past": 0.13,
       "news": 0.0,
       "habitat": 0.76,
-      "arrivals": 1.1,
+      "arrivals": 3.5,
       "from_obs": 0.0,
       "drift_ref": "échelle fixe (historique en construction)",
       "exposure": 1.07,
@@ -811,9 +771,42 @@
        "mld": 6.5
       }
      }
+    },
+    {
+     "date": "2026-10-12",
+     "level": "Faible",
+     "risk": 0.1,
+     "why": [
+      "peu de dérive vers la plage"
+     ],
+     "factors": {
+      "drift": 0.0,
+      "obs": 0.0,
+      "wind_past": 0.12,
+      "news": 0.0,
+      "habitat": 0.76,
+      "arrivals": 0.0,
+      "from_obs": 0.0,
+      "drift_ref": "échelle fixe (historique en construction)",
+      "exposure": 1.07,
+      "season": 0.55,
+      "strong_wind": false,
+      "wind_kmh": 6,
+      "moon_age": 1.1,
+      "habitat_detail": {
+       "sst": 26.6,
+       "chl": 0.061,
+       "sal": 38.54,
+       "mld": 6.5
+      }
+     }
     }
    ],
    "species": [
+    {
+     "name": "Pélagie (Pelagia noctiluca)",
+     "sting": "forte"
+    },
     {
      "name": "Méduse chou-fleur (Rhizostoma pulmo)",
      "sting": "faible"
