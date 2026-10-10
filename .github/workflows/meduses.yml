@@ -1,56 +1,2028 @@
-name: Méduses — dérive de la nuit
+| **Faible** | 7 (R1, R2, R4, R5, R6, R7, R8) | Suivi trimestriel |
+| **Très Faible** | 2 (R9, R10) | Surveillance passive |
 
-on:
-  schedule:
-    - cron: "30 3 * * *"     # chaque nuit à 4h30 heure tunisienne
-  workflow_dispatch:          # bouton « Run workflow » pour lancer à la main
-    inputs:
-      mode:
-        description: "normal = prévision du jour ; rejeu = vérifier le modèle sur le passé"
-        required: true
-        default: normal
-        type: choice
-        options: [normal, rejeu]
+**Exposition globale aux risques : FAIBLE à MOYENNE**
 
-permissions:
-  contents: write
+---
 
-concurrency:
-  group: meduses
-  cancel-in-progress: false
+## ANNEXE D : ARCHITECTURE TECHNIQUE DÉTAILLÉE
 
-jobs:
-  derive:
-    runs-on: ubuntu-latest
-    timeout-minutes: 90
-    steps:
-      - uses: actions/checkout@v4
+### 🏗️ VUE D'ENSEMBLE DE L'ARCHITECTURE
 
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.11"
-          cache: pip
-          cache-dependency-path: drift/requirements.txt
+```
+┌─────────────────────────────────────────────────────────────────┐
+│                    COUCHE PRÉSENTATION                           │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐          │
+│  │ Power BI     │  │ Power BI     │  │ Teams        │          │
+│  │ Desktop      │  │ Service      │  │ (Embedded)   │          │
+│  └──────────────┘  └──────────────┘  └──────────────┘          │
+└─────────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────┐
+│                    COUCHE TRAITEMENT                             │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐          │
+│  │ Power Query  │  │ DAX Engine   │  │ Power        │          │
+│  │ (ETL)        │  │ (Calculs)    │  │ Automate     │          │
+│  └──────────────┘  └──────────────┘  └──────────────┘          │
+└─────────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────┐
+│                    COUCHE DONNÉES                                │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐          │
+│  │ SharePoint   │  │ Microsoft    │  │ Data Gateway │          │
+│  │ Lists        │  │ Forms        │  │ (SAGE)       │          │
+│  └──────────────┘  └──────────────┘  └──────────────┘          │
+└─────────────────────────────────────────────────────────────────┘
+                              ↓
+┌─────────────────────────────────────────────────────────────────┐
+│                    COUCHE SOURCES                                │
+│  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐          │
+│  │ SAGE         │  │ Fichiers     │  │ Bases Access │          │
+│  │ Comptabilité │  │ Excel        │  │ Scolarité    │          │
+│  └──────────────┘  └──────────────┘  └──────────────┘          │
+└─────────────────────────────────────────────────────────────────┘
+```
 
-      - name: Installer les outils
-        run: pip install -r drift/requirements.txt
+---
 
-      - name: Calculer la dérive des méduses
-        env:
-          COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUS_USER }}
-          COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUS_PASSWORD }}
-        run: |
-          if [ "${{ github.event.inputs.mode }}" = "rejeu" ]; then
-            python drift/run_drift.py --replay
-          else
-            python drift/run_drift.py
-          fi
+### 📊 MODÈLE DE DONNÉES CIBLE (STAR SCHEMA)
 
-      - name: Enregistrer le résultat
-        run: |
-          git config user.name  "winn3oum-bot"
-          git config user.email "winn3oum-bot@users.noreply.github.com"
-          git add data/
-          git commit -m "Méduses : mise à jour du $(date -u +%Y-%m-%d)" || echo "Rien de nouveau"
-          git pull --rebase
-          git push
+#### SCHÉMA EN ÉTOILE - VUE COMPLÈTE
+
+```
+                    ┌─────────────────┐
+                    │  Dim_Temps      │
+                    ├─────────────────┤
+                    │ DateKey (PK)    │
+                    │ Date            │
+                    │ Jour            │
+                    │ Mois            │
+                    │ Trimestre       │
+                    │ Année           │
+                    │ Semaine         │
+                    │ JourSemaine     │
+                    └─────────────────┘
+                            │
+        ┌───────────────────┼───────────────────┐
+        │                   │                   │
+┌───────▼──────┐    ┌───────▼──────┐    ┌──────▼───────┐
+│Dim_Etudiant  │    │Fact_Inscrip  │    │Dim_Formation │
+├──────────────┤    ├──────────────┤    ├──────────────┤
+│EtudiantKey   │◄───│EtudiantKey   │───►│FormationKey  │
+│Nom           │    │FormationKey  │    │NomFormation  │
+│Prenom        │    │DateKey       │    │Niveau        │
+│Statut        │    │CampusKey     │    │Type          │
+│Campus        │    │EntrepriseKey │    │Capacite      │
+│Email         │    │NbInscrits    │    └──────────────┘
+└──────────────┘    │CA            │
+                    │DateInscript  │
+        ┌───────────┤              │
+        │           └──────────────┘
+        │                   │
+┌───────▼──────┐    ┌───────▼──────┐
+│Dim_Campus    │    │Dim_Entreprise│
+├──────────────┤    ├──────────────┤
+│CampusKey(PK) │    │EntrepriseKey │
+│NomCampus     │    │NomEntreprise │
+│Ville         │    │Secteur       │
+│Capacite      │    │Ville         │
+└──────────────┘    │NbAlternants  │
+                    └──────────────┘
+
+┌────────────────────────────────────────────────────────┐
+│              TABLE DE FAITS : Fact_Cours               │
+├────────────────────────────────────────────────────────┤
+│ CoursKey (PK)                                          │
+│ DateKey (FK) → Dim_Temps                               │
+│ FormationKey (FK) → Dim_Formation                      │
+│ IntervenantKey (FK) → Dim_Intervenant                  │
+│ HeuresPrevues (mesure)                                 │
+│ HeuresRealisees (mesure)                               │
+│ NoteEvaluation (mesure)                                │
+│ StatutCours (Réalisé, Annulé)                          │
+└────────────────────────────────────────────────────────┘
+```
+
+---
+
+### 🔄 FLUX DE DONNÉES DÉTAILLÉS
+
+#### FLUX 1 : DONNÉES COMMERCIALES (PROSPECTS → INSCRITS)
+
+```
+[Fichiers Excel Commerciaux]
+         ↓
+[Migration one-shot vers SharePoint]
+         ↓
+[Nettoyage Power Query : Dédoublonnage, Standardisation]
+         ↓
+[Référentiel STATUT_PROSPECT validé]
+         ↓
+[Table Fact_Prospects dans modèle Power BI]
+         ↓
+[Dashboard Commercial]
+```
+
+**Fréquence :** Quotidienne (automatique via Power Automate)  
+**Volumétrie :** ~8000 prospects/an = 24K lignes sur 3 ans  
+**Transformations appliquées :**
+- Dédoublonnage par Email + Téléphone
+- Standardisation noms (MAJUSCULES → Capitalize)
+- Mapping statuts vers référentiel unique (10 statuts)
+- Calcul automatique du délai de conversion
+
+---
+
+#### FLUX 2 : DONNÉES SCOLARITÉ (ÉTUDIANTS)
+
+```
+[3 Bases Access Scolarité]
+         ↓
+[Export CSV mensuel (Phase 0)]
+         ↓
+[Consolidation Power Query : Fusion 3 bases]
+         ↓
+[Nettoyage : Résolution conflits, Référentiel STATUT_ETUDIANT]
+         ↓
+[Table Dim_Etudiant + Fact_Inscriptions]
+         ↓
+[Dashboards Direction, Scolarité, Finance]
+```
+
+**Migration vers SharePoint (Phase 1) :**
+- Base Access 1 (Paris) → Liste SharePoint "Etudiants_Paris"
+- Base Access 2 (Lyon) → Liste SharePoint "Etudiants_Lyon"
+- Base Access 3 (Bordeaux) → Liste SharePoint "Etudiants_Bordeaux"
+- Consolidation via Power Query vers table unique
+
+**Fréquence :** Quotidienne (après migration SharePoint)  
+**Volumétrie :** 2800 étudiants actuels + 5 ans historique = ~8500 lignes
+
+---
+
+#### FLUX 3 : DONNÉES FINANCIÈRES (SAGE)
+
+```
+[SAGE Comptabilité - Serveur local]
+         ↓
+[Data Gateway (VM dédiée) - Connexion sécurisée]
+         ↓
+[Extraction tables : Factures, Paiements, Charges]
+         ↓
+[Power Query : Jointures + Calculs marge]
+         ↓
+[Table Fact_Finances]
+         ↓
+[Dashboard Finance]
+```
+
+**Tables SAGE extraites :**
+- `F_COMPTET` : Comptes clients (étudiants)
+- `F_DOCENTETE` : Factures (entêtes)
+- `F_DOCLIGNE` : Lignes de factures
+- `F_ECRITURE` : Écritures comptables
+- `F_REGLEMENTT` : Règlements
+
+**Fréquence :** Quotidienne (extraction automatique 6h du matin)  
+**Volumétrie :** ~15K factures/an
+
+---
+
+#### FLUX 4 : DONNÉES PÉDAGOGIQUES (PLANNING + ÉVALUATIONS)
+
+```
+[Fichier Excel Planning (Philippe)]
+         ↓
+[Migration SharePoint - Liste "Planning_Cours"]
+         ↓
+[Microsoft Forms : Évaluations post-cours]
+         ↓
+[Power Automate : Consolidation automatique]
+         ↓
+[Power Query : Croisement Planning × Évaluations]
+         ↓
+[Table Fact_Cours + Dim_Intervenant]
+         ↓
+[Dashboard Pédagogie]
+```
+
+**Fréquence :** 
+- Planning : Hebdomadaire (mise à jour manuelle sur SharePoint)
+- Évaluations : Temps réel (Forms → SharePoint automatique)
+
+**Volumétrie :** ~2500 cours/an × 3 ans = 7500 lignes
+
+---
+
+### 🔐 SÉCURITÉ & GOUVERNANCE DES DONNÉES
+
+#### GESTION DES DROITS D'ACCÈS
+
+| Profil | Dashboards Accessibles | Niveau Accès | Filtres Automatiques |
+|--------|------------------------|--------------|---------------------|
+| **DG** | Tous (Direction, Commercial, Pédagogie, Finance) | Lecture totale | Aucun (vue globale) |
+| **Dir. Commerciale** | Direction, Commercial | Lecture + Export | Par équipe commerciale |
+| **Dir. Pédagogique** | Direction, Pédagogie | Lecture + Export | Par campus |
+| **DAF** | Direction, Finance | Lecture + Modification | Aucun (vue globale) |
+| **Dir. Scolarité** | Direction, Scolarité (non créé Phase 1) | Lecture | Par campus |
+| **Commercial** | Commercial uniquement | Lecture | Son portefeuille uniquement (RLS) |
+| **Chef Projet BI** | Tous + Administration | Écriture complète | Aucun |
+
+**RLS (Row-Level Security) :**
+- Commerciaux : Filtre automatique `[Commercial] = USERPRINCIPALNAME()`
+- Directeurs Campus : Filtre `[Campus] IN ("Paris", "Lyon")`
+- Implémentation via DAX dans Power BI Desktop
+
+---
+
+#### POLITIQUE DE BACKUP & RESTAURATION
+
+| Élément | Fréquence Backup | Rétention | Responsable |
+|---------|------------------|-----------|-------------|
+| **Fichiers sources SharePoint** | Automatique (M365) | 93 jours | Microsoft |
+| **Rapports Power BI (.pbix)** | Quotidien (Git) | Infini | Chef Projet BI |
+| **SAGE Comptabilité** | Quotidien (IT) | 30 jours | Service IT |
+| **Modèle de données** | À chaque publication | Versions illimitées | Power BI Service |
+| **Documentation** | À chaque modification | Infini (SharePoint) | Chef Projet BI |
+
+**Plan de Restauration (RPO/RTO) :**
+- **RPO (Recovery Point Objective) :** 24h max (données perdues max 1 jour)
+- **RTO (Recovery Time Objective) :** 4h (système rétabli en 4h)
+
+---
+
+### ⚙️ SPÉCIFICATIONS TECHNIQUES
+
+#### SERVEUR DATA GATEWAY
+
+| Caractéristique | Spécification |
+|-----------------|---------------|
+| **Type** | Machine virtuelle Windows Server 2019 |
+| **CPU** | 4 vCPU |
+| **RAM** | 8 GB |
+| **Stockage** | 50 GB SSD |
+| **Réseau** | Connexion VPN au réseau LAFABRIQUE |
+| **Logiciels** | Power BI On-Premises Data Gateway, .NET Framework 4.7 |
+| **Disponibilité** | 99.5% (maintenance mensuelle) |
+| **Coût** | 50€/mois (hébergement cloud) |
+
+---
+
+#### VOLUMÉTRIE & PERFORMANCE
+
+| Métrique | Valeur Actuelle | Prévision 3 ans | Capacité Power BI |
+|----------|-----------------|-----------------|-------------------|
+| **Lignes Fact_Inscriptions** | 8 500 | 17 000 | 100M (OK ✓) |
+| **Lignes Fact_Prospects** | 24 000 | 50 000 | 100M (OK ✓) |
+| **Lignes Fact_Cours** | 7 500 | 20 000 | 100M (OK ✓) |
+| **Lignes Fact_Finances** | 45 000 | 90 000 | 100M (OK ✓) |
+| **Taille modèle compressé** | ~150 MB | ~400 MB | 10 GB (OK ✓) |
+| **Utilisateurs simultanés** | 20 | 50 | 100 (Premium, OK ✓) |
+| **Temps rafraîchissement** | 5 min | 12 min | <30 min (OK ✓) |
+
+**Conclusion :** Architecture dimensionnée pour 5 ans de croissance sans migration nécessaire.
+
+---
+
+## ANNEXE E : PLAN DE FORMATION DÉTAILLÉ
+
+### 🎓 STRATÉGIE DE FORMATION (3 NIVEAUX)
+
+#### NIVEAU 1 : UTILISATEURS FINAUX (85% des collaborateurs)
+
+**Public :** DG, Directeurs, Managers, Collaborateurs administratifs
+
+**Objectif :** Savoir utiliser les dashboards au quotidien
+
+**Durée :** 2h à 1 jour selon profil
+
+**Contenu Détaillé :**
+
+**Module 1 : Introduction BI LAFABRIQUE (30 min)**
+- Pourquoi ce projet ? (contexte et bénéfices)
+- Vue d'ensemble des 4 dashboards
+- Navigation générale
+
+**Module 2 : Utilisation Dashboard (1h30)**
+- Connexion à Power BI Service
+- Navigation entre pages
+- Utilisation des filtres (période, campus, formation)
+- Lecture des KPI et graphiques
+- Drill-down (clic sur un élément)
+- Export Excel/PDF
+- Création de favoris
+
+**Module 3 : Alertes & Notifications (30 min)**
+- Configuration alertes personnelles
+- Réception notifications (email, Teams)
+- Gestion des abonnements rapports
+
+**Module 4 : Cas Pratiques (1h - optionnel selon profil)**
+- Scénario 1 : "Combien d'inscrits ce mois par formation ?"
+- Scénario 2 : "Quels prospects relancer cette semaine ?"
+- Scénario 3 : "Quel est mon budget vs réalisé ?"
+
+**Format :** Présentiel ou visio (Teams)  
+**Groupes :** 10 personnes max  
+**Support :** Manuel utilisateur + Vidéos 3min  
+**Évaluation :** Quiz 10 questions (validation 7/10)
+
+---
+
+**CALENDRIER FORMATION NIVEAU 1**
+
+| Profil | Public | Nb Pers. | Durée | Date | Formateur |
+|--------|--------|----------|-------|------|-----------|
+| **Direction** | DG + 3 Directeurs | 4 | 2h | M3 | Consultant + Chef Projet BI |
+| **Commercial** | Dir + 8 commerciaux | 9 | 1j | M4 | Chef Projet BI |
+| **Pédagogie** | Dir + 5 collaborateurs | 6 | 1j | M7 | Chef Projet BI |
+| **Finance** | DAF + 4 comptables | 5 | 1j | M6 | Consultant + Chef Projet BI |
+| **Scolarité** | Dir + 7 administratifs | 8 | 1j | M8 | Chef Projet BI |
+| **Stages** | Resp + 2 assistants | 3 | 1/2j | M9 | Chef Projet BI |
+
+**Total :** 35 personnes formées | 11 jours de formation
+
+---
+
+#### NIVEAU 2 : POWER USERS (10% des collaborateurs)
+
+**Public :** Chef Projet BI, 1 personne équipe DAF
+
+**Objectif :** Savoir maintenir et faire évoluer les dashboards
+
+**Durée :** 5 jours (35 heures)
+
+**Programme Détaillé :**
+
+**Jour 1 : Fondamentaux Power BI Desktop**
+- Installation et configuration Power BI Desktop
+- Interface et navigation
+- Connexion aux sources de données (Excel, SharePoint, SQL)
+- Power Query : transformations de base
+  - Filtrer, trier, regrouper
+  - Ajouter colonnes calculées
+  - Fusionner/ajouter requêtes
+- Publication vers Power BI Service
+- TP : Créer un rapport simple avec données LAFABRIQUE
+
+**Jour 2 : Modélisation de Données**
+- Principes du modèle en étoile (Star Schema)
+- Tables de faits vs dimensions
+- Relations entre tables (1-N, N-N)
+- Gestion des cardinalités
+- Clés primaires et étrangères
+- TP : Modéliser les données Prospects → Inscrits
+
+**Jour 3 : DAX Niveau Intermédiaire**
+- Introduction au langage DAX
+- Mesures vs Colonnes calculées
+- Fonctions essentielles :
+  - SUM, AVERAGE, COUNT, DISTINCTCOUNT
+  - CALCULATE, FILTER
+  - ALL, ALLEXCEPT
+  - RELATED, RELATEDTABLE
+- Time Intelligence :
+  - DATESYTD, TOTALYTD
+  - SAMEPERIODLASTYEAR
+- TP : Créer les KPI LAFABRIQUE en DAX
+
+**Jour 4 : Visualisations Avancées**
+- Choix du bon type de graphique
+- Personnalisation des visuels
+- Formatage conditionnel
+- Tooltips personnalisés
+- Drill-through et bookmarks
+- Visuels personnalisés (marketplace)
+- TP : Créer le Dashboard Commercial
+
+**Jour 5 : Administration & Déploiement**
+- Power BI Service : workspaces, capacités
+- Gestion des droits (RLS - Row Level Security)
+- Planification des actualisations
+- Surveillance et monitoring
+- Gestion des versions
+- TP : Publier et sécuriser un rapport complet
+
+**Formateur :** Consultant externe expert Power BI  
+**Lieu :** Salle de formation LAFABRIQUE (PC individuel)  
+**Support :** Certification Microsoft PL-300 offerte (en ligne)  
+**Évaluation :** Projet final (créer un dashboard de A à Z)
+
+**Coût :** 2500€ par personne (inclus dans budget 35K€)
+
+---
+
+**CALENDRIER FORMATION NIVEAU 2**
+
+| Formation | Participant | Date | Formateur |
+|-----------|-------------|------|-----------|
+| Power BI Niveau 1 (5j) | Chef Projet BI | M1 (Janvier 2026) | Consultant externe |
+| Power BI Niveau 1 (5j) | Data Référent DAF | M6 (Juin 2026) | Consultant externe |
+| Power BI Niveau 2 (5j) | Chef Projet BI | M9 (Septembre 2026) | Consultant externe |
+
+**Total :** 15 jours de formation Power Users
+
+---
+
+#### NIVEAU 3 : EXPERT (5% - Chef de Projet BI uniquement)
+
+**Public :** Chef Projet BI
+
+**Objectif :** Maîtrise complète Power BI + Architecture
+
+**Durée :** Formation continue 18 mois (learning by doing)
+
+**Programme :**
+
+**Phase 1 (M1-M6) : Fondations**
+- Formation initiale 5j (voir Niveau 2)
+- Shadowing consultants (10j)
+- Co-développement Dashboard Commercial (5j)
+
+**Phase 2 (M7-M12) : Autonomie Progressive**
+- Formation Power BI Niveau 2 (5j)
+- Formation SQL avancé (3j)
+- Développement autonome Dashboard Finance (10j supervisé)
+- Optimisation performance (2j)
+
+**Phase 3 (M13-M18) : Expertise**
+- Formation Modélisation Kimball (2j)
+- Formation Architecture données (3j)
+- Formation Power Automate (2j)
+- Préparation Certification PL-300 (en ligne)
+- Passage certification (1j)
+
+**Total investissement formation Expert :** ~100 jours sur 18 mois
+
+---
+
+### 📚 SUPPORTS PÉDAGOGIQUES LIVRÉS
+
+#### DOCUMENTATION UTILISATEUR
+
+**1. Manuel Utilisateur par Profil (5 manuels)**
+- Manuel Direction (15 pages)
+- Manuel Commercial (25 pages)
+- Manuel Pédagogie (20 pages)
+- Manuel Finance (22 pages)
+- Manuel Scolarité (18 pages)
+
+**Contenu type :** 
+- Introduction au dashboard
+- Navigation pas à pas
+- Explication de chaque KPI
+- Cas d'usage pratiques
+- FAQ
+- Contacts support
+
+**Format :** PDF + Version imprimée (reliure spirale)
+
+---
+
+**2. Vidéos Tutoriels (20 vidéos × 3 min)**
+
+| # | Titre | Durée | Sujet |
+|---|-------|-------|-------|
+| 01 | Se connecter à Power BI Service | 2 min | Authentification M365 |
+| 02 | Naviguer dans un dashboard | 3 min | Navigation générale |
+| 03 | Utiliser les filtres | 3 min | Filtres période, campus, formation |
+| 04 | Comprendre les KPI | 4 min | Lecture KPI avec tendances |
+| 05 | Exporter en Excel | 2 min | Export données |
+| 06 | Exporter en PDF | 2 min | Génération rapport PDF |
+| 07 | Drill-down sur un graphique | 3 min | Creuser dans les données |
+| 08 | Créer une alerte | 3 min | Configuration alertes automatiques |
+| 09 | S'abonner à un rapport | 2 min | Recevoir rapports par email |
+| 10 | Dashboard Direction : Vue d'ensemble | 4 min | Tour guidé dashboard DG |
+| 11 | Dashboard Commercial : Pipeline | 3 min | Utilisation funnel commercial |
+| 12 | Dashboard Commercial : Performance | 3 min | Analyse performance équipe |
+| 13 | Dashboard Pédagogie : Planning | 3 min | Consulter planning hebdomadaire |
+| 14 | Dashboard Pédagogie : Évaluations | 3 min | Analyser notes intervenants |
+| 15 | Dashboard Finance : Rentabilité | 4 min | Analyser marge par formation |
+| 16 | Dashboard Finance : Budget vs Réalisé | 3 min | Suivre écarts budgétaires |
+| 17 | Résoudre problèmes courants | 3 min | Troubleshooting |
+| 18 | Qui contacter en cas de problème | 2 min | Support et escalade |
+| 19 | Bonnes pratiques utilisation | 3 min | Tips & tricks |
+| 20 | Nouveautés et mises à jour | 3 min | Communiquer évolutions |
+
+**Format :** MP4 720p, hébergées sur SharePoint, accessibles via QR Code
+
+---
+
+**3. Quick Reference Cards (Cartes de Référence Rapide)**
+
+**Format :** A4 recto-verso plastifié
+
+**Contenu :**
+- **Recto :** 
+  - 5 actions les plus courantes (avec captures d'écran)
+  - Raccourcis clavier
+  - Contacts support
+  
+- **Verso :**
+  - Signification des KPI essentiels
+  - Code couleur sémantique (vert/rouge/jaune)
+  - QR Codes vers vidéos tutoriels
+
+**Distribution :** 1 carte par utilisateur, posée sur le bureau
+
+---
+
+**4. FAQ Dynamique (SharePoint)**
+
+**Structure :**
+- Catégories : Connexion, Navigation, Filtres, Export, Erreurs, Demandes d'évolution
+- Recherche full-text
+- Vote "Utile / Pas utile" pour chaque réponse
+- Formulaire "Poser une question" (traité sous 48h)
+
+**Alimentation :** 
+- Base initiale : 30 questions pré-remplies
+- Enrichissement continu par Chef Projet BI
+
+---
+
+#### DOCUMENTATION TECHNIQUE (Pour Power Users & Chef Projet BI)
+
+**1. Architecture Complète du Système (30 pages)**
+- Schémas d'architecture (couches, flux)
+- Modèle de données complet (toutes les tables)
+- Règles de gestion
+- Dépendances entre tables
+
+**2. Dictionnaire de Données (50 pages)**
+- Chaque table documentée
+- Chaque champ documenté (nom, type, description, source)
+- Référentiels complets (STATUT_ETUDIANT, etc.)
+
+**3. Guide d'Administration Power BI (40 pages)**
+- Gestion des workspaces
+- Gestion des droits (RLS)
+- Planification des actualisations
+- Monitoring et alertes
+- Gestion des licences
+- Procédures de backup/restauration
+
+**4. Code Source DAX Commenté**
+- Toutes les mesures DAX avec commentaires
+- Colonnes calculées expliquées
+- Bonnes pratiques et optimisations
+
+**5. Procédures de Maintenance (20 pages)**
+- Procédure mensuelle (vérifications routine)
+- Procédure trimestrielle (audit qualité données)
+- Procédure annuelle (revue complète)
+- Procédures de dépannage (troubleshooting)
+- Gestion des incidents
+
+**Format :** PDF + SharePoint (version vivante, mise à jour continue)
+
+---
+
+### ✅ ÉVALUATION & CERTIFICATION
+
+#### ÉVALUATION DES ACQUIS
+
+**Niveau 1 (Utilisateurs) :**
+- Quiz 10 questions à la fin de la formation
+- Note minimale : 7/10 pour validation
+- Si échec : Session de rattrapage personnalisée
+
+**Niveau 2 (Power Users) :**
+- Projet final : Créer un dashboard complet (noté /20)
+- Présentation orale du projet (15 min)
+- Note minimale : 12/20 pour validation
+
+**Niveau 3 (Expert) :**
+- Certification Microsoft PL-300 (Microsoft Certified: Power BI Data Analyst Associate)
+- Passage en ligne (gratuit via Microsoft Learn)
+- Obligatoire pour le Chef Projet BI
+
+---
+
+#### SUIVI POST-FORMATION
+
+**Mois M+1 à M+3 après formation :**
+- Office Hours hebdomadaires (2h/semaine)
+- Support dédié (réponse <4h)
+- Mini-sessions de rappel (30 min) si besoin
+
+**Mois M+6 :**
+- Session de rafraîchissement (1/2 journée)
+- Nouveautés et fonctionnalités ajoutées
+- Retours d'expérience
+
+---
+
+## ANNEXE F : CALENDRIER DÉTAILLÉ (DIAGRAMME DE GANTT)
+
+### 📅 PLANNING PROJET 18 MOIS (PAR SEMAINE)
+
+#### PHASE 0 : QUICK WINS & FONDATIONS (Semaines 1-12)
+
+| Semaine | Tâches | Responsable | Livrables |
+|---------|--------|-------------|-----------|
+| **S-2 à S0** | **PRÉPARATION** | | |
+| S-2 | Validation COPIL | DG | Budget approuvé |
+| S-1 | Lancement recrutement Chef Projet BI | RH | Annonce publiée |
+| S0 | Kick-off projet | Tous | Comité lancé |
+| **S1-S4** | **CADRAGE & DIAGNOSTIC** | | |
+| S1 | Interviews parties prenantes (8 profils) | Consultant | Verbatims |
+| S2 | Analyse flux d'information actuels | Consultant | Cartographie |
+| S3 | Inventaire sources de données | Chef Projet BI | Liste exhaustive |
+| S4 | Validation Livrable 1 (Diagnostic) | COPIL | Livrable 1 ✓ |
+| **S5-S8** | **NETTOYAGE DONNÉES & RÉFÉRENTIEL** | | |
+| S5 | Nettoyage fichiers prospects (dédoublonnage) | Consultant + Commercial | Base propre |
+| S6 | Création Référentiel STATUT_ETUDIANT | COPIL | 10 statuts validés |
+| S7 | Migration données vers SharePoint (pilote) | Chef Projet BI | SharePoint opérationnel |
+| S8 | Validation qualité données (audit) | Référents Métiers | Taux erreur <5% |
+| **S9-S12** | **DASHBOARD DIRECTION MVP** | | |
+| S9 | Modélisation données (version 1) | Consultant | Modèle étoile v1 |
+| S10 | Développement Dashboard Direction (MVP) | Consultant | Dashboard v0.1 |
+| S11 | Tests utilisateurs (DG + 3 Directeurs) | DG | Feedback collecté |
+| S12 | Publication Dashboard Direction | Chef Projet BI | Dashboard live ✓ |
+| **Formation** | Formation Direction (2h) - S12 | Chef Projet BI | 4 pers. formées |
+
+---
+
+#### PHASE 1 : ARCHITECTURE & INTÉGRATION (Semaines 13-36)
+
+| Semaine | Tâches | Responsable | Livrables |
+|---------|--------|-------------|-----------|
+| **S13-S16** | **MODÉLISATION COMPLÈTE** | | |
+| S13 | Finalisation modèle de données (Livrable 3) | Consultant | Schéma complet |
+| S14 | Création tables de dimensions | Chef Projet BI | 5 dimensions créées |
+| S15 | Création tables de faits | Chef Projet BI | 4 faits créées |
+| S16 | Validation Livrable 3 (Modèle) | COPIL | Livrable 3 ✓ |
+| **S17-S20** | **DASHBOARD COMMERCIAL** | | |
+| S17 | Développement Funnel de conversion | Consultant | Funnel opérationnel |
+| S18 | Développement KPI Performance commerciale | Consultant | 5 KPI créés |
+| S19 | Intégration données prospects nettoyées | Chef Projet BI | Données connectées |
+| S20 | Tests + Ajustements Dashboard Commercial | Dir. Commercial | Feedback intégré |
+| S21 | Publication Dashboard Commercial | Chef Projet BI | Dashboard live ✓ |
+| **Formation** | Formation Commercial (1j) - S21 | Chef Projet BI | 9 pers. formées |
+| **S22-S26** | **INTÉGRATION SAGE** | | |
+| S22 | Installation Data Gateway | IT + Consultant | Gateway installé |
+| S23 | Configuration connexion SAGE | Consultant + DAF | Connexion OK |
+| S24 | Tests extraction données comptables | Consultant | Tables extraites |
+| S25 | Développement flux automatiques | Consultant | ETL opérationnel |
+| S26 | Validation intégration SAGE | COPIL + DAF | Intégration ✓ |
+| **Formation** | Formation Power Users DAF (5j) - S26 | Consultant | 1 pers. formée |
+| **S27-S31** | **DASHBOARD PÉDAGOGIE** | | |
+| S27 | Migration planning Excel → SharePoint | Chef Projet BI + Dir. Pédagogie | Planning centralisé |
+| S28 | Développement Dashboard Planning | Chef Projet BI (supervisé) | Vue hebdomadaire |
+| S29 | Intégration évaluations (Microsoft Forms) | Chef Projet BI | Forms connectés |
+| S30 | Développement KPI Qualité pédagogique | Consultant | 5 KPI créés |
+| S31 | Tests + Publication Dashboard Pédagogie | Dir. Pédagogique | Dashboard live ✓ |
+| **Formation** | Formation Pédagogie (1j) - S31 | Chef Projet BI | 6 pers. formées |
+| **S32-S36** | **DASHBOARD FINANCE** | | |
+| S32 | Développement Analyse rentabilité formation | Consultant + DAF | Tableau rentabilité |
+| S33 | Développement Suivi budgétaire | Chef Projet BI (supervisé) | Budget vs Réel |
+| S34 | Développement KPI Recouvrement | Chef Projet BI | Impayés tracking |
+| S35 | Tests + Ajustements Dashboard Finance | DAF | Feedback intégré |
+| S36 | Publication Dashboard Finance | Chef Projet BI | Dashboard live ✓ |
+| **Formation** | Formation Finance (1j) - S36 | Chef Projet BI | 5 pers. formées |
+
+---
+
+#### PHASE 2 : INDUSTRIALISATION & PILOTAGE (Semaines 37-72)
+
+| Semaine | Tâches | Responsable | Livrables |
+|---------|--------|-------------|-----------|
+| **S37-S40** | **CONSOLIDATION DASHBOARD DG 360°** | | |
+| S37 | Intégration tous les KPI stratégiques | Chef Projet BI | 12 KPI consolidés |
+| S38 | Développement vue Rentabilité complète | Consultant | Analyse marge |
+| S39 | Développement Alertes automatiques | Chef Projet BI | 5 alertes configurées |
+| S40 | Validation Dashboard DG 360° | DG + COPIL | Dashboard final ✓ |
+| **S41-S44** | **OPTIMISATION & PERFORMANCE** | | |
+| S41 | Audit performance (temps chargement) | Consultant | Rapport perf |
+| S42 | Optimisation requêtes DAX | Consultant | Temps <10s |
+| S43 | Optimisation modèle de données | Consultant | Taille réduite 20% |
+| S44 | Tests de charge (50 utilisateurs simultanés) | Chef Projet BI | Tests OK |
+| **S45-S48** | **FORMATION AVANCÉE** | | |
+| S45 | Formation Power BI Niveau 2 - Chef Projet (5j) | Consultant | Expert formé |
+| S46 | Formation Scolarité (1j) | Chef Projet BI | 8 pers. formées |
+| S47 | Formation Stages (1/2j) | Chef Projet BI | 3 pers. formées |
+| S48 | Session rafraîchissement tous profils (1/2j) | Chef Projet BI | 35 pers. |
+| **S49-S56** | **INDUSTRIALISATION FLUX** | | |
+| S49 | Automatisation complète flux données | Chef Projet BI | Power Automate |
+| S50 | Configuration sauvegardes automatiques | Chef Projet BI | Backups quotidiens |
+| S51 | Mise en place monitoring (alertes erreurs) | Chef Projet BI | Monitoring actif |
+| S52 | Tests reprise sur incident | Chef Projet BI | Plan testé |
+| S53-S56 | **Buffer** (ajustements, corrections) | Chef Projet BI | Stabilisation |
+| **S57-S64** | **DOCUMENTATION & TRANSFERT** | | |
+| S57-S58 | Rédaction documentation technique complète | Chef Projet BI | 150 pages |
+| S59-S60 | Rédaction manuels utilisateurs (5 profils) | Chef Projet BI | 5 manuels |
+| S61 | Production vidéos tutoriels (20 vidéos) | Chef Projet BI | 20 vidéos 3min |
+| S62 | Mise en ligne FAQ dynamique | Chef Projet BI | FAQ SharePoint |
+| S63 | Formation administrateurs (gestion droits) | Consultant | 2 pers. formées |
+| S64 | Validation documentation complète | COPIL | Docs validées |
+| **S65-S68** | **AUTONOMISATION ÉQUIPE** | | |
+| S65 | Passation complète Chef Projet BI | Consultant | 100% autonome |
+| S66 | Tests autonomie (évolution dashboard) | Chef Projet BI | Test réussi |
+| S67 | Préparation Certification PL-300 | Chef Projet BI | Révisions |
+| S68 | Passage Certification Microsoft PL-300 | Chef Projet BI | Certifié ✓ |
+| **S69-S72** | **CLÔTURE PROJET** | | |
+| S69 | Mesure ROI réel vs prévisionnel | COPIL | Rapport ROI |
+| S70 | Bilan projet (réussites, axes amélioration) | Tous | Bilan complet |
+| S71 | Définition plan MCO (Année N+1) | Chef Projet BI + DAF | Plan MCO |
+| S72 | COPIL Final - Clôture officielle | DG + COPIL | Projet clôturé ✓ |
+
+---
+
+### 📊 VUE GANTT SIMPLIFIÉE (18 MOIS)
+
+```
+Mois │ 1  2  3 │ 4  5  6  7  8  9 │ 10 11 12 13 14 15 16 17 18
+─────┼─────────┼──────────────────┼────────────────────────────
+Phase 0: Quick Wins
+├─ Cadrage       [████]
+├─ Nettoyage          [████]
+└─ Dashboard DG           [████]
+                 └─ Livré ✓
+
+Phase 1: Architecture
+├─ Modélisation      [████]
+├─ Dashboard Commercial   [████]
+├─ Intégration SAGE           [██████]
+├─ Dashboard Pédagogie               [████]
+└─ Dashboard Finance                      [████]
+                                          └─ Livré ✓
+
+Phase 2: Maturité
+├─ Dashboard DG 360°                          [████]
+├─ Optimisation                                   [████]
+├─ Formation avancée                                  [████]
+├─ Industrialisation                                      [██████]
+├─ Documentation                                              [████]
+└─ Clôture                                                        [██]
+                                                                  └─ Fin ✓
+```
+
+---
+
+### 🎯 JALONS CLÉS (MILESTONES)
+
+| Jalon | Date | Critères de Validation |
+|-------|------|----------------------|
+| **M1** : Recrutement Chef Projet BI | Fin M1 | CDI signé, poste pourvu |
+| **M2** : Référentiel Unique validé | Fin M2 | 10 statuts approuvés COPIL |
+| **M3** : Dashboard Direction live | Fin M3 | DG utilise quotidiennement |
+| **M6** : Intégration SAGE opérationnelle | Fin M6 | Données finance automatiques |
+| **M9** : 4 Dashboards déployés | Fin M9 | Tous services équipés |
+| **M12** : Dashboard DG 360° complet | Fin M12 | Rentabilité analysable |
+| **M15** : Autonomie équipe interne | Fin M15 | Chef Projet autonome |
+| **M18** : Projet clôturé | Fin M18 | ROI mesuré, MCO actif |
+
+---
+
+## ANNEXE G : BENCHMARK CONCURRENTIEL
+
+### 🏫 COMPARAISON AVEC ÉCOLES SIMILAIRES
+
+#### MÉTHODOLOGIE
+
+**Échantillon :** 8 écoles supérieures privées comparables
+- Taille : 1500-4000 étudiants
+- Secteur : Informatique, Commerce, Management
+- Géographie : France métropolitaine
+
+**Critères évalués :**
+- Maturité BI (échelle 1-5)
+- Outils utilisés
+- Budget investi
+- ROI mesuré
+- Délai de déploiement
+
+**Sources :**
+- Interviews informelles (réseau professionnel)
+- Publications secteur (Educpros, L'Étudiant)
+- Salons professionnels
+- Consultants secteur éducation
+
+---
+
+#### RÉSULTATS BENCHMARK
+
+| École | Taille | Maturité BI | Outils | Budget | Délai | ROI |
+|-------|--------|-------------|--------|--------|-------|-----|
+| **ESILV** | 3200 | ⭐⭐⭐⭐ (Niveau 4) | Power BI + Salesforce | 280K€ | 14 mois | 2.8× |
+| **Epitech** | 2500 | ⭐⭐⭐ (Niveau 3) | Tableau + HubSpot | 320K€ | 12 mois | 2.1× |
+| **WebSchool** | 1800 | ⭐⭐⭐ (Niveau 3) | Power BI | 180K€ | 10 mois | 3.5× |
+| **EFREI** | 3800 | ⭐⭐⭐⭐ (Niveau 4) | QlikSense | 350K€ | 16 mois | 2.5× |
+| **ESIEE** | 3100 | ⭐⭐⭐ (Niveau 3) | Power BI | 240K€ | 13 mois | 2.9× |
+| **Sup de Vinci** | 2200 | ⭐⭐ (Niveau 2) | Excel + Access | 0€ | - | - |
+| **ESCP** | 6500 | ⭐⭐⭐⭐⭐ (Niveau 5) | SAP BI + Salesforce | 800K€ | 24 mois | 2.2× |
+| **Digital Campus** | 2000 | ⭐⭐ (Niveau 2) | Google Sheets | 0€ | - | - |
+| **LAFABRIQUE** (Avant) | 2800 | ⭐ (Niveau 1) | Excel éparpillés | 0€ | - | - |
+| **LAFABRIQUE** (Cible M18) | 2800 | ⭐⭐⭐⭐ (Niveau 4) | Power BI + M365 | 216K€ | 18 mois | 3.2× |
+
+---
+
+#### ANALYSE PAR CRITÈRE
+
+**1. MATURITÉ BI (Échelle 1-5)**
+
+**Niveau 1 (Archaïque) :**
+- Fichiers Excel éparpillés par service
+- Aucun dashboard centralisé
+- Décisions "au feeling"
+- **Écoles concernées :** LAFABRIQUE (avant), ~10% du secteur
+
+**Niveau 2 (Émergent) :**
+- Fichiers Excel structurés
+- Quelques tableaux de bord manuels
+- Base de données Access unifiée
+- **Écoles concernées :** Sup de Vinci, Digital Campus, ~25% du secteur
+
+**Niveau 3 (En développement) :**
+- Solution BI déployée (Power BI, Tableau)
+- 2-4 dashboards opérationnels
+- Direction équipée
+- **Écoles concernées :** Epitech, WebSchool, ESIEE, ~40% du secteur
+
+**Niveau 4 (Mature) :**
+- BI complète 360°
+- Tous les services équipés
+- Dashboards temps réel
+- Prédictif basique
+- **Écoles concernées :** ESILV, EFREI, LAFABRIQUE (cible), ~20% du secteur
+
+**Niveau 5 (Leader) :**
+- BI avancée avec IA/ML
+- Prédictif et prescriptif
+- Automatisation poussée
+- **Écoles concernées :** ESCP, HEC, ESSEC, ~5% du secteur (grandes écoles)
+
+---
+
+**2. BUDGET INVESTI**
+
+| Tranche Budget | Nombre Écoles | Maturité Moyenne |
+|----------------|---------------|------------------|
+| 0€ (Statu quo) | 2/8 | Niveau 1-2 |
+| 150-250K€ | 3/8 | Niveau 3 |
+| 250-350K€ | 2/8 | Niveau 4 |
+| >350K€ | 1/8 | Niveau 4-5 |
+
+**Moyenne secteur (Niveau 3-4) :** 260K€
+
+**LAFABRIQUE (216K€) :** 17% sous la moyenne → **Budget compétitif**
+
+---
+
+**3. DÉLAI DE DÉPLOIEMENT**
+
+| Délai | Nombre Écoles | Approche |
+|-------|---------------|----------|
+| 10-12 mois | 2/8 | Big Bang (risqué) |
+| 13-16 mois | 4/8 | Itératif (recommandé) |
+| >18 mois | 1/8 | Progressif (grandes écoles) |
+
+**Moyenne secteur :** 14 mois
+
+**LAFABRIQUE (18 mois) :** +29% vs moyenne → Approche **prudente et sécurisée**
+
+---
+
+**4. ROI MESURÉ**
+
+| ROI | Nombre Écoles | Commentaire |
+|-----|---------------|-------------|
+| 2.0-2.5× | 3/8 | ROI standard |
+| 2.5-3.0× | 3/8 | ROI bon |
+| 3.0-3.5× | 2/8 | ROI excellent |
+
+**Moyenne secteur :** 2.6×
+
+**LAFABRIQUE (3.2×) :** +23% vs moyenne → **ROI supérieur à la moyenne**
+
+---
+
+#### SYNTHÈSE COMPARATIVE
+
+| Critère | Moyenne Secteur | LAFABRIQUE Cible | Écart |
+|---------|-----------------|------------------|-------|
+| **Budget** | 260K€ | 216K€ | -17% ✓ |
+| **Délai** | 14 mois | 18 mois | +29% (approche prudente) |
+| **Maturité cible** | Niveau 3-4 | Niveau 4 | Aligné ✓ |
+| **ROI** | 2.6× | 3.2× | +23% ✓ |
+
+**Conclusion :** LAFABRIQUE propose un **projet compétitif** avec un ROI supérieur à la moyenne pour un budget inférieur.
+
+---
+
+### 🎯 POSITIONNEMENT CONCURRENTIEL
+
+**Forces du Projet LAFABRIQUE :**
+- ✅ Budget optimisé (utilisation M365 existant)
+- ✅ Approche prudente (risques maîtrisés)
+- ✅ ROI supérieur à la moyenne (+23%)
+- ✅ Formation intégrée (35K€ dédiés)
+
+**Points d'Attention :**
+- ⚠️ Délai plus long (+4 mois vs moyenne) → Mais justifié par approche itérative sécurisée
+- ⚠️ Dépendance qualité données initiale → Mais phase nettoyage prévue
+
+**Benchmark Cible : ESILV (école similaire)**
+- Taille comparable : 3200 vs 2800 étudiants
+- Budget : 280K€ vs 216K€ (-23%)
+- Délai : 14 mois vs 18 mois (+4 mois)
+- ROI : 2.8× vs 3.2× (+14%)
+- Outil : Power BI identique
+
+**Conclusion :** LAFABRIQUE peut **rattraper son retard** (Niveau 1 → Niveau 4) en 18 mois pour un investissement inférieur aux concurrents.
+
+---
+
+## ANNEXE H : GLOSSAIRE BI & ACRONYMES
+
+### 📚 TERMES BUSINESS INTELLIGENCE
+
+| Terme | Définition | Exemple LAFABRIQUE |
+|-------|------------|-------------------|
+| **BI (Business Intelligence)** | Ensemble de technologies et processus permettant de transformer les données brutes en informations exploitables pour la prise de décision | Projet LAFABRIQUE Data Pilot |
+| **Dashboard** | Tableau de bord visuel présentant des KPI et graphiques en temps réel | Dashboard Direction avec 12 KPI stratégiques |
+| **KPI (Key Performance Indicator)** | Indicateur clé de performance mesurant l'atteinte d'objectifs stratégiques | Taux de remplissage, Taux de conversion |
+| **ETL (Extract, Transform, Load)** | Processus d'extraction, transformation et chargement de données depuis les sources vers le système BI | Extraction SAGE → Transformation Power Query → Chargement Power BI |
+| **Data Warehouse** | Entrepôt de données centralisé optimisé pour l'analyse | Modèle en étoile LAFABRIQUE (bien que simplifié) |
+| **Star Schema (Modèle en Étoile)** | Architecture de données avec une table de faits centrale et des tables de dimensions | Fact_Inscriptions + Dim_Etudiant, Dim_Formation, etc. |
+| **Dimension** | Table contenant des attributs descriptifs (Qui, Quoi, Où, Quand) | Dim_Etudiant (Nom, Prénom, Campus) |
+| **Fait (Fact Table)** | Table contenant des mesures quantifiables et clés étrangères vers dimensions | Fact_Inscriptions (Nombre, CA, Date) |
+| **DAX (Data Analysis Expressions)** | Langage de formules utilisé dans Power BI pour créer des mesures et colonnes calculées | `Taux Conversion = DIVIDE([Inscrits], [Prospects])` |
+| **Power Query** | Outil ETL intégré à Power BI pour transformer les données | Nettoyage et dédoublonnage prospects |
+| **Data Gateway** | Passerelle permettant la connexion sécurisée entre Power BI cloud et sources de données on-premise | Connexion Power BI ↔ SAGE Comptabilité |
+| **RLS (Row-Level Security)** | Sécurité au niveau ligne permettant de filtrer les données selon l'utilisateur | Commerciaux voient uniquement leur portefeuille |
+| **Drill-Down** | Action de creuser dans les données pour obtenir plus de détails | Clic sur Formation A → Liste des étudiants inscrits |
+| **Drill-Through** | Navigation vers une page détaillée en cliquant sur un élément | Clic sur KPI Taux Placement → Page détails par formation |
+| **Slicing** | Filtrage des données selon une dimension spécifique | Filtrer par Campus = "Paris" |
+| **Measure (Mesure)** | Calcul dynamique évalué au moment de l'affichage | `CA Total = SUM(Fact_Inscriptions[CA])` |
+| **Calculated Column** | Colonne calculée ajoutée à une table, évaluée une fois lors du rafraîchissement | `Age = YEAR(TODAY()) - YEAR([DateNaissance])` |
+| **Refresh (Rafraîchissement)** | Mise à jour des données dans Power BI depuis les sources | Rafraîchissement quotidien à 6h du matin |
+| **Workspace** | Espace de travail dans Power BI Service contenant rapports et datasets | Workspace "LAFABRIQUE BI" |
+| **Dataset** | Modèle de données publié dans Power BI Service | Dataset "Données LAFABRIQUE" |
+| **Report** | Rapport visuel (.pbix) contenant dashboards et graphiques | Rapport "Dashboard Direction" |
+
+---
+
+### 🔤 ACRONYMES PROJET
+
+| Acronyme | Signification | Contexte LAFABRIQUE |
+|----------|---------------|---------------------|
+| **CA** | Chiffre d'Affaires | KPI financier principal (28M€/an) |
+| **CAC** | Customer Acquisition Cost (Coût d'Acquisition Client) | Coût marketing par étudiant recruté (cible <800€) |
+| **COPIL** | Comité de Pilotage | Instance décisionnelle bimensuelle (DG + Directeurs + Chef Projet BI) |
+| **COSU** | Comité Utilisateurs | Groupe de travail hebdomadaire (Référents métiers) |
+| **CRM** | Customer Relationship Management | Hors périmètre Phase 1 (gestion prospect simplifiée dans SharePoint) |
+| **DAF** | Directrice Administrative et Financière | Mme Claire Benoit (partie prenante clé) |
+| **DG** | Directeur Général | M. Laurent Dubois (Sponsor projet) |
+| **EBITDA** | Earnings Before Interest, Taxes, Depreciation, Amortization (Résultat d'exploitation) | Mesure de rentabilité (cible marge 35-40%) |
+| **ERP** | Enterprise Resource Planning | Hors périmètre (pas de remplacement SAGE prévu) |
+| **MCO** | Maintien en Condition Opérationnelle | Support post-projet (25K€/an) |
+| **MVP** | Minimum Viable Product | Dashboard Direction version initiale (Phase 0 M3) |
+| **NPS** | Net Promoter Score | Score de satisfaction (-100 à +100) |
+| **POC** | Proof of Concept | Test technique connexion SAGE (Phase 0) |
+| **RLS** | Row-Level Security | Sécurité données (commerciaux voient leur portefeuille uniquement) |
+| **ROI** | Return On Investment (Retour sur Investissement) | 3.2× (216K€ investi → 700K€/an retour) |
+| **RGAA** | Référentiel Général d'Amélioration de l'Accessibilité | Normes accessibilité (contraste 4.5:1 minimum) |
+| **TCO** | Total Cost of Ownership (Coût Total de Possession) | 216K€ sur 18 mois (tout inclus) |
+| **TJM** | Taux Journalier Moyen | Coût consultant (750€/jour) |
+
+---
+
+### 🎓 TERMES MÉTIER LAFABRIQUE
+
+| Terme | Définition | Valeurs Possibles |
+|-------|------------|-------------------|
+| **Statut Étudiant** | État administratif d'un étudiant dans le système | PROSPECT, PRÉINSCRIT, INSCRIT_INITIAL, INSCRIT_ALTERNANCE, EN_COURS, DIPLÔMÉ, ABANDON, EXCLU |
+| **Formation Initiale** | Formation classique à temps plein (hors alternance) | Exemple : BTS SIO Initial |
+| **Alternance** | Formation en contrat d'apprentissage ou professionnalisation | Exemple : Bachelor Dev Web Alternance |
+| **Taux de Remplissage** | % places occupées vs capacité totale | Cible : 80% |
+| **Taux de Transformation** | % prospects convertis en inscrits | Cible : 30% |
+| **Taux de Rétention** | % étudiants année N réinscrits en N+1 | Cible : 85% |
+| **Taux de Placement** | % alternants placés en entreprise sous 6 mois | Cible : 90% |
+| **Vacataire** | Intervenant externe payé à l'heure | 320 vacataires à LAFABRIQUE |
+| **Campus** | Site géographique de l'école | Paris (principal), Lyon, Bordeaux |
+| **Niveau** | Niveau de formation | Bac+2, Bac+3, Bac+4, Bac+5 |
+
+---
+
+### 📊 FORMULES DAX CLÉS
+
+| Formule | Code DAX | Explication |
+|---------|----------|-------------|
+| **Taux de Conversion** | `DIVIDE([Inscrits], [Prospects], 0)` | Divise inscrits par prospects (0 si division par zéro) |
+| **CA Total** | `SUM(Fact_Inscriptions[CA])` | Somme du chiffre d'affaires |
+| **Marge Nette** | `[CA Total] - [Coûts Totaux]` | Différence entre revenus et coûts |
+| **Taux de Marge** | `DIVIDE([Marge Nette], [CA Total], 0)` | Marge en % du CA |
+| **CA Année Précédente** | `CALCULATE([CA Total], SAMEPERIODLASTYEAR(Dim_Temps[Date]))` | CA de la même période l'année dernière |
+| **Évolution CA** | `DIVIDE([CA Total] - [CA N-1], [CA N-1], 0)` | Croissance du CA en % |
+| **Nombre Distinct Étudiants** | `DISTINCTCOUNT(Fact_Inscriptions[EtudiantKey])` | Compte les étudiants uniques |
+| **CA Cumulé** | `CALCULATE([CA Total], DATESYTD(Dim_Temps[Date]))` | Cumul du CA depuis début d'année |
+
+---
+
+## ✅ FIN DES ANNEXES TECHNIQUES
+
+**Document validé par :**
+- Chef de Projet BI
+- Consultant Expert BI
+- Équipe CPDIA/ESIS
+
+**Date de dernière mise à jour :** Décembre 2025
+
+**Version :** 1.0
+
+---
+
+**Contact Support :**
+- Email : bi-support@lafabrique.fr
+- Teams : Canal "Projet BI LAFABRIQUE"
+- Tel : +33 1 XX XX XX XX
+
+---
+
+*Ce document est confidentiel et destiné exclusivement au Comité de Direction de LAFABRIQUE.*# PARTIE 4 - ANNEXES TECHNIQUES
+
+**Projet LAFABRIQUE Data Pilot**  
+**Support complémentaire au pitch CODIR**  
+**Équipe : Celia SAIDANI, Aya ELMOHDI, Cecilia MENDIL, Gayth MEJAI, Mohamed Ryad SMAILI**  
+**Date : Décembre 2025**
+
+---
+
+## 📋 TABLE DES MATIÈRES
+
+**ANNEXE A** : Détail des 37 KPI par Domaine  
+**ANNEXE B** : Budget Détaillé Ligne par Ligne  
+**ANNEXE C** : Matrice des Risques Complète  
+**ANNEXE D** : Architecture Technique Détaillée  
+**ANNEXE E** : Plan de Formation Détaillé  
+**ANNEXE F** : Calendrier Détaillé (Diagramme de Gantt)  
+**ANNEXE G** : Benchmark Concurrentiel  
+**ANNEXE H** : Glossaire BI & Acronymes  
+
+---
+
+## ANNEXE A : DÉTAIL DES 37 KPI PAR DOMAINE
+
+### 📊 DOMAINE 1 : PILOTAGE STRATÉGIQUE (Direction Générale)
+
+#### KPI 1.1 : Taux de Remplissage Global
+
+| Élément | Description |
+|---------|-------------|
+| **Nom** | Taux de Remplissage Global |
+| **Définition** | Pourcentage des places disponibles occupées par des étudiants inscrits |
+| **Formule** | (Nombre d'inscrits / Capacité totale) × 100 |
+| **Unité** | % |
+| **Source** | Scolarité (base Access) |
+| **Fréquence MAJ** | Quotidienne |
+| **Granularité** | Global, par Campus, par Formation, par Niveau |
+| **Cible** | 80% |
+| **Seuils d'alerte** | 🟢 >75% \| 🟡 60-75% \| 🔴 <60% |
+| **Propriétaire** | Directeur Général |
+| **Utilisateurs** | DG, Dir. Commercial, Dir. Scolarité |
+
+---
+
+#### KPI 1.2 : Taux de Transformation Prospects → Inscrits
+
+| Élément | Description |
+|---------|-------------|
+| **Nom** | Taux de Transformation (Conversion) |
+| **Définition** | Pourcentage de prospects qui deviennent inscrits définitifs |
+| **Formule** | (Nombre d'inscrits / Nombre de prospects) × 100 |
+| **Unité** | % |
+| **Source** | Commercial (fichiers Excel consolidés) |
+| **Fréquence MAJ** | Hebdomadaire |
+| **Granularité** | Par Campagne, par Canal, par Formation, par Commercial |
+| **Cible** | 30% |
+| **Seuils d'alerte** | 🟢 >28% \| 🟡 22-28% \| 🔴 <22% |
+| **Propriétaire** | Directrice Commerciale |
+| **Utilisateurs** | DG, Dir. Commercial, Équipe Commerciale |
+
+---
+
+#### KPI 1.3 : Chiffre d'Affaires Réalisé vs Budget
+
+| Élément | Description |
+|---------|-------------|
+| **Nom** | CA Réalisé vs Budget |
+| **Définition** | Comparaison du CA facturé avec le budget prévisionnel |
+| **Formule** | CA Réalisé (cumul) et Écart = (CA Réalisé - Budget) / Budget × 100 |
+| **Unité** | € et % |
+| **Source** | SAGE Comptabilité |
+| **Fréquence MAJ** | Quotidienne |
+| **Granularité** | Par Mois, par Formation, par Campus |
+| **Cible** | 100% du budget (28M€/an) |
+| **Seuils d'alerte** | 🟢 >95% \| 🟡 90-95% \| 🔴 <90% |
+| **Propriétaire** | DAF |
+| **Utilisateurs** | DG, DAF, Contrôleur de Gestion |
+
+---
+
+#### KPI 1.4 : Taux de Rétention N → N+1
+
+| Élément | Description |
+|---------|-------------|
+| **Nom** | Taux de Rétention (Poursuite d'études) |
+| **Définition** | Pourcentage d'étudiants inscrits en année N qui se réinscrivent en N+1 |
+| **Formule** | (Étudiants année N réinscrits en N+1 / Étudiants année N) × 100 |
+| **Unité** | % |
+| **Source** | Scolarité |
+| **Fréquence MAJ** | Annuelle (calculé en Septembre) |
+| **Granularité** | Par Formation, par Niveau, par Campus |
+| **Cible** | 85% |
+| **Seuils d'alerte** | 🟢 >80% \| 🟡 70-80% \| 🔴 <70% |
+| **Propriétaire** | Directeur Scolarité |
+| **Utilisateurs** | DG, Dir. Pédagogique, Dir. Scolarité |
+
+---
+
+#### KPI 1.5 : Taux de Placement Alternance (6 mois)
+
+| Élément | Description |
+|---------|-------------|
+| **Nom** | Taux de Placement Alternance |
+| **Définition** | Pourcentage d'alternants ayant trouvé une entreprise dans les 6 mois |
+| **Formule** | (Alternants placés sous 6 mois / Total alternants) × 100 |
+| **Unité** | % |
+| **Source** | Service Stages/Alternance (fichier Excel) |
+| **Fréquence MAJ** | Mensuelle |
+| **Granularité** | Par Formation, par Campus |
+| **Cible** | 90% |
+| **Seuils d'alerte** | 🟢 >85% \| 🟡 75-85% \| 🔴 <75% |
+| **Propriétaire** | Responsable Stages/Alternance |
+| **Utilisateurs** | DG, Dir. Stages, Dir. Pédagogique |
+
+---
+
+#### KPI 1.6 : Satisfaction Globale (NPS Étudiants)
+
+| Élément | Description |
+|---------|-------------|
+| **Nom** | Net Promoter Score (NPS) Étudiants |
+| **Définition** | Score de satisfaction global des étudiants (échelle -100 à +100) |
+| **Formule** | % Promoteurs (9-10/10) - % Détracteurs (0-6/10) |
+| **Unité** | Score (-100 à +100) |
+| **Source** | Évaluations Microsoft Forms (post-semestre) |
+| **Fréquence MAJ** | Semestrielle |
+| **Granularité** | Par Formation, par Campus, par Promotion |
+| **Cible** | NPS > +40 |
+| **Seuils d'alerte** | 🟢 >+30 \| 🟡 +10 à +30 \| 🔴 <+10 |
+| **Propriétaire** | Service Qualité |
+| **Utilisateurs** | DG, Dir. Qualité, Dir. Pédagogique |
+
+---
+
+#### KPI 1.7 : Taux d'Abandon (Dropout)
+
+| Élément | Description |
+|---------|-------------|
+| **Nom** | Taux d'Abandon |
+| **Définition** | Pourcentage d'étudiants inscrits qui abandonnent en cours d'année |
+| **Formule** | (Nombre d'abandons / Inscrits en début d'année) × 100 |
+| **Unité** | % |
+| **Source** | Scolarité |
+| **Fréquence MAJ** | Mensuelle |
+| **Granularité** | Par Formation, par Niveau, par Motif d'abandon |
+| **Cible** | <10% |
+| **Seuils d'alerte** | 🟢 <8% \| 🟡 8-12% \| 🔴 >12% |
+| **Propriétaire** | Directeur Scolarité |
+| **Utilisateurs** | DG, Dir. Scolarité, Dir. Pédagogique |
+
+---
+
+### 📞 DOMAINE 2 : PERFORMANCE COMMERCIALE
+
+#### KPI 2.1 : Nombre de Leads par Source
+
+| Élément | Description |
+|---------|-------------|
+| **Nom** | Leads par Source/Canal |
+| **Définition** | Nombre de prospects qualifiés générés par chaque canal marketing |
+| **Formule** | Count(Prospects) GROUP BY Canal |
+| **Unité** | Nombre |
+| **Source** | Commercial + Marketing (fichiers Excel) |
+| **Fréquence MAJ** | Quotidienne |
+| **Granularité** | Par Canal (Web, Salon, Partenariat, Email, etc.) |
+| **Cible** | Variable selon canal (ex: Web 200/mois) |
+| **Seuils d'alerte** | Comparaison vs mois précédent |
+| **Propriétaire** | Directrice Commerciale |
+| **Utilisateurs** | Dir. Commercial, Dir. Marketing |
+
+---
+
+#### KPI 2.2 : Coût d'Acquisition par Étudiant (CAC)
+
+| Élément | Description |
+|---------|-------------|
+| **Nom** | Customer Acquisition Cost (CAC) |
+| **Définition** | Coût marketing et commercial pour recruter un étudiant |
+| **Formule** | (Budget Marketing + Salaires équipe commerciale) / Nombre d'inscrits |
+| **Unité** | € par étudiant |
+| **Source** | SAGE (budget marketing) + Commercial (inscrits) |
+| **Fréquence MAJ** | Mensuelle |
+| **Granularité** | Par Canal, par Formation |
+| **Cible** | <800€ par étudiant |
+| **Seuils d'alerte** | 🟢 <750€ \| 🟡 750-900€ \| 🔴 >900€ |
+| **Propriétaire** | Directrice Commerciale |
+| **Utilisateurs** | Dir. Commercial, DAF, DG |
+
+---
+
+#### KPI 2.3 : Délai Moyen de Conversion
+
+| Élément | Description |
+|---------|-------------|
+| **Nom** | Délai Moyen Prospect → Inscrit |
+| **Définition** | Nombre moyen de jours entre premier contact et inscription définitive |
+| **Formule** | AVG(Date Inscription - Date Premier Contact) |
+| **Unité** | Jours |
+| **Source** | Commercial |
+| **Fréquence MAJ** | Hebdomadaire |
+| **Granularité** | Par Formation, par Commercial, par Canal |
+| **Cible** | <45 jours |
+| **Seuils d'alerte** | 🟢 <40j \| 🟡 40-55j \| 🔴 >55j |
+| **Propriétaire** | Directrice Commerciale |
+| **Utilisateurs** | Dir. Commercial, Équipe Commerciale |
+
+---
+
+#### KPI 2.4 : Taux de Réponse aux Relances
+
+| Élément | Description |
+|---------|-------------|
+| **Nom** | Taux de Réponse Relances |
+| **Définition** | Pourcentage de prospects qui répondent aux relances commerciales |
+| **Formule** | (Réponses / Relances envoyées) × 100 |
+| **Unité** | % |
+| **Source** | Commercial (CRM simplifié dans SharePoint) |
+| **Fréquence MAJ** | Hebdomadaire |
+| **Granularité** | Par Commercial, par Type de relance (Email/Tel/SMS) |
+| **Cible** | >25% |
+| **Seuils d'alerte** | 🟢 >22% \| 🟡 15-22% \| 🔴 <15% |
+| **Propriétaire** | Directrice Commerciale |
+| **Utilisateurs** | Dir. Commercial, Équipe Commerciale |
+
+---
+
+#### KPI 2.5 : Pipeline Commercial (Valeur)
+
+| Élément | Description |
+|---------|-------------|
+| **Nom** | Valeur du Pipeline Commercial |
+| **Définition** | Valeur totale potentielle des prospects en cours (CA prévisionnel) |
+| **Formule** | SUM(Prospects × Frais de scolarité × Probabilité de conversion) |
+| **Unité** | € |
+| **Source** | Commercial |
+| **Fréquence MAJ** | Temps réel |
+| **Granularité** | Par Étape du funnel, par Formation, par Commercial |
+| **Cible** | 3× objectif mensuel d'inscriptions |
+| **Seuils d'alerte** | 🟢 >2.5× \| 🟡 1.5-2.5× \| 🔴 <1.5× |
+| **Propriétaire** | Directrice Commerciale |
+| **Utilisateurs** | Dir. Commercial, DG |
+
+---
+
+### 🎓 DOMAINE 3 : GESTION DE LA SCOLARITÉ
+
+#### KPI 3.1 : Nombre d'Inscriptions (par statut)
+
+| Élément | Description |
+|---------|-------------|
+| **Nom** | Inscriptions par Statut |
+| **Définition** | Répartition des étudiants selon leur statut d'inscription |
+| **Formule** | Count(Étudiants) GROUP BY Statut |
+| **Unité** | Nombre |
+| **Source** | Scolarité |
+| **Fréquence MAJ** | Quotidienne |
+| **Granularité** | Par Statut (Préinscrit, Inscrit Initial, Inscrit Alternance, etc.) |
+| **Cible** | Selon capacité (2800 étudiants) |
+| **Seuils d'alerte** | Comparaison vs objectif |
+| **Propriétaire** | Directeur Scolarité |
+| **Utilisateurs** | Dir. Scolarité, DG, DAF |
+
+---
+
+#### KPI 3.2 : Taux de Complétion des Dossiers
+
+| Élément | Description |
+|---------|-------------|
+| **Nom** | Taux de Complétion Dossiers Administratifs |
+| **Définition** | Pourcentage de dossiers étudiants complets (tous documents fournis) |
+| **Formule** | (Dossiers complets / Total dossiers) × 100 |
+| **Unité** | % |
+| **Source** | Scolarité |
+| **Fréquence MAJ** | Hebdomadaire |
+| **Granularité** | Par Promotion, par Campus |
+| **Cible** | 100% au 30/09 |
+| **Seuils d'alerte** | 🟢 >95% \| 🟡 85-95% \| 🔴 <85% |
+| **Propriétaire** | Directeur Scolarité |
+| **Utilisateurs** | Dir. Scolarité, Équipe Administrative |
+
+---
+
+#### KPI 3.3 : Taux d'Absentéisme
+
+| Élément | Description |
+|---------|-------------|
+| **Nom** | Taux d'Absentéisme |
+| **Définition** | Pourcentage d'absences par rapport au total d'heures de cours |
+| **Formule** | (Heures d'absence / Heures totales prévues) × 100 |
+| **Unité** | % |
+| **Source** | Pédagogie (émargements) |
+| **Fréquence MAJ** | Hebdomadaire |
+| **Granularité** | Par Étudiant, par Formation, par Cours |
+| **Cible** | <8% |
+| **Seuils d'alerte** | 🟢 <6% \| 🟡 6-10% \| 🔴 >10% |
+| **Propriétaire** | Directeur Pédagogique |
+| **Utilisateurs** | Dir. Pédagogique, Dir. Scolarité |
+
+---
+
+#### KPI 3.4 : Délai Moyen de Traitement Demandes
+
+| Élément | Description |
+|---------|-------------|
+| **Nom** | Délai Traitement Demandes Administratives |
+| **Définition** | Temps moyen entre demande étudiant et traitement complet |
+| **Formule** | AVG(Date Traitement - Date Demande) |
+| **Unité** | Jours |
+| **Source** | Scolarité (via Microsoft Forms + SharePoint) |
+| **Fréquence MAJ** | Hebdomadaire |
+| **Granularité** | Par Type de demande (Attestation, Relevé de notes, etc.) |
+| **Cible** | <5 jours |
+| **Seuils d'alerte** | 🟢 <4j \| 🟡 4-7j \| 🔴 >7j |
+| **Propriétaire** | Directeur Scolarité |
+| **Utilisateurs** | Dir. Scolarité, Équipe Administrative |
+
+---
+
+### 📚 DOMAINE 4 : QUALITÉ PÉDAGOGIQUE
+
+#### KPI 4.1 : Taux de Réalisation des Heures Prévues
+
+| Élément | Description |
+|---------|-------------|
+| **Nom** | Taux de Réalisation Heures |
+| **Définition** | Pourcentage d'heures de cours effectivement réalisées vs planifiées |
+| **Formule** | (Heures réalisées / Heures prévues) × 100 |
+| **Unité** | % |
+| **Source** | Pédagogie (planning + émargements) |
+| **Fréquence MAJ** | Hebdomadaire |
+| **Granularité** | Par Formation, par Intervenant, par Campus |
+| **Cible** | >95% |
+| **Seuils d'alerte** | 🟢 >93% \| 🟡 88-93% \| 🔴 <88% |
+| **Propriétaire** | Directeur Pédagogique |
+| **Utilisateurs** | Dir. Pédagogique, DAF (paie vacataires) |
+
+---
+
+#### KPI 4.2 : Nombre de Cours Annulés
+
+| Élément | Description |
+|---------|-------------|
+| **Nom** | Cours Annulés |
+| **Définition** | Nombre de cours annulés et motifs d'annulation |
+| **Formule** | Count(Cours) WHERE Statut = 'Annulé' GROUP BY Motif |
+| **Unité** | Nombre |
+| **Source** | Pédagogie |
+| **Fréquence MAJ** | Quotidienne |
+| **Granularité** | Par Motif (Intervenant absent, Salle indispo, etc.), par Formation |
+| **Cible** | <5 cours/mois |
+| **Seuils d'alerte** | 🟢 <3/mois \| 🟡 3-7/mois \| 🔴 >7/mois |
+| **Propriétaire** | Directeur Pédagogique |
+| **Utilisateurs** | Dir. Pédagogique, Dir. Scolarité |
+
+---
+
+#### KPI 4.3 : Note Moyenne des Intervenants
+
+| Élément | Description |
+|---------|-------------|
+| **Nom** | Évaluation Intervenants par Étudiants |
+| **Définition** | Note moyenne donnée aux intervenants par les étudiants (échelle /5) |
+| **Formule** | AVG(Note) par Intervenant |
+| **Unité** | Note /5 |
+| **Source** | Évaluations Microsoft Forms (post-cours) |
+| **Fréquence MAJ** | Mensuelle (consolidation semestrielle) |
+| **Granularité** | Par Intervenant, par Formation, par Type de cours |
+| **Cible** | >4.2/5 |
+| **Seuils d'alerte** | 🟢 >4.0 \| 🟡 3.5-4.0 \| 🔴 <3.5 |
+| **Propriétaire** | Directeur Pédagogique |
+| **Utilisateurs** | Dir. Pédagogique, Service Qualité |
+
+---
+
+#### KPI 4.4 : Taux d'Occupation des Salles
+
+| Élément | Description |
+|---------|-------------|
+| **Nom** | Taux d'Occupation Salles de Cours |
+| **Définition** | Pourcentage de créneaux horaires où les salles sont occupées |
+| **Formule** | (Créneaux occupés / Total créneaux disponibles) × 100 |
+| **Unité** | % |
+| **Source** | Pédagogie (planning) |
+| **Fréquence MAJ** | Hebdomadaire |
+| **Granularité** | Par Salle, par Campus, par Créneau horaire |
+| **Cible** | 70-85% (ni trop bas, ni surchargé) |
+| **Seuils d'alerte** | 🟢 65-85% \| 🟡 50-65% ou >85% \| 🔴 <50% ou >95% |
+| **Propriétaire** | Directeur Pédagogique |
+| **Utilisateurs** | Dir. Pédagogique, Dir. Administratif |
+
+---
+
+#### KPI 4.5 : Taux de Succès aux Examens
+
+| Élément | Description |
+|---------|-------------|
+| **Nom** | Taux de Réussite Examens |
+| **Définition** | Pourcentage d'étudiants ayant validé leurs examens (note ≥10/20) |
+| **Formule** | (Étudiants ayant validé / Total étudiants passant l'examen) × 100 |
+| **Unité** | % |
+| **Source** | Pédagogie (résultats d'examens) |
+| **Fréquence MAJ** | Semestrielle |
+| **Granularité** | Par Formation, par Matière, par Promotion |
+| **Cible** | >80% |
+| **Seuils d'alerte** | 🟢 >75% \| 🟡 65-75% \| 🔴 <65% |
+| **Propriétaire** | Directeur Pédagogique |
+| **Utilisateurs** | Dir. Pédagogique, Service Qualité, DG |
+
+---
+
+### 🏢 DOMAINE 5 : STAGES ET ALTERNANCE
+
+#### KPI 5.1 : Nombre d'Alternants Placés
+
+| Élément | Description |
+|---------|-------------|
+| **Nom** | Alternants Placés |
+| **Définition** | Nombre d'alternants ayant signé un contrat d'alternance |
+| **Formule** | Count(Alternants) WHERE Statut = 'Placé' |
+| **Unité** | Nombre |
+| **Source** | Service Stages/Alternance |
+| **Fréquence MAJ** | Hebdomadaire |
+| **Granularité** | Par Formation, par Campus, par Période (mois) |
+| **Cible** | Variable selon promotion (ex: 250/an) |
+| **Seuils d'alerte** | Comparaison vs objectif mensuel |
+| **Propriétaire** | Responsable Stages/Alternance |
+| **Utilisateurs** | Dir. Stages, DG, Dir. Pédagogique |
+
+---
+
+#### KPI 5.2 : Délai Moyen de Placement
+
+| Élément | Description |
+|---------|-------------|
+| **Nom** | Délai Moyen de Placement Alternance |
+| **Définition** | Nombre moyen de jours entre début de recherche et signature contrat |
+| **Formule** | AVG(Date Signature - Date Début Recherche) |
+| **Unité** | Jours |
+| **Source** | Service Stages/Alternance |
+| **Fréquence MAJ** | Mensuelle |
+| **Granularité** | Par Formation, par Campus |
+| **Cible** | <90 jours (3 mois) |
+| **Seuils d'alerte** | 🟢 <80j \| 🟡 80-120j \| 🔴 >120j |
+| **Propriétaire** | Responsable Stages/Alternance |
+| **Utilisateurs** | Dir. Stages, Dir. Pédagogique |
+
+---
+
+#### KPI 5.3 : Satisfaction Entreprises Partenaires
+
+| Élément | Description |
+|---------|-------------|
+| **Nom** | NPS Entreprises |
+| **Définition** | Score de satisfaction des entreprises (tuteurs) sur les alternants |
+| **Formule** | % Promoteurs - % Détracteurs (échelle NPS) |
+| **Unité** | Score (-100 à +100) |
+| **Source** | Évaluations Microsoft Forms (mi-parcours + fin alternance) |
+| **Fréquence MAJ** | Semestrielle |
+| **Granularité** | Par Formation, par Étudiant |
+| **Cible** | NPS > +30 |
+| **Seuils d'alerte** | 🟢 >+20 \| 🟡 0 à +20 \| 🔴 <0 |
+| **Propriétaire** | Responsable Stages/Alternance |
+| **Utilisateurs** | Dir. Stages, Dir. Pédagogique, Service Qualité |
+
+---
+
+#### KPI 5.4 : Nombre d'Incidents Rapportés
+
+| Élément | Description |
+|---------|-------------|
+| **Nom** | Incidents Alternance |
+| **Définition** | Nombre d'incidents signalés (absences, conflits, ruptures) |
+| **Formule** | Count(Incidents) GROUP BY Type |
+| **Unité** | Nombre |
+| **Source** | Service Stages/Alternance (via Forms + SharePoint) |
+| **Fréquence MAJ** | Temps réel |
+| **Granularité** | Par Type d'incident, par Formation, par Entreprise |
+| **Cible** | <5% des alternants concernés |
+| **Seuils d'alerte** | 🟢 <3% \| 🟡 3-7% \| 🔴 >7% |
+| **Propriétaire** | Responsable Stages/Alternance |
+| **Utilisateurs** | Dir. Stages, Dir. Scolarité |
+
+---
+
+### 💰 DOMAINE 6 : GESTION FINANCIÈRE
+
+#### KPI 6.1 : Chiffre d'Affaires par Formation
+
+| Élément | Description |
+|---------|-------------|
+| **Nom** | CA par Formation |
+| **Définition** | Revenus générés par chaque formation (frais de scolarité) |
+| **Formule** | SUM(Inscrits × Frais de scolarité) |
+| **Unité** | € |
+| **Source** | SAGE Comptabilité + Scolarité |
+| **Fréquence MAJ** | Quotidienne |
+| **Granularité** | Par Formation, par Campus, par Mois |
+| **Cible** | Selon budget (ex: Dev Web 450K€/an) |
+| **Seuils d'alerte** | Comparaison vs budget (variance >10%) |
+| **Propriétaire** | DAF |
+| **Utilisateurs** | DAF, DG, Contrôleur de Gestion |
+
+---
+
+#### KPI 6.2 : Marge Nette par Formation
+
+| Élément | Description |
+|---------|-------------|
+| **Nom** | Marge Nette (EBITDA) par Formation |
+| **Définition** | Rentabilité de chaque formation (CA - Coûts directs) |
+| **Formule** | CA - (Coûts intervenants + Coûts structure alloués) |
+| **Unité** | € et % du CA |
+| **Source** | SAGE + Pédagogie (heures intervenants) |
+| **Fréquence MAJ** | Mensuelle |
+| **Granularité** | Par Formation, par Campus |
+| **Cible** | Marge >30% |
+| **Seuils d'alerte** | 🟢 >35% \| 🟡 25-35% \| 🔴 <25% |
+| **Propriétaire** | DAF |
+| **Utilisateurs** | DAF, DG |
+
+---
+
+#### KPI 6.3 : Taux de Recouvrement
+
+| Élément | Description |
+|---------|-------------|
+| **Nom** | Taux de Recouvrement Frais de Scolarité |
+| **Définition** | Pourcentage des frais de scolarité effectivement encaissés |
+| **Formule** | (CA encaissé / CA facturé) × 100 |
+| **Unité** | % |
+| **Source** | SAGE Comptabilité |
+| **Fréquence MAJ** | Quotidienne |
+| **Granularité** | Global, par Formation, par Campus |
+| **Cible** | >95% |
+| **Seuils d'alerte** | 🟢 >93% \| 🟡 88-93% \| 🔴 <88% |
+| **Propriétaire** | DAF |
+| **Utilisateurs** | DAF, Contrôleur de Gestion |
+
+---
+
+#### KPI 6.4 : Montant des Impayés
+
+| Élément | Description |
+|---------|-------------|
+| **Nom** | Impayés Frais de Scolarité |
+| **Définition** | Montant total des frais de scolarité facturés mais non encaissés |
+| **Formule** | SUM(Factures) WHERE Statut = 'Impayée' |
+| **Unité** | € |
+| **Source** | SAGE Comptabilité |
+| **Fréquence MAJ** | Quotidienne |
+| **Granularité** | Par Ancienneté (< 30j, 30-60j, >60j), par Formation |
+| **Cible** | <100K€ |
+| **Seuils d'alerte** | 🟢 <80K€ \| 🟡 80-120K€ \| 🔴 >120K€ |
+| **Propriétaire** | DAF |
+| **Utilisateurs** | DAF, Contrôleur de Gestion, Service Recouvrement |
+
+---
+
+#### KPI 6.5 : Coût par Étudiant
+
+| Élément | Description |
+|---------|-------------|
+| **Nom** | Coût Complet par Étudiant |
+| **Définition** | Coût total (direct + indirect) divisé par nombre d'étudiants |
+| **Formule** | (Total Charges Exploitation) / Nombre d'étudiants |
+| **Unité** | € par étudiant |
+| **Source** | SAGE + Scolarité |
+| **Fréquence MAJ** | Mensuelle |
+| **Granularité** | Par Formation, par Campus |
+| **Cible** | Variable selon formation (ex: 8000€/étudiant en moyenne) |
+| **Seuils d'alerte** | Comparaison vs budget |
+| **Propriétaire** | DAF |
+| **Utilisateurs** | DAF, DG, Contrôleur de Gestion |
+
+---
+
+#### KPI 6.6 : Budget vs Réalisé (Écart)
+
+| Élément | Description |
+|---------|-------------|
+| **Nom** | Écart Budgétaire |
+| **Définition** | Différence entre budget prévisionnel et dépenses réelles |
+| **Formule** | (Dépenses Réelles - Budget) / Budget × 100 |
+| **Unité** | € et % |
+| **Source** | SAGE Comptabilité |
+| **Fréquence MAJ** | Mensuelle |
+| **Granularité** | Par Nature de dépense, par Centre de coût, par Campus |
+| **Cible** | Écart entre -5% et +5% |
+| **Seuils d'alerte** | 🟢 -3% à +3% \| 🟡 -5% à -3% ou +3% à +5% \| 🔴 <-5% ou >+5% |
+| **Propriétaire** | DAF |
+| **Utilisateurs** | DAF, DG, Contrôleur de Gestion |
+
+---
+
+#### KPI 6.7 : Heures Vacataires Payées
+
+| Élément | Description |
+|---------|-------------|
+| **Nom** | Coût Vacataires |
+| **Définition** | Montant total des heures de vacations payées aux intervenants |
+| **Formule** | SUM(Heures × Taux horaire) |
+| **Unité** | € |
+| **Source** | SAGE (paie) + Pédagogie (heures réalisées) |
+| **Fréquence MAJ** | Mensuelle |
+| **Granularité** | Par Intervenant, par Formation, par Campus |
+| **Cible** | Selon budget (ex: 3.5M€/an) |
+| **Seuils d'alerte** | Comparaison vs budget mensuel |
+| **Propriétaire** | DAF |
+| **Utilisateurs** | DAF, Dir. Pédagogique |
+
+---
+
+## ANNEXE B : BUDGET DÉTAILLÉ LIGNE PAR LIGNE
+
+### 💰 STRUCTURE DU BUDGET (216 000 € TTC - 18 MOIS)
+
+#### POSTE 1 : LICENCES & OUTILS (11 000 €)
+
+| Ligne | Description | Quantité | Prix Unit. | Total | Commentaire |
+|-------|-------------|----------|------------|-------|-------------|
+| 1.1 | Power BI Pro (utilisateurs) | 50 licences × 18 mois | 8.40€/user/mois | 7 560 € | Inclus partiellement dans M365 (coût marginal) |
+| 1.2 | Power BI Premium (si besoin Phase 2) | 0 | - | 0 € | Non prévu (Pro suffit) |
+| 1.3 | SharePoint stockage additionnel | 200 GB × 18 mois | 0.20€/GB/mois | 720 € | Au-delà de la capacité M365 de base |
+| 1.4 | Microsoft Forms Premium | 10 comptes × 18 mois | 4€/compte/mois | 720 € | Formulaires avancés |
+| 1.5 | Data Gateway (serveur virtuel) | 1 VM × 18 mois | 50€/mois | 900 € | Serveur dédié connexion SAGE |
+| 1.6 | Licences M365 supplémentaires | 5 comptes × 18 mois | 20€/compte/mois | 1 800 € | Nouveaux collaborateurs projet |
+| 1.7 | Outils collaboration (Miro, Figma) | Forfait équipe projet | - | 300 € | Conception maquettes |
+| **TOTAL POSTE 1** | | | | **11 000 €** | |
+
+---
+
+#### POSTE 2 : SERVICES EXTERNES CONSULTING (95 000 €)
+
+| Ligne | Description | Jours | TJM | Total | Phase |
+|-------|-------------|-------|-----|-------|-------|
+| 2.1 | Diagnostic approfondi & cadrage | 20 j | 750 € | 15 000 € | Phase 0 |
+| 2.2 | Analyse besoins détaillée (interviews) | 10 j | 750 € | 7 500 € | Phase 0 |
+| 2.3 | Nettoyage données (prospection + étudiants) | 15 j | 650 € | 9 750 € | Phase 0 |
+| 2.4 | Modélisation données (Livrable 3 - Kimball) | 25 j | 750 € | 18 750 € | Phase 1 |
+| 2.5 | Développement Dashboard Direction (MVP) | 8 j | 750 € | 6 000 € | Phase 0 |
+| 2.6 | Développement Dashboard Commercial | 10 j | 750 € | 7 500 € | Phase 1 |
+| 2.7 | Développement Dashboard Pédagogie | 8 j | 750 € | 6 000 € | Phase 1 |
+| 2.8 | Développement Dashboard Finance | 10 j | 750 € | 7 500 € | Phase 1 |
+| 2.9 | Intégration SAGE (Data Gateway + ETL) | 20 j | 750 € | 15 000 € | Phase 1 |
+| 2.10 | Recette & Tests utilisateurs | 10 j | 650 € | 6 500 € | Phase 1-2 |
+| 2.11 | Documentation technique complète | 7 j | 650 € | 4 550 € | Phase 2 |
+| 2.12 | Support Phase 2 (industrialisation) | 5 j | 750 € | 3 750 € | Phase 2 |
+| **TOTAL POSTE 2** | **148 jours** | | | **107 800 €** | |
+| **Négociation forfait -12%** | | | | **-12 800 €** | Engagement 18 mois |
+| **NET POSTE 2** | | | | **95 000 €** | |
+
+---
+
+#### POSTE 3 : RESSOURCES INTERNES (111 300 €)
+
+| Ligne | Description | Durée | Coût Mensuel | Total | Commentaire |
+|-------|-------------|-------|--------------|-------|-------------|
+| 3.1 | **Chef de Projet BI (CDI - recrutement)** | 18 mois | 4 583 € | 82 500 € | Salaire chargé 55K€/an |
+| 3.2 | Temps référents métiers (COSU) | 18 mois | 1 600 € | 28 800 € | 4 réf. × 2h/sem × 50€/h |
+| **TOTAL POSTE 3** | | | | **111 300 €** | |
+
+---
+
+#### POSTE 4 : FORMATION & CHANGE MANAGEMENT (35 000 €)
+
+| Ligne | Description | Public | Durée | Prix | Total |
+|-------|-------------|--------|-------|------|-------|
+| 4.1 | Formation Power BI niveau 1 (Chef Projet) | 1 pers. | 5 jours | 2 500 € | 2 500 € |
+| 4.2 | Formation Power BI niveau 2 (Chef Projet) | 1 pers. | 5 jours | 2 500 € | 2 500 € |
+| 4.3 | Formation Power Users (équipe DAF) | 1 pers. | 5 jours | 2 500 € | 2 500 € |
+| 4.4 | Formation utilisateurs Direction | 4 pers. | 2h | 200 €/pers. | 800 € |
+| 4.5 | Formation utilisateurs Commercial | 9 pers. | 1 jour | 500 €/pers. | 4 500 € |
+| 4.6 | Formation utilisateurs Pédagogie | 6 pers. | 1 jour | 500 €/pers. | 3 000 € |
+| 4.7 | Formation utilisateurs Finance | 5 pers. | 1 jour | 500 €/pers. | 2 500 € |
+| 4.8 | Formation utilisateurs Scolarité | 8 pers. | 1 jour | 500 €/pers. | 4 000 € |
+| 4.9 | Consultant Change Management | 20 jours | 750 € | 15 000 € | Accompagnement adoption |
+| 4.10 | Supports pédagogiques (vidéos, docs) | Forfait | - | 3 000 € | Production interne |
+| 4.11 | Événements projet (lancement, célébrations) | 3 événements | 500 €/evt | 1 500 € | Team building |
+| 4.12 | Certifications Microsoft (PL-300) | 2 pers. | Gratuit en ligne | 0 € | Chef Projet + DAF |
+| **TOTAL POSTE 4** | | | | **41 800 €** | |
+| **Optimisation (mutualisation sessions)** | | | | **-6 800 €** | |
+| **NET POSTE 4** | | | | **35 000 €** | |
+
+---
+
+#### POSTE 5 : INFRASTRUCTURE & TECHNIQUE (2 000 €)
+
+| Ligne | Description | Durée | Prix | Total |
+|-------|-------------|-------|------|-------|
+| 5.1 | Serveur virtuel Data Gateway | 18 mois | 50 €/mois | 900 € |
+| 5.2 | Stockage additionnel SharePoint | 18 mois | 60 €/mois | 1 080 € |
+| 5.3 | Licences outils développement (tests) | Forfait | - | 200 € |
+| **TOTAL POSTE 5** | | | | **2 180 €** | |
+| **NET POSTE 5 (arrondi)** | | | | **2 000 €** | |
+
+---
+
+#### POSTE 6 : CONTINGENCE & IMPRÉVUS (12 000 €)
+
+| Ligne | Description | % | Montant | Commentaire |
+|-------|-------------|---|---------|-------------|
+| 6.1 | Contingence générale (5% du total) | 5% | 10 265 € | Pour absorber dépassements |
+| 6.2 | Buffer consultant (jours supplémentaires) | - | 3 750 € | 5 jours × 750€ si besoin |
+| 6.3 | Imprévus techniques (licences, outils) | - | 2 000 € | Correctifs non prévus |
+| **TOTAL POSTE 6** | | | | **16 015 €** | |
+| **NET POSTE 6 (arrondi conservateur)** | | | | **12 000 €** | |
+
+---
+
+### 📊 RÉCAPITULATIF BUDGET GLOBAL
+
+| Poste | Montant | % du Total |
+|-------|---------|-----------|
+| 1. Licences & Outils | 11 000 € | 5% |
+| 2. Services Externes | 95 000 € | 44% |
+| 3. Ressources Internes | 111 300 € | 51% |
+| 4. Formation & Change Mgmt | 35 000 € | 16% |
+| 5. Infrastructure | 2 000 € | 1% |
+| 6. Contingence | 12 000 € | 6% |
+| **TOTAL TCO 18 MOIS** | **266 300 €** | |
+| **Optimisations & ajustements** | **-50 300 €** | |
+| **BUDGET PROJET FINAL** | **216 000 €** | **100%** |
+
+---
+
+### 💡 NOTES IMPORTANTES
+
+**Optimisations Budgétaires Appliquées :**
+- ✅ Négociation forfait consulting (-12%)
+- ✅ Mutualisation sessions formation (-20%)
+- ✅ Utilisation M365 existant (économie ~15K€ vs achat neuf)
+- ✅ Recrutement junior Chef Projet (55K€ vs 70K€ senior)
+
+**Coûts NON Inclus (Hors Périmètre) :**
+- ❌ Remplacement SAGE Comptabilité
+- ❌ CRM externe (Salesforce, HubSpot)
+- ❌ ERP complet
+- ❌ Salaires équipes existantes (DAF, Commercial, etc.)
+
+---
+
+## ANNEXE C : MATRICE DES RISQUES COMPLÈTE
+
+### 🎯 MÉTHODOLOGIE D'ÉVALUATION
+
+**Probabilité :**
+- **Très Faible** : <10% | **Faible** : 10-30% | **Moyenne** : 30-60% | **Élevée** : 60-80% | **Très Élevée** : >80%
+
+**Impact :**
+- **Négligeable** : <5K€ | **Faible** : 5-20K€ | **Moyen** : 20-50K€ | **Élevé** : 50-100K€ | **Critique** : >100K€
+
+**Criticité = Probabilité × Impact**
+
+---
+
+### 📋 RISQUES IDENTIFIÉS (15 RISQUES MAJEURS)
+
+#### RISQUE R1 : Dépassement Budgétaire
+
+| Élément | Description |
+|---------|-------------|
+| **ID** | R1 |
+| **Catégorie** | Financier |
+| **Description** | Le projet dépasse le budget initial de 216K€ |
+| **Causes** | Complexité technique sous-estimée, périmètre qui dérive (scope creep), ressources pas disponibles |
+| **Probabilité** | Moyenne (30%) |
+| **Impact Brut** | Moyen (30K€) |
+| **Criticité Brute** | Moyenne |
+| **Mitigation** | • Forfait fixe 95K€ consulting (pas de régie)<br>• Contingence 12K€ (5%)<br>• Périmètre figé et validé COPIL<br>• Suivi budgétaire mensuel avec alertes |
+| **Probabilité Résiduelle** | Faible (15%) |
+| **Impact Résiduel** | Faible (10K€) |
+| **Criticité Résiduelle** | Faible |
+| **Responsable** | Chef de Projet BI |
+| **Plan de Réponse** | Si dépassement >5% → COPIL extraordinaire + arbitrage DG |
+
+---
+
+#### RISQUE R2 : ROI Non Atteint
+
+| Élément | Description |
+|---------|-------------|
+| **ID** | R2 |
+| **Catégorie** | Stratégique |
+| **Description** | Les bénéfices attendus (700K€/an) ne sont pas réalisés |
+| **Causes** | Adoption utilisateur faible, qualité données insuffisante, bénéfices surestimés |
+| **Probabilité** | Faible (20%) |
+| **Impact Brut** | Critique (500K€ de gains non réalisés) |
+| **Criticité Brute** | Élevée |
+| **Mitigation** | • Hypothèses conservatrices (gains +10% remplissage vs +40% possible)<br>• Quick Wins M3 pour prouver valeur<br>• Budget Change Management 35K€<br>• Sponsorship DG actif<br>• Phase nettoyage 2 mois dédiée |
+| **Probabilité Résiduelle** | Très Faible (5%) |
+| **Impact Résiduel** | Moyen (ROI 2× au lieu de 3.2×) |
+| **Criticité Résiduelle** | Faible |
+| **Responsable** | Directeur Général (Sponsor) |
+| **Plan de Réponse** | Si taux utilisation <50% à M6 → Audit gratuit + plan correctif |
+
+---
+
+#### RISQUE R3 : Résistance au Changement
+
+| Élément | Description |
+|---------|-------------|
+| **ID** | R3 |
+| **Catégorie** | Organisationnel |
+| **Description** | Les utilisateurs refusent d'adopter les nouveaux outils et restent sur Excel |
+| **Causes** | Peur de l'inconnu, attachement aux habitudes, formation insuffisante |
+| **Probabilité** | Élevée (50%) |
+| **Impact Brut** | Élevé (projet abandonné = 100K€ perdus) |
+| **Criticité Brute** | Critique |
+| **Mitigation** | • Sponsorship DG visible et actif<br>• 35K€ Change Management<br>• Quick Wins visibles M3<br>• Co-construction (COSU)<br>• Formation adaptée par profil<br>• Gamification et incentives |
+| **Probabilité Résiduelle** | Moyenne (25%) |
+| **Impact Résiduel** | Faible (adoption partielle, ROI réduit) |
+| **Criticité Résiduelle** | Moyenne |
+| **Responsable** | Consultant Change Management |
+| **Plan de Réponse** | Indicateurs adoption suivis mensuellement + plan correctif si <60% |
+
+---
+
+#### RISQUE R4 : Qualité des Données Initiale
+
+| Élément | Description |
+|---------|-------------|
+| **ID** | R4 |
+| **Catégorie** | Technique |
+| **Description** | Les données sources sont trop sales pour être exploitables (>30% erreurs) |
+| **Causes** | 15% doublons, 30% obsolescence, nomenclatures incohérentes |
+| **Probabilité** | Élevée (60%) |
+| **Impact Brut** | Moyen (dashboards faux = perte confiance) |
+| **Criticité Brute** | Élevée |
+| **Mitigation** | • Phase 0 dédiée nettoyage (2 mois)<br>• Propriétaires données désignés<br>• Référentiel unique validé COPIL<br>• Contrôles automatiques à l'entrée<br>• 15j consulting nettoyage budgétés |
+| **Probabilité Résiduelle** | Moyenne (30%) |
+| **Impact Résiduel** | Faible (quelques erreurs résiduelles) |
+| **Criticité Résiduelle** | Faible |
+| **Responsable** | Chef de Projet BI + Référents Métiers |
+| **Plan de Réponse** | Audit qualité M2 → Si >10% erreurs → phase nettoyage prolongée |
+
+---
+
+#### RISQUE R5 : Disponibilité Ressources Clés
+
+| Élément | Description |
+|---------|-------------|
+| **ID** | R5 |
+| **Catégorie** | Organisationnel |
+| **Description** | Chef de Projet BI ou référents métiers pas disponibles quand nécessaire |
+| **Causes** | Surcharge de travail, départ collaborateur, priorités concurrentes |
+| **Probabilité** | Moyenne (40%) |
+| **Impact Brut** | Moyen (retard 2-3 mois) |
+| **Criticité Brute** | Moyenne |
+| **Mitigation** | • Recrutement CDI Chef Projet (stabilité)<br>• Documentation exhaustive (passation possible)<br>• Binômes sur chaque rôle<br>• Clause prestataire (remplacement sous 5j)<br>• Transfert compétences progressif |
+| **Probabilité Résiduelle** | Faible (10%) |
+| **Impact Résiduel** | Faible (retard 1 mois max) |
+| **Criticité Résiduelle** | Faible |
+| **Responsable** | DG (arbitrage priorités) |
+| **Plan de Réponse** | Si absence >2 sem → Backup activé + consultant externe renforcé |
+
+---
+
+#### RISQUE R6 : Blocage Technique SAGE
+
+| Élément | Description |
+|---------|-------------|
+| **ID** | R6 |
+| **Catégorie** | Technique |
+| **Description** | Impossible de connecter Power BI à SAGE (API fermée, droits refusés) |
+| **Causes** | SAGE version ancienne, licence ne permettant pas extraction, IT refuse accès |
+| **Probabilité** | Faible (20%) |
+| **Impact Brut** | Moyen (pas de données finance automatiques) |
+| **Criticité Brute** | Moyenne |
+| **Mitigation** | • POC technique Phase 0 (test connexion AVANT engagement)<br>• Validation DAF + IT en amont<br>• Plan B : export CSV mensuel SAGE (moins idéal mais fonctionne)<br>• Data Gateway pour connexion sécurisée |
+| **Probabilité Résiduelle** | Très Faible (5%) |
+| **Impact Résiduel** | Négligeable (Plan B activé) |
+| **Criticité Résiduelle** | Très Faible |
+| **Responsable** | Chef de Projet BI + DAF |
+| **Plan de Réponse** | Si blocage confirmé → Export mensuel CSV + automatisation Power Automate |
+
+---
+
+#### RISQUE R7 : Scope Creep (Dérive du Périmètre)
+
+| Élément | Description |
+|---------|-------------|
+| **ID** | R7 |
+| **Catégorie** | Organisationnel |
+| **Description** | Demandes additionnelles hors périmètre initial (nouveaux dashboards, intégrations) |
+| **Causes** | Services demandent des fonctionnalités non prévues, absence de cadrage strict |
+| **Probabilité** | Moyenne (45%) |
+| **Impact Brut** | Moyen (dépassement 30K€ + délai) |
+| **Criticité Brute** | Moyenne |
+| **Mitigation** | • Périmètre figé dans Livrable 2 (Plan de Cadrage)<br>• Arbitrage strict COPIL pour toute demande<br>• Backlog Phase 3 pour évolutions futures<br>• Change control formalisé |
+| **Probabilité Résiduelle** | Faible (20%) |
+| **Impact Résiduel** | Faible (demandes refusées ou en Phase 3) |
+| **Criticité Résiduelle** | Faible |
+| **Responsable** | Chef de Projet BI + Sponsor DG |
+| **Plan de Réponse** | Toute demande hors périmètre → Validation COPIL obligatoire + impact budget/délai évalué |
+
+---
+
+#### RISQUE R8 : Performance Technique Insuffisante
+
+| Élément | Description |
+|---------|-------------|
+| **ID** | R8 |
+| **Catégorie** | Technique |
+| **Description** | Les dashboards sont trop lents (temps de chargement >30 secondes) |
+| **Causes** | Volumétrie sous-estimée, modèle de données mal optimisé, requêtes DAX lourdes |
+| **Probabilité** | Faible (15%) |
+| **Impact Brut** | Moyen (utilisateurs abandonnent l'outil) |
+| **Criticité Brute** | Moyenne |
+| **Mitigation** | • Architecture scalable (modèle en étoile Kimball)<br>• Tests de charge Phase 1<br>• Optimisation requêtes DAX par consultant expert<br>• Passage Power BI Premium si besoin (contingence) |
+| **Probabilité Résiduelle** | Très Faible (5%) |
+| **Impact Résiduel** | Négligeable (optimisations appliquées) |
+| **Criticité Résiduelle** | Très Faible |
+| **Responsable** | Chef de Projet BI + Consultant |
+| **Plan de Réponse** | Si temps chargement >20s → Sprint optimisation (5j consulting) |
+
+---
+
+#### RISQUE R9 : Abandon du Projet (Changement Direction)
+
+| Élément | Description |
+|---------|-------------|
+| **ID** | R9 |
+| **Catégorie** | Stratégique |
+| **Description** | Le projet est abandonné en cours (changement DG, crise financière) |
+| **Causes** | Changement de direction, priorités stratégiques modifiées, crise budgétaire |
+| **Probabilité** | Très Faible (5%) |
+| **Impact Brut** | Critique (150K€ investis perdus) |
+| **Criticité Brute** | Moyenne |
+| **Mitigation** | • Approche itérative (valeur livrée à chaque phase)<br>• Contractualisation par phase (pas 18 mois d'un coup)<br>• Quick Wins M3 prouvent valeur rapidement<br>• Documentation livrée (pas de dépendance prestataire) |
+| **Probabilité Résiduelle** | Très Faible (2%) |
+| **Impact Résiduel** | Faible (ROI partiel conservé si arrêt après Phase 1) |
+| **Criticité Résiduelle** | Très Faible |
+| **Responsable** | Directeur Général |
+| **Plan de Réponse** | Si arrêt envisagé → Bilan gains réalisés + décision éclairée COPIL |
+
+---
+
+#### RISQUE R10 : Défaillance Prestataire Externe
+
+| Élément | Description |
+|---------|-------------|
+| **ID** | R10 |
+| **Catégorie** | Contractuel |
+| **Description** | Le prestataire consulting fait faillite ou ne respecte pas ses engagements |
+| **Causes** | Problèmes financiers prestataire, qualité livrables insuffisante |
+| **Probabilité** | Très Faible (3%) |
+| **Impact Brut** | Élevé (projet bloqué, retard 6 mois) |
+| **Criticité Brute** | Faible |
+| **Mitigation** | • Sélection prestataire solide (vérification financière)<br>• Paiement échelonné par livrable validé<br>• Clause remplacement consultant sous 5j<br>• Transfert compétences progressif vers interne<br>• Documentation exhaustive |
+| **Probabilité Résiduelle** | Très Faible (1%) |
+| **Impact Résiduel** | Faible (nouveau prestataire trouvé sous 1 mois) |
+| **Criticité Résiduelle** | Très Faible |
+| **Responsable** | Chef de Projet BI + DAF |
+| **Plan de Réponse** | Si défaillance → Rupture contrat + sourcing nouveau prestataire immédiat |
+
+---
+
+### 📊 CARTE DES RISQUES (PROBABILITÉ × IMPACT)
+
+```
+IMPACT
+  ↑
+  │
+Élevé     │           │ R2 (ROI)    │ R3 (Résistance) │ R9 (Abandon)
+          │           │   ↓         │    ↓            │
+Moyen     │ R6 (SAGE) │ R7 (Scope)  │ R4 (Qualité)    │ R1 (Budget)
+          │    ↓      │   ↓         │   ↓             │
+Faible    │ R8 (Perf) │ R5 (Ressou.)│ R10 (Presta.)   │
+          │    ↓      │   ↓         │    ↓            │
+          └───────────┴─────────────┴─────────────────┴────→
+         Très Faible  Faible       Moyenne         Élevée  PROBABILITÉ
+```
+
+**Légende :** ↓ = Risque après mitigation (résiduel)
+
+---
+
+### ✅ SYNTHÈSE DES RISQUES
+
+| Criticité Résiduelle | Nombre de Risques | Actions |
+|---------------------|-------------------|---------|
+| **Critique** | 0 | - |
+| **Élevée** | 0 | - |
+| **Moyenne** | 1 (R3 - Résistance) | Suivi mensuel + plan adoption renforcé |
+| **Faible** | 7 (R1, R2, R4, R5, R6, R7, R8) | Suivi trime
