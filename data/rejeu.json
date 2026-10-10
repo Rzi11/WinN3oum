@@ -1,10 +1,10 @@
 {
- "generated": "2026-10-10T00:02:01Z",
- "version": "v0.2",
+ "generated": "2026-10-10T00:41:04Z",
+ "version": "v0.3",
  "summary": {
-  "events": 2,
+  "events": 3,
   "possible_ou_plus": 2,
-  "rang_moyen": 2.0,
+  "rang_moyen": 3.33,
   "note": "Rang 1 = la plage observée était celle que le modèle jugeait la plus à risque. Au hasard, le rang moyen serait 4 sur 7."
  },
  "results": [
@@ -14,18 +14,18 @@
    "km": 0.6,
    "taxon": "Rhizostoma pulmo",
    "source": "iNaturalist",
-   "predicted": "Élevé",
-   "risk": 0.46,
+   "predicted": "Possible",
+   "risk": 0.42,
    "rank": 3,
    "of": 7,
    "all": {
     "rmel": "Élevé",
     "taguermess": "Élevé",
-    "mahrez": "Élevé",
+    "mahrez": "Possible",
     "aghir": "Possible",
     "seguia": "Possible",
-    "kantara": "Possible",
-    "jmour": "Possible"
+    "kantara": "Faible",
+    "jmour": "Faible"
    },
    "mode": "derive",
    "sources": {
@@ -40,7 +40,33 @@
   },
   {
    "date": "2026-05-30",
-   "error": "HTTPSConnectionPool(host='historical-forecast-api.open-meteo.com', port=443): Read timed out. (read timeout=90)"
+   "observed_beach": "mahrez",
+   "km": 1.9,
+   "taxon": "Rhizostoma pulmo",
+   "source": "iNaturalist",
+   "predicted": "Faible",
+   "risk": 0.13,
+   "rank": 5,
+   "of": 7,
+   "all": {
+    "taguermess": "Faible",
+    "rmel": "Faible",
+    "seguia": "Faible",
+    "aghir": "Faible",
+    "mahrez": "Faible",
+    "kantara": "Faible",
+    "jmour": "Faible"
+   },
+   "mode": "derive",
+   "sources": {
+    "vent": "ok",
+    "courants surface": "cmems_mod_med_phy-cur_anfc_4.2km-2D_PT1H-m",
+    "courants 15 m": "cmems_mod_med_phy-cur_anfc_4.2km-3D_PT1H-m",
+    "vagues": "cmems_mod_med_wav_anfc_4.2km_PT1H-i",
+    "marée": "cmems_mod_med_phy-ssh_anfc_4.2km_PT15M-i",
+    "eau favorable": "sst, sal, mld, chl",
+    "fonds marins": "cmems_mod_med_phy_anfc_4.2km_static"
+   }
   },
   {
    "date": "2025-05-04",
@@ -49,16 +75,16 @@
    "taxon": "Rhizostoma pulmo",
    "source": "iNaturalist",
    "predicted": "Possible",
-   "risk": 0.33,
-   "rank": 1,
+   "risk": 0.31,
+   "rank": 2,
    "of": 7,
    "all": {
-    "taguermess": "Possible",
     "seguia": "Possible",
+    "taguermess": "Possible",
     "aghir": "Possible",
-    "kantara": "Possible",
-    "rmel": "Faible",
     "mahrez": "Faible",
+    "kantara": "Faible",
+    "rmel": "Faible",
     "jmour": "Faible"
    },
    "mode": "derive",
