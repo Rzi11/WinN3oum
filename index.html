@@ -117,6 +117,27 @@ input[type="datetime-local"]{font:15px var(--body);padding:10px 12px;border-radi
 .tab[aria-selected="true"]{color:var(--blue);background:#E8EFF9}
 #tab-turq[aria-selected="true"]{color:var(--turq-ink);background:#DDF4F1}
 
+/* Signalement */
+.report{background:var(--card);border-radius:22px;padding:18px;display:flex;flex-direction:column;gap:12px}
+.report h2{margin:0;font:800 22px/1.1 var(--display)}
+.report p{margin:0;font-size:14px;color:var(--muted)}
+.report select{font:16px var(--body);padding:12px;border-radius:14px;border:1px solid var(--line);background:var(--chaux);color:var(--ink);min-height:48px}
+.twobtn{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.big{border:0;border-radius:16px;padding:14px 10px;font:800 17px var(--display);cursor:pointer;min-height:56px}
+.big.seen{background:#FBDEDB;color:var(--bad-ink)} .big.none{background:var(--good-bg);color:var(--good-ink)}
+.big[aria-pressed="true"].seen{background:var(--bad);color:#fff} .big[aria-pressed="true"].none{background:var(--good);color:#fff}
+.opts{display:flex;flex-direction:column;gap:10px}
+.opts .when .chip{background:var(--chaux)}
+.opts .when .chip[aria-pressed="true"]{background:var(--blue);color:#fff}
+.check{display:flex;gap:10px;align-items:flex-start;font-size:15px}
+.check input{width:22px;height:22px;margin:0;flex-shrink:0}
+.send{border:0;background:var(--blue);color:#fff;font:700 17px var(--body);border-radius:16px;padding:14px;cursor:pointer;min-height:52px}
+.send:disabled{opacity:.5;cursor:default}
+.hp{position:absolute;left:-5000px;width:1px;height:1px;overflow:hidden}
+.msg{font-size:15px;font-weight:700;min-height:1.4em}
+.msg.ok{color:var(--good-ink)} .msg.err{color:var(--bad-ink)}
+.report details summary{font-size:13px;color:var(--muted);cursor:pointer}
+.report details input{font:15px var(--body);padding:10px;border-radius:12px;border:1px solid var(--line);margin-top:8px;width:100%;max-width:260px}
 footer{font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:6px}
 footer p{margin:0}
 footer .slogan{font:800 20px/1.2 var(--display);color:var(--blue)}
@@ -176,6 +197,43 @@ footer .slogan{font:800 20px/1.2 var(--display);color:var(--blue)}
     <section aria-label="Classement des plages" style="display:flex;flex-direction:column;gap:10px">
       <h2 class="section-title">Les autres plages</h2>
       <ol class="list" id="list"></ol>
+    </section>
+
+    <section class="report" id="report" hidden aria-label="Signaler les méduses">
+      <h2>Tu es à la plage ?</h2>
+      <p>Dis-nous si tu vois des méduses, ou pas. Ton signalement aide tout le monde et rend les prévisions plus justes.</p>
+      <label for="r-beach" class="label">Plage</label>
+      <select id="r-beach"></select>
+      <div class="twobtn">
+        <button class="big seen" id="r-seen" aria-pressed="false" type="button">J'en ai vu</button>
+        <button class="big none" id="r-none" aria-pressed="false" type="button">Rien vu</button>
+      </div>
+      <div class="opts" id="r-opts" hidden>
+        <div class="label">Combien ?</div>
+        <div class="when" id="r-amount">
+          <button class="chip" data-v="1" aria-pressed="true" type="button">Quelques-unes</button>
+          <button class="chip" data-v="2" aria-pressed="false" type="button">Beaucoup</button>
+          <button class="chip" data-v="3" aria-pressed="false" type="button">Invasion</button>
+        </div>
+        <label for="r-species" class="label">Laquelle ? (facultatif)</label>
+        <select id="r-species">
+          <option value="">Je ne sais pas</option>
+          <option value="Pélagie">Petite, mauve/rose, pique fort (pélagie)</option>
+          <option value="Chou-fleur">Grosse, blanche, bord violet (chou-fleur)</option>
+          <option value="Œuf au plat">Jaune au centre, comme un œuf au plat</option>
+          <option value="Galion">Bulle bleue flottante (galion portugais)</option>
+          <option value="Autre">Autre</option>
+        </select>
+        <label class="check"><input type="checkbox" id="r-stung"> Quelqu'un a été piqué</label>
+      </div>
+      <label class="check"><input type="checkbox" id="r-geo" checked> Partager ma position pour prouver que je suis sur la plage (elle n'est jamais affichée)</label>
+      <div class="hp" aria-hidden="true"><label for="r-web">Ne pas remplir</label><input id="r-web" tabindex="-1" autocomplete="off"></div>
+      <details><summary>Je suis maître-nageur, hôtel ou club de plongée</summary>
+        <label for="r-code" class="label" style="display:block;margin-top:8px">Code sentinelle</label>
+        <input id="r-code" autocomplete="off">
+      </details>
+      <button class="send" id="r-send" type="button" disabled>Envoyer</button>
+      <div class="msg" id="r-msg" role="status"></div>
     </section>
   </div>
 
@@ -441,7 +499,7 @@ async function fetchJSON(url, tries=3){
 // Plusieurs modèles météo croisés : européen (ECMWF), allemand (DWD ICON), français (Météo-France), américain (NOAA GFS)
 const MODELS=[["ecmwf_ifs025","ECMWF"],["icon_seamless","ICON"],["meteofrance_seamless","Météo-France"],["gfs_seamless","GFS"]];
 const WXVARS=["wind_speed_10m","wind_direction_10m","wind_gusts_10m","temperature_2m","uv_index","cloud_cover","cloud_cover_low","precipitation"];
-let MODELS_USED=[], AIR=null, MED=null;
+let MODELS_USED=[], AIR=null, MED=null, BASE_STATUS;
 async function loadMeduses(){
   try{ const r=await fetch("data/meduses.json",{cache:"no-store"}); if(r.ok){ MED=await r.json(); render(); } }catch(e){ MED=null; }
 }
@@ -451,8 +509,12 @@ function medFor(id, key){
   return MED.beaches[id].days.find(d=>d.date===day)||null;
 }
 function medText(m){
-  const why = m.drift>=0.5 ? "courant et vent poussent vers la plage" : m.drift>=0.2 ? "un peu de dérive vers la plage" : "peu de dérive vers la plage";
-  return `Méduses : ${m.level.toLowerCase()} — ${why}${MED.mode==="vent"?" (estimation vent seul)":""}`;
+  const why = (m.why&&m.why.length) ? m.why.join(", ") : "";
+  return `Méduses : ${m.level.toLowerCase()}${why?" — "+why:""}`;
+}
+function medSpecies(id){
+  const b=MED&&MED.beaches&&MED.beaches[id]; if(!b||!b.species||!b.species.length) return "";
+  return "Espèces possibles en ce moment : "+b.species.map(s=>`${s.name.split(" (")[0]} (piqûre ${s.sting})`).join(", ");
 }
 
 function mergeModels(j){
@@ -502,7 +564,7 @@ async function load(){
   const src=["Météo : "+MODELS_USED.join(" + ")];
   src.push(MARINE?"houle + marée ✓":"houle/marée indisponibles");
   src.push(AIR?"poussière (CAMS) ✓":"poussière indisponible");
-  $("status").textContent=src.join(" · ");
+  BASE_STATUS=src.join(" · "); $("status").textContent=BASE_STATUS;
   render(); renderTurq();
 }
 function showError(e){
@@ -546,7 +608,9 @@ function renderWith(w,marine,key){
   $("s-uv").textContent=w.uv==null?"—":fmt(w.uv,"",0);
 
   const ranked=BEACHES.map((b,k)=>{ const r={b,...scoreBeach(b,w,marine?marine[k]:null)}; const m=medFor(b.id,key); r.med=m;
-    if(m){ r.reasons.splice(1,0,medText(m)); if(m.level==="Élevé") r.s=Math.max(0,r.s-15); else if(m.level==="Possible") r.s=Math.max(0,r.s-4); }
+    { const rt=recentText(b.id); if(rt) r.reasons.push(rt); }
+    if(m){ r.reasons.splice(1,0,medText(m)); const sp=medSpecies(b.id); if(sp) r.reasons.push(sp);
+      if(m.level==="Signalé") r.s=Math.max(0,r.s-20); else if(m.level==="Élevé") r.s=Math.max(0,r.s-15); else if(m.level==="Possible") r.s=Math.max(0,r.s-4); }
     return r; }).sort((a,c)=>c.s-a.s);
   const top=ranked[0], v=verdict(top.s);
   const isNow = key && key===tunisKey(new Date());
@@ -558,6 +622,7 @@ function renderWith(w,marine,key){
   best.querySelector("h2").textContent=top.b.name;
   best.querySelector(".why").textContent=`${vibe(top.s)} ${top.reasons[0]}.`;
   const tags=[`${v.t} · ${top.s}/100`, `Vent ${Math.round(w.speed)} km/h`]; if(sea!=null) tags.push(`Eau ${Math.round(sea)} °C`); if(top.med) tags.push(`Méduses : ${top.med.level.toLowerCase()}`);
+  if(MED&&MED.generated&&typeof BASE_STATUS!=="undefined") $("status").textContent = BASE_STATUS + ` · méduses ${MED.version||""} du ${MED.generated.slice(8,10)}/${MED.generated.slice(5,7)}`;
   const tg=best.querySelector(".tags"); tags.forEach(t=>{const x=document.createElement("span");x.className="tag";x.textContent=t;tg.appendChild(x);});
 
   const list=$("list"); list.innerHTML="";
@@ -570,7 +635,7 @@ function renderWith(w,marine,key){
       <div class="more"><div class="zone"></div><ul></ul>
         <a class="maps" target="_blank" rel="noopener" href="${mapsUrl(r.b)}">Itinéraire →</a></div></details>`;
     li.querySelector(".bname b").textContent=r.b.name;
-    li.querySelector(".bname span").textContent=r.reasons[0];
+    li.querySelector(".bname span").textContent=(r.med&&(r.med.level==="Signalé"||r.med.level==="Élevé")?`Méduses : ${r.med.level.toLowerCase()} · `:"")+r.reasons[0];
     li.querySelector(".zone").textContent=r.b.zone;
     const ul=li.querySelector("ul"); r.reasons.forEach(t=>{const x=document.createElement("li");x.textContent=t;ul.appendChild(x);});
     list.appendChild(li);
@@ -592,7 +657,67 @@ function showTab(which){
 $("tab-swim").onclick=()=>{showTab("swim");window.scrollTo(0,0);}; $("tab-turq").onclick=()=>{showTab("turq");window.scrollTo(0,0);};
 try{ if(localStorage.getItem("winn3oum-tab")==="turq") showTab("turq"); }catch(e){}
 
+/* ---------- Signalements (Supabase) ---------- */
+// À remplir après avoir créé le projet Supabase (Settings → API) : l'URL et la clé « anon public ».
+const SUPABASE_URL = "https://qgslrrgmwwvizqlfblag.supabase.co";
+const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFnc2xycmdtd3d2aXpxbGZibGFnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE3ODgzODQsImV4cCI6MjEwNzM2NDM4NH0.ORot-XoQ9GO9k_yA9zpg0ytXTIMYLmM1TOQ7JAtEJuk";
+let REPORT = {seen:null, amount:1}, RECENT = {};
+function deviceId(){
+  let id=null; try{ id=localStorage.getItem("wn-device"); }catch(e){}
+  if(!id){ id=(crypto.randomUUID?crypto.randomUUID():"xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g,c=>{const r=Math.random()*16|0;return (c==="x"?r:(r&3|8)).toString(16);}));
+    try{ localStorage.setItem("wn-device",id); }catch(e){} }
+  return id;
+}
+function supa(path, opts={}){
+  return fetch(SUPABASE_URL+path, Object.assign({headers:{apikey:SUPABASE_ANON_KEY, Authorization:"Bearer "+SUPABASE_ANON_KEY, "Content-Type":"application/json"}}, opts));
+}
+function setupReport(){
+  if(!SUPABASE_URL||!SUPABASE_ANON_KEY) return;
+  $("report").hidden=false;
+  const sel=$("r-beach");
+  BEACHES.forEach(b=>{ const o=document.createElement("option"); o.value=b.id; o.textContent=b.name; sel.appendChild(o); });
+  const pick=(seen)=>{ REPORT.seen=seen; $("r-seen").setAttribute("aria-pressed",String(seen)); $("r-none").setAttribute("aria-pressed",String(!seen));
+    $("r-opts").hidden=!seen; $("r-send").disabled=false; };
+  $("r-seen").onclick=()=>pick(true); $("r-none").onclick=()=>pick(false);
+  $("r-amount").querySelectorAll(".chip").forEach(c=>c.onclick=()=>{ REPORT.amount=+c.dataset.v;
+    $("r-amount").querySelectorAll(".chip").forEach(x=>x.setAttribute("aria-pressed",String(x===c))); });
+  $("r-send").onclick=sendReport;
+  loadRecent();
+}
+function getPosition(){
+  return new Promise(res=>{
+    if(!$("r-geo").checked||!navigator.geolocation) return res(null);
+    navigator.geolocation.getCurrentPosition(p=>res(p.coords),()=>res(null),{enableHighAccuracy:true,timeout:8000,maximumAge:120000});
+  });
+}
+async function sendReport(){
+  const msg=$("r-msg"); msg.className="msg"; msg.textContent="Envoi…"; $("r-send").disabled=true;
+  const b=BEACHES.find(x=>x.id===$("r-beach").value);
+  const pos=await getPosition();
+  const body={p_device:deviceId(), p_beach:b.id, p_lat:b.lat, p_lon:b.lon,
+    p_user_lat:pos?pos.latitude:null, p_user_lon:pos?pos.longitude:null, p_user_acc:pos?Math.round(pos.accuracy):null,
+    p_seen:REPORT.seen, p_amount:REPORT.seen?REPORT.amount:0, p_species:REPORT.seen?($("r-species").value||null):null,
+    p_stung:REPORT.seen&&$("r-stung").checked, p_hp:$("r-web").value||null, p_code:$("r-code").value.trim()||null};
+  try{
+    const r=await supa("/rest/v1/rpc/submit_report",{method:"POST",body:JSON.stringify(body)});
+    const js=await r.json();
+    if(r.ok&&js.ok){ msg.className="msg ok"; msg.textContent=`Merci ! Ton signalement pour ${b.name} est pris en compte.`;
+      REPORT.seen=null; $("r-seen").setAttribute("aria-pressed","false"); $("r-none").setAttribute("aria-pressed","false"); $("r-opts").hidden=true; loadRecent(); }
+    else { msg.className="msg err"; msg.textContent=(js&&js.err)||"L'envoi n'a pas marché, réessaie dans un moment."; $("r-send").disabled=false; }
+  }catch(e){ msg.className="msg err"; msg.textContent="Pas de connexion : réessaie quand tu as du réseau."; $("r-send").disabled=false; }
+}
+async function loadRecent(){
+  try{ const r=await supa("/rest/v1/recent_reports?select=*"); if(!r.ok) return;
+    RECENT={}; (await r.json()).forEach(x=>RECENT[x.beach_id]=x); render(); }catch(e){}
+}
+function recentText(id){
+  const x=RECENT[id]; if(!x) return "";
+  const parts=[]; if(x.seen>0) parts.push(`${x.seen} « méduses vues »`); if(x.none_seen>0) parts.push(`${x.none_seen} « rien vu »`);
+  return parts.length?`Signalements des baigneurs (24 h) : ${parts.join(", ")}`:"";
+}
+
 load();
 loadMeduses();
+setupReport();
 </script>
 </body>
