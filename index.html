@@ -123,6 +123,9 @@ input[type="datetime-local"]{font:15px var(--body);padding:10px 12px;border-radi
 .report p{margin:0;font-size:14px;color:var(--muted)}
 .report select{font:16px var(--body);padding:12px;border-radius:14px;border:1px solid var(--line);background:var(--chaux);color:var(--ink);min-height:48px}
 .twobtn{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.threebtn{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.big.skip{background:var(--chaux);color:var(--muted)} .big[aria-pressed="true"].skip{background:var(--muted);color:#fff}
+.report .when .chip{background:var(--chaux)} .report .when .chip[aria-pressed="true"]{background:var(--blue);color:#fff}
 .big{border:0;border-radius:16px;padding:14px 10px;font:800 17px var(--display);cursor:pointer;min-height:56px}
 .big.seen{background:#FBDEDB;color:var(--bad-ink)} .big.none{background:var(--good-bg);color:var(--good-ink)}
 .big[aria-pressed="true"].seen{background:var(--bad);color:#fff} .big[aria-pressed="true"].none{background:var(--good);color:#fff}
@@ -138,6 +141,28 @@ input[type="datetime-local"]{font:15px var(--body);padding:10px 12px;border-radi
 .msg.ok{color:var(--good-ink)} .msg.err{color:var(--bad-ink)}
 .report details summary{font-size:13px;color:var(--muted);cursor:pointer}
 .report details input{font:15px var(--body);padding:10px;border-radius:12px;border:1px solid var(--line);margin-top:8px;width:100%;max-width:260px}
+/* Bancs surveillés */
+.bancs{display:flex;flex-direction:column;gap:10px}
+.banc{background:var(--card);border-radius:18px;padding:14px;display:flex;flex-direction:column;gap:6px}
+.banc .head{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
+.banc b{font-size:15px;line-height:1.3}
+.banc .msg2{font-size:15px;margin:0}
+.banc .meta{font-size:13px;color:var(--muted);margin:0}
+.pill.neutral{color:var(--blue-deep);background:#E8EFF9}
+.pills{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0}
+.beach.alerted{box-shadow:inset 4px 0 0 var(--bad)}
+.more .sub{font:700 12px var(--body);color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-top:4px}
+.hero .alert{margin:8px 0 0;padding:10px 12px;border-radius:12px;background:var(--bad-bg);color:var(--bad-ink);font-weight:700;font-size:15px}
+.origin{background:var(--card);border-radius:18px;padding:14px}
+.origin summary{font:800 17px/1.2 var(--display);cursor:pointer;min-height:32px}
+.origin .seasons{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0}
+.origin .seasons .chip{background:var(--chaux);min-height:40px;padding:8px 14px;font-size:14px}
+.origin .seasons .chip[aria-pressed="true"]{background:var(--blue);color:#fff}
+.zrow{display:grid;grid-template-columns:minmax(0,1fr) 48px;gap:4px 10px;align-items:center;font-size:14px;margin:6px 0}
+.zrow .bar{grid-column:1/-1;height:8px;border-radius:4px;background:var(--line);overflow:hidden}
+.zrow .bar i{display:block;height:100%;background:var(--turq)}
+.zrow .pct{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+.zrow small{grid-column:1/-1;color:var(--muted);font-size:12px;margin-top:-2px}
 footer{font-size:13px;color:var(--muted);display:flex;flex-direction:column;gap:6px}
 footer p{margin:0}
 footer .slogan{font:800 20px/1.2 var(--display);color:var(--blue)}
@@ -199,14 +224,37 @@ footer .slogan{font:800 20px/1.2 var(--display);color:var(--blue)}
       <ol class="list" id="list"></ol>
     </section>
 
-    <section class="report" id="report" hidden aria-label="Signaler les méduses">
-      <h2>Tu es à la plage ?</h2>
-      <p>Dis-nous si tu vois des méduses, ou pas. Ton signalement aide tout le monde et rend les prévisions plus justes.</p>
+    <section class="bancs" id="bancs" hidden aria-label="Zones de présence suivies">
+      <h2 class="section-title">Zones de présence suivies</h2>
+      <p class="hint">Chaque fois que des méduses sont vues en mer, on suit cette zone nuit après nuit avec les courants, puis on la projette sur 8 jours en 160 scénarios. On ne peut pas prouver que c'est toujours le même groupe de méduses : les pourcentages sont des parts de scénarios simulés, pas des probabilités.</p>
+      <div id="bancs-list" style="display:flex;flex-direction:column;gap:10px"></div>
+      <p class="hint" id="bancs-done"></p>
+      <details class="origin" id="origin" hidden><summary>D'où peut venir l'eau qui arrive à Djerba ?</summary><div id="origin-body"></div></details>
+      <p class="hint" id="carnet"></p>
+    </section>
+
+    <section class="report" id="report" hidden aria-label="C'était comment ?">
+      <h2>C'était comment ?</h2>
+      <p>Tu es à la plage ou tu en reviens ? 20 secondes, et tout le monde saura. Réponds seulement à ce que tu as vu.</p>
       <label for="r-beach" class="label">Plage</label>
       <select id="r-beach"></select>
-      <div class="twobtn">
+      <div class="label">La mer</div>
+      <div class="when" id="r-sea" role="group" aria-label="État de la mer">
+        <button class="chip" data-v="0" aria-pressed="false" type="button">Plate</button>
+        <button class="chip" data-v="1" aria-pressed="false" type="button">Un peu de clapot</button>
+        <button class="chip" data-v="2" aria-pressed="false" type="button">Des vagues</button>
+      </div>
+      <div class="label">L'eau</div>
+      <div class="when" id="r-clar" role="group" aria-label="Clarté de l'eau">
+        <button class="chip" data-v="0" aria-pressed="false" type="button">Claire</button>
+        <button class="chip" data-v="1" aria-pressed="false" type="button">Moyenne</button>
+        <button class="chip" data-v="2" aria-pressed="false" type="button">Trouble</button>
+      </div>
+      <div class="label">Les méduses</div>
+      <div class="threebtn">
         <button class="big seen" id="r-seen" aria-pressed="false" type="button">J'en ai vu</button>
         <button class="big none" id="r-none" aria-pressed="false" type="button">Rien vu</button>
+        <button class="big skip" id="r-skip" aria-pressed="false" type="button">Pas regardé</button>
       </div>
       <div class="opts" id="r-opts" hidden>
         <div class="label">Combien ?</div>
@@ -221,14 +269,28 @@ footer .slogan{font:800 20px/1.2 var(--display);color:var(--blue)}
           <option value="Pélagie">Petite, mauve/rose, pique fort (pélagie)</option>
           <option value="Chou-fleur">Grosse, blanche, bord violet (chou-fleur)</option>
           <option value="Œuf au plat">Jaune au centre, comme un œuf au plat</option>
+          <option value="Nomade">Grosse, bleutée, très nombreuse (méduse nomade)</option>
           <option value="Galion">Bulle bleue flottante (galion portugais)</option>
           <option value="Autre">Autre</option>
         </select>
         <label class="check"><input type="checkbox" id="r-stung"> Quelqu'un a été piqué</label>
       </div>
+      <div class="opts" id="r-how" hidden>
+        <div class="label">J'ai regardé…</div>
+        <div class="when" id="r-from">
+          <button class="chip" data-v="eau" aria-pressed="false" type="button">Dans l'eau</button>
+          <button class="chip" data-v="sable" aria-pressed="false" type="button">Depuis le sable</button>
+        </div>
+        <div class="when" id="r-min">
+          <button class="chip" data-v="3" aria-pressed="false" type="button">Moins de 5 min</button>
+          <button class="chip" data-v="15" aria-pressed="false" type="button">5 à 30 min</button>
+          <button class="chip" data-v="45" aria-pressed="false" type="button">Plus de 30 min</button>
+        </div>
+      </div>
       <label class="check"><input type="checkbox" id="r-geo" checked> Partager ma position pour prouver que je suis sur la plage (elle n'est jamais affichée)</label>
       <div class="hp" aria-hidden="true"><label for="r-web">Ne pas remplir</label><input id="r-web" tabindex="-1" autocomplete="off"></div>
       <details><summary>Je suis maître-nageur, hôtel ou club de plongée</summary>
+        <p style="margin-top:8px">Protocole sentinelle : chaque jour au même endroit, regarde 10 minutes dans l'eau, puis envoie ce que tu as vu, <b>même si tu n'as rien vu</b>. Une série régulière de « rien vu » vaut de l'or.</p>
         <label for="r-code" class="label" style="display:block;margin-top:8px">Code sentinelle</label>
         <input id="r-code" autocomplete="off">
       </details>
@@ -275,7 +337,8 @@ footer .slogan{font:800 20px/1.2 var(--display);color:var(--blue)}
 
 <script>
 // face = direction vers laquelle la plage regarde la mer (0 = Nord). beauty = potentiel turquoise de base (0-100)
-const BEACHES = [
+// Liste de secours : la vraie liste est dans plages.json (partagée avec le modèle méduses)
+let BEACHES = [
   {id:"rmel", shallow:true, name:"Ras R'mel (île aux flamants)", short:"Ras R'mel", zone:"Presqu'île nord, face à Houmt Souk", lat:33.895, lon:10.925, face:0, beauty:95,
    note:"Accès surtout en bateau depuis Houmt Souk.", bnote:"Lagon peu profond, sable blanc : l'eau la plus turquoise de l'île."},
   {id:"seguia", name:"La Seguia", short:"Seguia", zone:"Côte sud-est", lat:33.735, lon:11.005, face:125, beauty:88, note:"", bnote:"Sable clair, eau transparente quand c'est calme."},
@@ -503,6 +566,77 @@ let MODELS_USED=[], AIR=null, MED=null, BASE_STATUS;
 async function loadMeduses(){
   try{ const r=await fetch("data/meduses.json",{cache:"no-store"}); if(r.ok){ MED=await r.json(); render(); } }catch(e){ MED=null; }
 }
+let BANCS=null, CONNECT=null, OSEASON=null;
+async function loadBancs(){
+  try{ const r=await fetch("data/bancs.json",{cache:"no-store"}); if(r.ok){ BANCS=await r.json(); } }catch(e){}
+  try{ const r=await fetch("data/connectivite.json",{cache:"no-store"}); if(r.ok){ CONNECT=await r.json(); } }catch(e){}
+  renderBancs();
+}
+const ddmm=d=>`${d.slice(8,10)}/${d.slice(5,7)}`;
+function renderBancs(){
+  const sec=$("bancs"); if(!BANCS&&!CONNECT){ sec.hidden=true; return; }
+  sec.hidden=false;
+  const list=$("bancs-list"); list.innerHTML="";
+  const act=(BANCS&&BANCS.actifs)||[];
+  if(!act.length){ const p=document.createElement("p"); p.className="hint"; p.textContent="Aucune zone de présence suivie en ce moment."; list.appendChild(p); }
+  act.forEach(b=>{
+    const el=document.createElement("article"); el.className="banc";
+    const near=b.arrivees&&b.arrivees.length;
+    const pill = near||b.cap==="approche" ? ["bad","En approche"] : b.cap==="eloigne" ? ["good","S'éloigne"] : b.cap==="rapproche" ? ["warn","Se rapproche"] : ["neutral","Reste au large"];
+    el.innerHTML=`<div class="head"><b></b><span class="pill ${pill[0]}"></span></div><p class="msg2"></p><p class="meta"></p>`;
+    el.querySelector("b").textContent=b.nom;
+    el.querySelector(".pill").textContent=pill[1];
+    el.querySelector(".msg2").textContent=b.message;
+    const meta=[`Maintenant ${b.position.lieu}`];
+    if(b.distance_djerba_km!=null) meta.push(`à ${b.distance_djerba_km} km de Djerba`);
+    meta.push(`zone de ~${Math.max(1,Math.round(b.etalement_km))} km`);
+    if(b.confirmations) meta.push(`revu ${b.confirmations} fois`);
+    if(b.contradictions) meta.push(`${b.contradictions} « rien vu »`);
+    meta.push(b.age_jours<1?"repéré aujourd'hui":`suivi depuis ${b.age_jours} j`);
+    el.querySelector(".meta").textContent=meta.join(" · ");
+    list.appendChild(el);
+  });
+  const done=(BANCS&&BANCS.termines)||[];
+  $("bancs-done").textContent = done.length ? "Suivi terminé récemment : "+done.slice(-3).map(x=>`zone n°${x.id} (${x.raison})`).join(" · ") : "";
+  // carnet de bord
+  const st=BANCS&&BANCS.carnet&&BANCS.carnet.par_delai;
+  if(st){ let v=0,ok=0; Object.values(st).forEach(x=>{v+=x.verifiables||0; ok+=x.vu||0;});
+    $("carnet").textContent = v ? `Carnet de bord : ${v} annonces d'arrivée vérifiées, ${ok} confirmées sur place.` : "Carnet de bord : chaque annonce d'arrivée sera vérifiée avec vos retours « C'était comment ? ».";
+  }
+  renderOrigin();
+}
+function renderOrigin(){
+  const box=$("origin"), body=$("origin-body");
+  if(!CONNECT||!CONNECT.saisons){ box.hidden=true; return; }
+  box.hidden=false;
+  const names={printemps:"Printemps",ete:"Été",automne:"Automne"};
+  const keys=Object.keys(CONNECT.saisons);
+  if(!OSEASON){ const m=new Date().getMonth()+1; OSEASON = m>=3&&m<=5?"printemps":m>=6&&m<=8?"ete":"automne"; if(!keys.includes(OSEASON)) OSEASON=keys[0]; }
+  const S=CONNECT.saisons[OSEASON];
+  body.innerHTML=`<p class="hint" style="margin-top:8px">Connectivité possible des eaux : part de l'eau arrivant devant nos plages qui est passée par chaque zone dans les ${CONNECT.jours} jours avant, et en combien de jours (courants de surface ${CONNECT.annees.join(", ")}). Ça dit où surveiller, pas d'où viennent réellement les méduses.</p><div class="seasons"></div><div class="zones"></div><p class="hint"></p>`;
+  const sb=body.querySelector(".seasons");
+  keys.forEach(k=>{ const c=document.createElement("button"); c.className="chip"; c.type="button"; c.textContent=names[k]||k;
+    c.setAttribute("aria-pressed",String(k===OSEASON)); c.onclick=()=>{OSEASON=k; renderOrigin(); box.open=true;}; sb.appendChild(c); });
+  const zs=body.querySelector(".zones"); const max=Math.max(0.01,...S.passage.map(p=>p.part));
+  const never=S.passage.filter(p=>p.part<0.005).map(p=>p.zone);
+  S.passage.filter(p=>p.part>=0.005).forEach(p=>{
+    const pct=p.part*100; const row=document.createElement("div"); row.className="zrow";
+    row.innerHTML=`<span></span><span class="pct"></span><div class="bar"><i></i></div><small></small>`;
+    row.querySelector("span").textContent=p.zone;
+    row.querySelector(".pct").textContent= pct<1 ? (pct>0?"<1 %":"0 %") : `${Math.round(pct)} %`;
+    row.querySelector("i").style.width=`${Math.max(pct>0?2:0, p.part/max*100)}%`;
+    row.querySelector("small").textContent = p.delai_median ? `en général ~${p.delai_median} jours avant, parfois dès ${p.delai_rapide} jours` : "jamais en 21 jours";
+    zs.appendChild(row);
+  });
+  if(never.length){ const n=document.createElement("p"); n.className="hint"; n.style.marginTop="8px";
+    n.textContent=`Presque jamais (moins de 1 %) : ${never.join(", ")}. L'eau de là-bas arrive très rarement chez nous en moins de ${CONNECT.jours} jours.`; zs.appendChild(n); }
+  body.querySelector(":scope > p.hint:last-child").textContent="Plus la barre est longue, plus des méduses vues dans cette zone méritent d'être surveillées. C'est la route de l'eau en surface, sans le vent ni la nage des méduses.";
+}
+function medBancs(id){
+  const b=MED&&MED.beaches&&MED.beaches[id]; if(!b||!b.bancs||!b.bancs.length) return "";
+  const a=b.bancs[0]; const when=a.du===a.au?`le ${ddmm(a.du)}`:`entre le ${ddmm(a.du)} et le ${ddmm(a.au)}`;
+  return `Zone de présence suivie n°${a.banc} : ${Math.round(a.part*100)} % des scénarios simulés arrivent ici ${when}`;
+}
 function medFor(id, key){
   if(!MED||!MED.beaches||!MED.beaches[id]) return null;
   const day=(key||tunisKey(new Date())).slice(0,10);
@@ -514,7 +648,43 @@ function medText(m){
 }
 function medSpecies(id){
   const b=MED&&MED.beaches&&MED.beaches[id]; if(!b||!b.species||!b.species.length) return "";
-  return "Espèces possibles en ce moment : "+b.species.map(s=>`${s.name.split(" (")[0]} (piqûre ${s.sting})`).join(", ");
+  return "Espèces compatibles avec la saison (pas une identification) : "+b.species.map(s=>`${s.name.split(" (")[0]} (piqûre ${s.sting})`).join(", ");
+}
+// Alerte méduses : 2 = signalées (preuve), 1 = vigilance (signalement non vérifié ou estimation élevée), 0 = rien
+const TIER_PILL={2:["bad","Méduses signalées"],1:["warn","Méduses : vigilance"]};
+const hhmm=iso=>{ try{ return new Date(iso).toLocaleTimeString("fr-FR",{hour:"2-digit",minute:"2-digit",timeZone:TZ}); }catch(e){ return ""; } };
+function medInfo(id, key){
+  const m=medFor(id,key), live=RECENT[id], lines=[];
+  const today=tunisKey(new Date()).slice(0,10), isToday=!key||key.slice(0,10)===today;
+  let tier=0, head="";
+  // 1. OBSERVÉ : ce qui a vraiment été vu (signalements des dernières 24 h affichés tout de suite, sans attendre la nuit)
+  if(isToday && live && live.seen>0){
+    const nets=live.seen_nets??live.seen;
+    tier = nets>=2 ? 2 : 1;
+    lines.push(`Observé : ${live.seen} signalement${live.seen>1?"s":""} « méduses vues » ces 24 h${live.last_seen_at?`, le dernier à ${hhmm(live.last_seen_at)}`:""} (${nets>=2?"plusieurs personnes, pas encore vérifié":"non vérifié"})`);
+    head = nets>=2 ? "Méduses vues par plusieurs baigneurs" : "Méduses vues par un baigneur (non vérifié)";
+  }
+  if(m && m.observe && !(live && live.seen>0 && /baigneur/.test(m.observe))) lines.push(`Observé : ${m.observe}`);
+  if(m && m.level==="Signalé"){ tier=2; head = head || "Méduses signalées"; }
+  // 2. TRANSPORT POSSIBLE : ce que suggèrent les courants (estimation)
+  if(m){
+    const lvl = m.level==="Signalé" ? "élevé" : m.level.toLowerCase();
+    if(m.confiance==="insuffisant"){
+      lines.push(`Estimation : pas assez d'informations (le modèle dirait « ${lvl} »)`);
+      if(!head) head="Méduses : pas assez d'infos";
+    } else {
+      lines.push(`Estimation : risque ${lvl}`);
+      if(m.level==="Élevé"){ tier=Math.max(tier,1); head = head || "Méduses : risque élevé (estimation)"; }
+      if(!head) head=`Méduses : risque ${lvl} (estimation)`;
+    }
+    const tr = m.transport || m.why || [];
+    if(tr.length) lines.push(`Transport possible : ${tr.join(", ")}`);
+    if(m.note_modele) lines.push(`Désaccord : ${m.note_modele}`);
+    // 3. CONFIANCE
+    const c = m.confiance==="observé" ? "observation récente sur place" : m.confiance==="estimation" ? "estimation, sans observation récente sur cette plage" : m.confiance==="insuffisant" ? "faible, très peu de données dans le secteur" : "";
+    if(c) lines.push(`Confiance : ${c}`);
+  }
+  return {tier, lines, head, m};
 }
 
 function mergeModels(j){
@@ -607,11 +777,11 @@ function renderWith(w,marine,key){
   $("s-cloud").textContent=w.cloud==null?"—":`${Math.round(w.cloud)} %`;
   $("s-uv").textContent=w.uv==null?"—":fmt(w.uv,"",0);
 
-  const ranked=BEACHES.map((b,k)=>{ const r={b,...scoreBeach(b,w,marine?marine[k]:null)}; const m=medFor(b.id,key); r.med=m;
-    { const rt=recentText(b.id); if(rt) r.reasons.push(rt); }
-    if(m){ r.reasons.splice(1,0,medText(m)); const sp=medSpecies(b.id); if(sp) r.reasons.push(sp);
-      if(m.level==="Signalé") r.s=Math.max(0,r.s-20); else if(m.level==="Élevé") r.s=Math.max(0,r.s-15); else if(m.level==="Possible") r.s=Math.max(0,r.s-4); }
-    return r; }).sort((a,c)=>c.s-a.s);
+  // L'état de la mer (score) et l'alerte méduses sont SÉPARÉS : une belle mer ne compense jamais une alerte.
+  // Classement : d'abord les plages sans alerte, puis « vigilance », puis « méduses signalées » ; dans chaque groupe, la mer.
+  const ranked=BEACHES.map((b,k)=>{ const r={b,...scoreBeach(b,w,marine?marine[k]:null)}; r.mi=medInfo(b.id,key); r.med=r.mi.m;
+    r.jelly=[...r.mi.lines]; const bt=medBancs(b.id); if(bt) r.jelly.push(bt); const sp=medSpecies(b.id); if(sp) r.jelly.push(sp);
+    return r; }).sort((a,c)=>(a.mi.tier-c.mi.tier)||(c.s-a.s));
   const top=ranked[0], v=verdict(top.s);
   const isNow = key && key===tunisKey(new Date());
   const when = !key ? "Vent saisi à la main" : isNow ? "Lyoum, win n3oum ?" : `${dayLabel(key.slice(0,10))} · ${hourOf(key)}h`;
@@ -621,23 +791,25 @@ function renderWith(w,marine,key){
   best.querySelector(".eyebrow").textContent=when;
   best.querySelector("h2").textContent=top.b.name;
   best.querySelector(".why").textContent=`${vibe(top.s)} ${top.reasons[0]}.`;
-  const tags=[`${v.t} · ${top.s}/100`, `Vent ${Math.round(w.speed)} km/h`]; if(sea!=null) tags.push(`Eau ${Math.round(sea)} °C`); if(top.med) tags.push(`Méduses : ${top.med.level.toLowerCase()}`);
+  if(top.mi.tier>0){ const al=document.createElement("p"); al.className="alert"; al.textContent=`Attention : ${top.mi.head}. Toutes les plages ont une alerte méduses en ce moment.`; best.querySelector(".why").after(al); }
+  const tags=[`Mer ${v.t.toLowerCase()} · ${top.s}/100`, `Vent ${Math.round(w.speed)} km/h`]; if(sea!=null) tags.push(`Eau ${Math.round(sea)} °C`); if(top.mi.head) tags.push(top.mi.head);
   if(MED&&MED.generated&&typeof BASE_STATUS!=="undefined") $("status").textContent = BASE_STATUS + ` · méduses ${MED.version||""} du ${MED.generated.slice(8,10)}/${MED.generated.slice(5,7)}`;
   const tg=best.querySelector(".tags"); tags.forEach(t=>{const x=document.createElement("span");x.className="tag";x.textContent=t;tg.appendChild(x);});
 
   const list=$("list"); list.innerHTML="";
   ranked.slice(1).forEach(r=>{
-    const vv=verdict(r.s), li=document.createElement("li");
-    li.innerHTML=`<details class="beach"><summary>
+    const vv=verdict(r.s), li=document.createElement("li"), al=TIER_PILL[r.mi.tier];
+    li.innerHTML=`<details class="beach${r.mi.tier===2?" alerted":""}"><summary>
         <span class="score" style="background:${vv.c}">${r.s}</span>
         <span class="bname"><b></b><span></span></span>
-        <span class="pill ${vv.cls}">${vv.t}</span></summary>
-      <div class="more"><div class="zone"></div><ul></ul>
+        <span class="pills"><span class="pill ${vv.cls}">${vv.t}</span>${al?`<span class="pill ${al[0]}">${al[1]}</span>`:""}</span></summary>
+      <div class="more"><div class="zone"></div><div class="sub">La mer</div><ul class="sea"></ul><div class="sub">Méduses</div><ul class="jelly"></ul>
         <a class="maps" target="_blank" rel="noopener" href="${mapsUrl(r.b)}">Itinéraire →</a></div></details>`;
     li.querySelector(".bname b").textContent=r.b.name;
-    li.querySelector(".bname span").textContent=(r.med&&(r.med.level==="Signalé"||r.med.level==="Élevé")?`Méduses : ${r.med.level.toLowerCase()} · `:"")+r.reasons[0];
+    li.querySelector(".bname span").textContent=r.mi.tier>0 ? r.mi.head : r.reasons[0];
     li.querySelector(".zone").textContent=r.b.zone;
-    const ul=li.querySelector("ul"); r.reasons.forEach(t=>{const x=document.createElement("li");x.textContent=t;ul.appendChild(x);});
+    const ul=li.querySelector("ul.sea"); r.reasons.forEach(t=>{const x=document.createElement("li");x.textContent=t;ul.appendChild(x);});
+    const uj=li.querySelector("ul.jelly"); (r.jelly.length?r.jelly:["Pas d'information méduses pour cette plage."]).forEach(t=>{const x=document.createElement("li");x.textContent=t;uj.appendChild(x);});
     list.appendChild(li);
   });
 }
@@ -671,16 +843,27 @@ function deviceId(){
 function supa(path, opts={}){
   return fetch(SUPABASE_URL+path, Object.assign({headers:{apikey:SUPABASE_ANON_KEY, Authorization:"Bearer "+SUPABASE_ANON_KEY, "Content-Type":"application/json"}}, opts));
 }
+function chipGroup(id, key){
+  $(id).querySelectorAll(".chip").forEach(c=>c.onclick=()=>{
+    const on=c.getAttribute("aria-pressed")!=="true";
+    $(id).querySelectorAll(".chip").forEach(x=>x.setAttribute("aria-pressed","false"));
+    c.setAttribute("aria-pressed",String(on)); REPORT[key]= on ? c.dataset.v : null; updateSend(); });
+}
+function updateSend(){ $("r-send").disabled = !(REPORT.seen!==undefined && REPORT.seen!==null || REPORT.sea!=null || REPORT.clar!=null); }
 function setupReport(){
   if(!SUPABASE_URL||!SUPABASE_ANON_KEY) return;
   $("report").hidden=false;
   const sel=$("r-beach");
   BEACHES.forEach(b=>{ const o=document.createElement("option"); o.value=b.id; o.textContent=b.name; sel.appendChild(o); });
-  const pick=(seen)=>{ REPORT.seen=seen; $("r-seen").setAttribute("aria-pressed",String(seen)); $("r-none").setAttribute("aria-pressed",String(!seen));
-    $("r-opts").hidden=!seen; $("r-send").disabled=false; };
-  $("r-seen").onclick=()=>pick(true); $("r-none").onclick=()=>pick(false);
+  REPORT={seen:null, amount:1, sea:null, clar:null, from:null, min:null};
+  const pick=(seen,btn)=>{ const on=$(btn).getAttribute("aria-pressed")!=="true";
+    ["r-seen","r-none","r-skip"].forEach(x=>$(x).setAttribute("aria-pressed","false"));
+    $(btn).setAttribute("aria-pressed",String(on)); REPORT.seen = on ? seen : null;
+    $("r-opts").hidden = !(on && seen===true); $("r-how").hidden = !(on && (seen===true||seen===false)); updateSend(); };
+  $("r-seen").onclick=()=>pick(true,"r-seen"); $("r-none").onclick=()=>pick(false,"r-none"); $("r-skip").onclick=()=>pick("skip","r-skip");
   $("r-amount").querySelectorAll(".chip").forEach(c=>c.onclick=()=>{ REPORT.amount=+c.dataset.v;
     $("r-amount").querySelectorAll(".chip").forEach(x=>x.setAttribute("aria-pressed",String(x===c))); });
+  chipGroup("r-sea","sea"); chipGroup("r-clar","clar"); chipGroup("r-from","from"); chipGroup("r-min","min");
   $("r-send").onclick=sendReport;
   loadRecent();
 }
@@ -694,30 +877,43 @@ async function sendReport(){
   const msg=$("r-msg"); msg.className="msg"; msg.textContent="Envoi…"; $("r-send").disabled=true;
   const b=BEACHES.find(x=>x.id===$("r-beach").value);
   const pos=await getPosition();
-  const body={p_device:deviceId(), p_beach:b.id, p_lat:b.lat, p_lon:b.lon,
+  const seen = REPORT.seen===true ? true : REPORT.seen===false ? false : null;
+  const base={p_device:deviceId(), p_beach:b.id, p_lat:b.lat, p_lon:b.lon,
     p_user_lat:pos?pos.latitude:null, p_user_lon:pos?pos.longitude:null, p_user_acc:pos?Math.round(pos.accuracy):null,
-    p_seen:REPORT.seen, p_amount:REPORT.seen?REPORT.amount:0, p_species:REPORT.seen?($("r-species").value||null):null,
-    p_stung:REPORT.seen&&$("r-stung").checked, p_hp:$("r-web").value||null, p_code:$("r-code").value.trim()||null};
+    p_seen:seen, p_amount:seen?REPORT.amount:0, p_species:seen?($("r-species").value||null):null,
+    p_stung:seen===true&&$("r-stung").checked, p_hp:$("r-web").value||null, p_code:$("r-code").value.trim()||null};
+  const v08={...base, p_sea:REPORT.sea!=null?+REPORT.sea:null, p_clarity:REPORT.clar!=null?+REPORT.clar:null,
+    p_from:seen!==null?REPORT.from:null, p_minutes:seen!==null&&REPORT.min!=null?+REPORT.min:null};
   try{
-    const r=await supa("/rest/v1/rpc/submit_report",{method:"POST",body:JSON.stringify(body)});
+    let r=await supa("/rest/v1/rpc/submit_report",{method:"POST",body:JSON.stringify(v08)});
+    if(r.status===404 && seen!==null){                       // base pas encore mise à jour (v0.8) : ancien format
+      r=await supa("/rest/v1/rpc/submit_report",{method:"POST",body:JSON.stringify(base)}); }
     const js=await r.json();
-    if(r.ok&&js.ok){ msg.className="msg ok"; msg.textContent=`Merci ! Ton signalement pour ${b.name} est pris en compte.`;
-      REPORT.seen=null; $("r-seen").setAttribute("aria-pressed","false"); $("r-none").setAttribute("aria-pressed","false"); $("r-opts").hidden=true; loadRecent(); }
+    if(r.ok&&js.ok){ msg.className="msg ok"; msg.textContent=`Merci ! C'est enregistré pour ${b.name}.`;
+      setupReset(); loadRecent(); }
     else { msg.className="msg err"; msg.textContent=(js&&js.err)||"L'envoi n'a pas marché, réessaie dans un moment."; $("r-send").disabled=false; }
   }catch(e){ msg.className="msg err"; msg.textContent="Pas de connexion : réessaie quand tu as du réseau."; $("r-send").disabled=false; }
+}
+function setupReset(){
+  REPORT={seen:null, amount:1, sea:null, clar:null, from:null, min:null};
+  $("report").querySelectorAll('[aria-pressed="true"]').forEach(x=>{ if(!(x.parentElement.id==="r-amount"&&x.dataset.v==="1")) x.setAttribute("aria-pressed","false"); });
+  $("r-opts").hidden=true; $("r-how").hidden=true; updateSend();
 }
 async function loadRecent(){
   try{ const r=await supa("/rest/v1/recent_reports?select=*"); if(!r.ok) return;
     RECENT={}; (await r.json()).forEach(x=>RECENT[x.beach_id]=x); render(); }catch(e){}
 }
-function recentText(id){
+function recentText(id){ // (v0.8 : intégré à medInfo ; gardé pour compatibilité)
   const x=RECENT[id]; if(!x) return "";
   const parts=[]; if(x.seen>0) parts.push(`${x.seen} « méduses vues »`); if(x.none_seen>0) parts.push(`${x.none_seen} « rien vu »`);
   return parts.length?`Signalements des baigneurs (24 h) : ${parts.join(", ")}`:"";
 }
 
-load();
-loadMeduses();
-setupReport();
+async function loadPlages(){
+  try{ const r=await fetch("plages.json",{cache:"no-store"}); if(!r.ok) return;
+    const list=((await r.json()).plages||[]).filter(b=>(b.region||"djerba")==="djerba").map(b=>({...b, shallow:!!b.shallow}));
+    if(list.length) BEACHES=list; }catch(e){}
+}
+(async()=>{ await loadPlages(); load(); loadMeduses(); loadBancs(); setupReport(); })();
 </script>
 </body>
