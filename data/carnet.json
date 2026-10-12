@@ -1,0 +1,12 @@
+{
+ "entrees": [],
+ "surprises": [],
+ "annonces_confirmees": [],
+ "stats": {
+  "par_delai": {},
+  "surprises": 0,
+  "annonces_confirmees": 0,
+  "note": "Chaque prévision d'arrivée d'un banc est vérifiée avec les observations et signalements ±1 jour. taux_reussite = « vu » / (« vu » + « rien vu »). Surprises = méduses vues sans annonce d'un banc."
+ },
+ "_surprises_vues": []
+}

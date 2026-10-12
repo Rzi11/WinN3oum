@@ -142,12 +142,12 @@
   },
   "2026-10-13|aghir": {
    "level": "Possible",
-   "risk": 0.27,
+   "risk": 0.25,
    "run": "2026-10-12"
   },
   "2026-10-13|jmour": {
    "level": "Possible",
-   "risk": 0.32,
+   "risk": 0.33,
    "run": "2026-10-12"
   },
   "2026-10-13|kantara": {
@@ -157,17 +157,17 @@
   },
   "2026-10-13|mahrez": {
    "level": "Possible",
-   "risk": 0.27,
+   "risk": 0.25,
    "run": "2026-10-12"
   },
   "2026-10-13|rmel": {
    "level": "Possible",
-   "risk": 0.41,
+   "risk": 0.4,
    "run": "2026-10-12"
   },
   "2026-10-13|seguia": {
    "level": "Possible",
-   "risk": 0.26,
+   "risk": 0.27,
    "run": "2026-10-12"
   },
   "2026-10-13|taguermess": {
