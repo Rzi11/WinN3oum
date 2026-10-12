@@ -410,8 +410,8 @@ def obs_persistence(obs, b, t_day_start):
         if age_h < -24 or age_h > 72:
             continue
         d = float(km_between(b["lat"], b["lon"], o["lat"], o["lon"]))
-        if o["source"] == "presse":
-            continue
+        if o["source"] in ("presse", "signalement"):
+            continue                              # signalements : traités à part (crédibilité, voir credibility.py)
         if d > 10:
             continue
         decay = math.exp(-max(0, age_h) / 36) * (1 - d / 12)

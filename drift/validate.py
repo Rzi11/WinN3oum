@@ -118,7 +118,9 @@ def run_validation(predict, gather_obs, jsave, out_path, loaders=None):
             break
 
     rows, all_risks = [], []
+    by_point = {}          # (point, facteur) -> {jour: valeur} pour la comparaison dans le temps
     factors = ("risk", "drift", "obs", "wind_past", "habitat", "exposure", "arrivals")
+    C.VALID_MAX_RUNS = max(C.VALID_MAX_RUNS, 30)
     for start, covers in runs:
         t_now = np.datetime64(start.isoformat() + "T00:00", "m") - np.timedelta64(1, "D")
         past = [o for o in obs if o["time"] < t_now]
@@ -142,6 +144,11 @@ def run_validation(predict, gather_obs, jsave, out_path, loaders=None):
                 for f in factors[1:]:
                     vals[f].append(r["factors"].get(f, np.nan) if f != "habitat" else r["factors"].get("habitat", np.nan))
             all_risks += vals["risk"]
+            ev_points = {e["point"] for e in events}
+            for i, pid in enumerate(ids):
+                if pid in ev_points:
+                    for f in factors:
+                        by_point.setdefault((pid, f), {})[day] = vals[f][i]
             for e in [e for e in events if e["date"] == day]:
                 i = ids.index(e["point"])
                 row = dict(e, lead_days=di, level=res["beaches"][e["point"]]["days"][di]["level"], mode=res["mode"])
@@ -153,6 +160,14 @@ def run_validation(predict, gather_obs, jsave, out_path, loaders=None):
                 rows.append(row)
         print(f"[validation] simulation du {start} : {sum(1 for r in rows if r['date'] in covers)} événements notés")
 
+    # --- comparaison dans le temps : le jour observé ressort-il par rapport aux autres jours simulés au même endroit ?
+    for r in rows:
+        for f in factors:
+            series = by_point.get((r["point"], f), {})
+            others = [v for d, v in series.items() if d != r["date"] and v == v]
+            if len(others) >= 5 and r["date"] in series and series[r["date"]] == series[r["date"]]:
+                r["tpct_" + f] = round(percentile(others + [series[r["date"]]], series[r["date"]]), 3)
+
     # --- résumé
     def mean(key):
         v = [r[key] for r in rows if key in r]
@@ -162,6 +177,11 @@ def run_validation(predict, gather_obs, jsave, out_path, loaders=None):
         percentile_moyen_risque=mean("pct_risk"),
         part_dans_le_quart_superieur=round(float(np.mean([r["pct_risk"] >= 0.75 for r in rows])), 3) if rows else None,
         percentile_moyen_par_facteur={f: mean("pct_" + f) for f in factors[1:]},
+        dans_le_temps=dict(
+            evenements=sum(1 for r in rows if "tpct_risk" in r),
+            percentile_moyen_risque=mean("tpct_risk"),
+            par_facteur={f: mean("tpct_" + f) for f in factors[1:]},
+            lecture="Même endroit, autres jours : le jour où des méduses ont été vues avait-il un risque plus haut que d'habitude ?"),
         niveaux_aux_points_observes={lv: sum(r["level"] == lv for r in rows) for lv in ("Faible", "Possible", "Élevé", "Signalé")},
         lecture="50 % = pas mieux que le hasard. 60–65 % = utile. Au-delà de 70 % = très bon. "
                 "Un facteur proche de 50 % n'aide pas : baisser son poids dans config.py.",

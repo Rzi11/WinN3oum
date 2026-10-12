@@ -5,7 +5,7 @@ Tous les chiffres marqués « À RÉGLER » sont des hypothèses de départ :
 ils seront ajustés avec le rejeu du passé et les signalements de l'été.
 """
 
-VERSION = "v0.3"
+VERSION = "v0.5"
 UTC_OFFSET = 1                     # Tunisie : UTC+1, pas d'heure d'été
 
 # ------------------------------------------------------------------ zones
@@ -40,17 +40,18 @@ HISTORY_DAYS = 60                  # historique par plage pour la comparaison «
 HISTORY_MIN_RUNS = 7               # nb de nuits avant d'utiliser la comparaison à soi-même
 
 # ------------------------------------------------------------------ poids des facteurs (À RÉGLER)
+# Poids réglés d'après la 1re validation régionale (26 observations, oct. 2026) — petit échantillon, à revoir :
+#   eau favorable 71 % (utile) · exposition 68 % (utile) · dérive 45 % (pas de signal à cette échelle)
+#   vent de mer passé 33 % (signal INVERSE : on voit plus de méduses par mer calme → facteur « calme »)
 W = dict(
-    drift=0.55,        # poussée physique vers la plage
-    obs=0.25,          # observations récentes proches (persistance)
-    wind_past=0.10,    # vent vers la plage sur les 72 dernières heures
+    drift=0.30,        # poussée physique vers la plage (gardée : c'est elle qui fait varier le risque d'un jour à l'autre)
+    habitat=0.30,      # eau favorable (température, salinité, chlorophylle, couche de surface)
+    obs=0.20,          # observations récentes proches (persistance)
+    calm=0.10,         # peu de vent de mer ces 3 derniers jours (eau calme = méduses visibles et baigneurs présents)
     news=0.10,         # articles de presse récents sur la région
 )
-# L'eau favorable ne fait plus partie de la somme (elle était « très favorable » partout et rendait tout « Possible ») :
-# elle module le risque de ×0,8 (eau défavorable) à ×1,1 (eau idéale).
-HABITAT_MULT = (0.8, 1.1)
 BASE_PRESENCE = 0.15               # part du risque qui ne dépend que de la saison
-LEVELS = (0.2, 0.45)               # seuils Faible / Possible / Élevé — À RÉGLER avec validation.json
+LEVELS = (0.2, 0.45)               # seuils par défaut ; remplacés automatiquement par ceux de data/validation.json (même version)
 STRONG_WIND_KMH = 35               # au-delà : méduses brassées en profondeur, moins visibles
 LUNAR_WEIGHT = 0.0                 # cycle lunaire (cuboméduses) : calculé mais pas utilisé tant que non prouvé ici
 

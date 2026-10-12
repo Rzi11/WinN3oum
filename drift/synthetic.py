@@ -126,3 +126,19 @@ def validation_obs(t_to):
         out.append(dict(lat=la + rng.normal(0, .02), lon=lo + rng.normal(0, .02), time=t_to - int(rng.integers(5, 200)) * 24 * h,
                         taxon="Pelagia noctiluca", source="iNaturalist", weight=1.0, spread_km=2, ref=f"v{k}"))
     return out
+
+
+def test_reports(t_now):
+    """Signalements factices : 2 baigneurs indépendants à Sidi Mahrez, un « menteur » isolé à El Kantara, une sentinelle à Aghir."""
+    h = np.timedelta64(1, "h")
+    new = dict(alpha=2, beta=2, role="public", banned=False, n_reports=1)
+    good = dict(alpha=9, beta=2, role="public", banned=False, n_reports=12)
+    liar = dict(alpha=2, beta=7, role="public", banned=False, n_reports=9)
+    sent = dict(alpha=8, beta=2, role="sentinelle", banned=False, n_reports=20)
+    return [
+        dict(id=1, time=t_now + 8 * h, device_id="a", beach_id="mahrez", lat=33.858, lon=10.985, user_lat=33.859, user_lon=10.984, user_acc=20, seen=True, amount=2, species="Pélagie", stung=False, ip_hash="n1", status="new", dev=new),
+        dict(id=2, time=t_now + 9 * h, device_id="b", beach_id="mahrez", lat=33.858, lon=10.985, user_lat=None, user_lon=None, user_acc=None, seen=True, amount=1, species=None, stung=True, ip_hash="n2", status="new", dev=good),
+        dict(id=3, time=t_now + 9 * h, device_id="c", beach_id="kantara", lat=33.665, lon=10.955, user_lat=36.8, user_lon=10.2, user_acc=30, seen=True, amount=3, species="Galion", stung=False, ip_hash="n3", status="new", dev=liar),
+        dict(id=4, time=t_now + 9 * h, device_id="d", beach_id="kantara", lat=33.665, lon=10.955, user_lat=None, user_lon=None, user_acc=None, seen=True, amount=3, species=None, stung=False, ip_hash="n3", status="new", dev=new),
+        dict(id=5, time=t_now + 7 * h, device_id="e", beach_id="aghir", lat=33.772, lon=11.025, user_lat=33.772, user_lon=11.024, user_acc=10, seen=False, amount=0, species=None, stung=False, ip_hash="n5", status="new", dev=sent),
+    ]

@@ -55,6 +55,7 @@ def gather_obs(t_from, t_to, status, with_news=True):
     obs = []
     for name, fn in (("iNaturalist", lambda: S.load_inaturalist(C.REGION_BOX, d1, d2)),
                      ("GBIF", lambda: S.load_gbif(C.REGION_BOX, d1, d2)),
+                     ("OBIS", lambda: S.load_obis(C.REGION_BOX, d1, d2)),
                      ("signalements", lambda: S.load_reports(P_REPORTS, t_from))):
         try:
             got = fn(); obs += got; status[name] = f"ok ({len(got)})"
@@ -162,13 +163,11 @@ def predict(t_now, obs, status, history=None, historical=False, loaders=None,
             wind_f = float(np.clip(push / 5, 0, 1))
             news_f = M.news_factor(obs, b, t_day)
             hab_f, hab_det = M.habitat_scores(hab, b["lat"], b["lon"], t_day + np.timedelta64(12, "h")) if hab else (None, {})
-            ws = dict(C.W)
-            fac = dict(drift=drift_f, obs=obs_f, wind_past=wind_f, news=news_f)
-            P = sum(ws[k] * fac[k] for k in ws) / sum(ws.values())
-            hm = 1.0
+            fac = dict(drift=drift_f, obs=obs_f, wind_past=wind_f, calm=1 - wind_f, news=news_f)
             if hab_f is not None:
                 fac["habitat"] = hab_f
-                hm = C.HABITAT_MULT[0] + (C.HABITAT_MULT[1] - C.HABITAT_MULT[0]) * hab_f
+            ws = {k: v for k, v in C.W.items() if k in fac}
+            P = sum(ws[k] * fac[k] for k in ws) / sum(ws.values())
             # un banc qui arrive depuis une observation réelle pèse plus lourd que la seule physique
             if a["obs"] > 0:
                 P = max(P, min(1.0, 0.35 + 0.5 * (1 - math.exp(-a["obs"] / 5))))
@@ -178,8 +177,9 @@ def predict(t_now, obs, status, history=None, historical=False, loaders=None,
             strong = 0.8 if wspd > C.STRONG_WIND_KMH else 1.0
             moon = M.moon_age_days(t_day + np.timedelta64(12, "h"))
             lunar = 1 + C.LUNAR_WEIGHT * math.cos(2 * math.pi * (moon - 23) / 29.53)
-            risk = float(np.clip(season * (C.BASE_PRESENCE + (1 - C.BASE_PRESENCE) * P) * E * hm * strong * lunar, 0, 1))
-            level = "Faible" if risk < C.LEVELS[0] else "Possible" if risk < C.LEVELS[1] else "Élevé"
+            risk = float(np.clip(season * (C.BASE_PRESENCE + (1 - C.BASE_PRESENCE) * P) * E * strong * lunar, 0, 1))
+            lv = levels()
+            level = "Faible" if risk < lv[0] else "Possible" if risk < lv[1] else "Élevé"
             if signal and d in days[:2]:
                 level = "Signalé"
             why = explain(fac, a, E, strong, season, mode)
@@ -192,6 +192,23 @@ def predict(t_now, obs, status, history=None, historical=False, loaders=None,
         out_beaches[b["id"]] = dict(name=b["name"], exposure=exposure[b["id"]][1], days=rows,
                                     species=M.likely_species(int(days[0][5:7]), sst))
     return dict(mode=mode, days=days, beaches=out_beaches, particles=dict(fond=n_bg, observations=n_obs)), raw_today
+
+
+_LEVELS = None
+
+
+def levels():
+    """Seuils issus de la dernière validation de la même version du modèle, sinon ceux de config.py."""
+    global _LEVELS
+    if _LEVELS is None:
+        v = jload(os.path.join(DATA, "validation.json"), {})
+        sg = (v.get("summary") or {}).get("seuils_suggeres")
+        if v.get("version") == C.VERSION and sg and 0 < sg["possible"] < sg["eleve"] < 1:
+            _LEVELS = (sg["possible"], sg["eleve"])
+            print(f"[seuils] repris de la validation : {_LEVELS}")
+        else:
+            _LEVELS = C.LEVELS
+    return _LEVELS
 
 
 def explain(f, a, E, strong, season, mode):
@@ -208,12 +225,12 @@ def explain(f, a, E, strong, season, mode):
         parts.append("un peu de dérive vers la plage")
     else:
         parts.append("peu de dérive vers la plage")
-    if f["wind_past"] >= 0.5:
-        parts.append("vent de mer ces 3 derniers jours")
+    if f["wind_past"] <= 0.1:
+        parts.append("mer calme ces derniers jours")
     if f["news"] > 0:
         parts.append("méduses dans la presse locale")
-    if f.get("habitat", 0.5) >= 0.85 and f["drift"] >= 0.2:
-        parts.append("eau très favorable")
+    if f.get("habitat", 0.5) >= 0.8:
+        parts.append("eau favorable aux méduses")
     if E >= 1.15:
         parts.append("plage qui piège les méduses")
     if strong < 1:
@@ -274,12 +291,36 @@ def run_normal(loaders=None, test=False):
         status["observations"] = "synthétiques"
     else:
         obs, articles = gather_obs(t_now - np.timedelta64(C.LOOKBACK_DAYS, "D"), t_now + np.timedelta64(1, "D"), status)
+    # --- signalements des utilisateurs (Supabase) : points de départ + fusion pondérée par la crédibilité
+    import credibility as CR
+    reports = []
+    if test and hasattr(loaders, "test_reports"):
+        reports = loaders.test_reports(t_now)
+    elif CR.enabled():
+        try:
+            reports = CR.fetch_reports(C.LOOKBACK_DAYS)
+        except Exception as e:
+            status["signalements app"] = f"indisponible : {str(e)[:120]}"
+    if reports:
+        status["signalements app"] = f"ok ({len(reports)})"
+        obs = obs + CR.as_seed_obs(reports, C.BEACHES)
+    elif "signalements app" not in status:
+        status["signalements app"] = "non configuré" if not CR.enabled() else "ok (0)"
     history = jload(P_HIST, {})
     res, raw_today = predict(t_now, obs, status, history=history, loaders=loaders)
+    science = [o for o in obs if o["source"] in ("iNaturalist", "GBIF", "OBIS")]
+    if reports:
+        res = CR.fuse(res, reports, science, C.BEACHES, levels())
+    rep_stats = None
+    if reports and CR.enabled() and not test:
+        try:
+            rep_stats = CR.update_reputation(reports, science, res, C.BEACHES)
+        except Exception as e:
+            print(f"[réputation] échec : {e}")
     out = dict(generated=now.replace(microsecond=0).isoformat() + "Z", version=C.VERSION, mode=res["mode"],
                method="Dérive (courants surface + 15 m, vent, vagues, jour/nuit, marée) × eau favorable × exposition + observations, presse, vent passé, saison. Indicateur non validé.",
                sources=status, particles=res["particles"], days=res["days"], beaches=res["beaches"],
-               observations=summarize_obs(obs), news=articles[:10])
+               observations=summarize_obs(obs), news=articles[:10], reputation=rep_stats)
     jsave(P_OUT, out)
     if not test:
         update_history(raw_today, res["days"][0])

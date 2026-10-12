@@ -243,6 +243,33 @@ def load_gbif(box, d1, d2):
     return obs
 
 
+def load_obis(box, d1, d2):
+    """OBIS (base mondiale de biodiversité marine) : campagnes scientifiques, JellyWatch, etc. Sans compte."""
+    poly = (f"POLYGON(({box['lon_min']} {box['lat_min']},{box['lon_max']} {box['lat_min']},"
+            f"{box['lon_max']} {box['lat_max']},{box['lon_min']} {box['lat_max']},{box['lon_min']} {box['lat_min']}))")
+    obs = []
+    for taxon in ("Scyphozoa", "Cubozoa", "Physalia physalis", "Velella velella"):
+        r = http_get("https://api.obis.org/v3/occurrence", timeout=60, params=dict(
+            scientificname=taxon, geometry=poly, startdate=d1, enddate=d2, size=1000))
+        for o in r.json().get("results", []):
+            if "inaturalist" in str(o.get("datasetName", "")).lower():
+                continue                          # déjà pris via iNaturalist
+            if o.get("decimalLatitude") is None or not o.get("eventDate"):
+                continue
+            ed = str(o["eventDate"])[:16].replace(" ", "T")
+            if len(ed) == 10:
+                ed += "T12:00"
+            try:
+                t = np.datetime64(ed[:16], "m")
+            except Exception:
+                continue
+            obs.append(dict(lat=float(o["decimalLatitude"]), lon=float(o["decimalLongitude"]), time=t,
+                            taxon=o.get("scientificName", "?"), source="OBIS", weight=1.0, spread_km=3.0,
+                            ref=f"obis:{o.get('id')}"))
+    print(f"[OBIS] {len(obs)} observations")
+    return obs
+
+
 def load_reports(path, since):
     """Signalements des utilisateurs de l'app (fichier facultatif data/signalements.json)."""
     if not os.path.exists(path):
