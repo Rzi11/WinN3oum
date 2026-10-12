@@ -22,7 +22,10 @@ import numpy as np
 import config as C
 import model as M
 
-SUPA_URL = os.environ.get("SUPABASE_URL", "").rstrip("/")
+SUPA_URL = os.environ.get("SUPABASE_URL", "").strip().rstrip("/")
+for _suffix in ("/rest/v1", "/rest/v1/rpc"):        # tolère l'adresse copiée depuis la page « Data API »
+    if SUPA_URL.endswith(_suffix):
+        SUPA_URL = SUPA_URL[: -len(_suffix)]
 SUPA_KEY = os.environ.get("SUPABASE_SERVICE_KEY", "")
 
 MAX_LLR_PUBLIC = 1.0        # poids maximum d'une source non vérifiée (≈ fait passer 20 % → 40 %)
