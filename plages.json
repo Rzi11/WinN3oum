@@ -1,0 +1,27 @@
+{
+ "_aide": "Liste des plages, partagée par l'app (index.html) et le modèle méduses (drift/). Pour ajouter ou renommer une plage : modifier ici, rien d'autre. id = identifiant court sans espace (ne pas le changer après coup : l'historique y est rattaché). face = direction vers laquelle la plage regarde la mer (0 = nord, 90 = est, 180 = sud, 270 = ouest). shelter = 1 si encadrée par un cap ou une digue. wadi = 1 si arrivée d'eau douce. shallow = 1 si très peu profonde. beauty = potentiel turquoise (0-100).",
+ "version": 1,
+ "plages": [
+  {"id": "rmel", "region": "djerba", "name": "Ras R'mel (île aux flamants)", "short": "Ras R'mel", "zone": "Presqu'île nord, face à Houmt Souk",
+   "lat": 33.895, "lon": 10.925, "face": 0, "shelter": 1, "wadi": 0, "shallow": 1, "beauty": 95,
+   "note": "Accès surtout en bateau depuis Houmt Souk.", "bnote": "Lagon peu profond, sable blanc : l'eau la plus turquoise de l'île."},
+  {"id": "seguia", "region": "djerba", "name": "La Seguia", "short": "Seguia", "zone": "Côte sud-est",
+   "lat": 33.735, "lon": 11.005, "face": 125, "shelter": 0, "wadi": 0, "shallow": 0, "beauty": 88,
+   "note": "", "bnote": "Sable clair, eau transparente quand c'est calme."},
+  {"id": "mahrez", "region": "djerba", "name": "Sidi Mahrez", "short": "Sidi Mahrez", "zone": "Zone touristique, côte nord-est",
+   "lat": 33.858, "lon": 10.985, "face": 20, "shelter": 0, "wadi": 0, "shallow": 0, "beauty": 85,
+   "note": "Longue plage de sable fin, bien équipée.", "bnote": "Face au nord : le soleil est toujours dans ton dos."},
+  {"id": "aghir", "region": "djerba", "name": "Aghir", "short": "Aghir", "zone": "Côte est",
+   "lat": 33.772, "lon": 11.025, "face": 100, "shelter": 0, "wadi": 0, "shallow": 0, "beauty": 85,
+   "note": "", "bnote": "Plus belle l'après-midi, soleil dans le dos."},
+  {"id": "taguermess", "region": "djerba", "name": "Ras Taguermess", "short": "Taguermess", "zone": "Cap nord-est, près du phare",
+   "lat": 33.825, "lon": 11.055, "face": 65, "shelter": 0, "wadi": 0, "shallow": 0, "beauty": 78,
+   "note": "Très exposée : spot de kite quand ça souffle.", "bnote": ""},
+  {"id": "kantara", "region": "djerba", "name": "El Kantara", "short": "El Kantara", "zone": "Côte sud-est, chaussée romaine",
+   "lat": 33.665, "lon": 10.955, "face": 155, "shelter": 1, "wadi": 0, "shallow": 1, "beauty": 65,
+   "note": "Eau très peu profonde, idéal enfants.", "bnote": "Fond parfois vaseux : moins turquoise."},
+  {"id": "jmour", "region": "djerba", "name": "Sidi Jmour", "short": "Sidi Jmour", "zone": "Côte ouest",
+   "lat": 33.848, "lon": 10.745, "face": 295, "shelter": 0, "wadi": 0, "shallow": 1, "beauty": 58,
+   "note": "Peu profonde, calme, couchers de soleil.", "bnote": "Mieux pour le coucher de soleil que pour le turquoise."}
+ ]
+}
