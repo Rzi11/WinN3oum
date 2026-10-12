@@ -6,11 +6,11 @@ on:
   workflow_dispatch:          # bouton « Run workflow » pour lancer à la main
     inputs:
       mode:
-        description: "normal = prévision du jour ; rejeu = Djerba sur le passé ; validation = toute la région (~1 h)"
+        description: "normal = prévision + bancs + apprentissage ; rejeu = Djerba sur le passé ; validation = Tunisie-Sicile (~1 h) ; apprentissage = 2 h d'apprentissage méditerranéen ; connectivite = recalculer la carte d'où viennent les méduses (~2 h)"
         required: true
         default: normal
         type: choice
-        options: [normal, rejeu, validation]
+        options: [normal, rejeu, validation, apprentissage, connectivite]
 
 permissions:
   contents: write
@@ -46,9 +46,40 @@ jobs:
             python drift/run_drift.py --replay
           elif [ "${{ github.event.inputs.mode }}" = "validation" ]; then
             python drift/run_drift.py --validate
+          elif [ "${{ github.event.inputs.mode }}" = "apprentissage" ]; then
+            echo "apprentissage seul"
+          elif [ "${{ github.event.inputs.mode }}" = "connectivite" ]; then
+            python drift/connect.py --budget 140
           else
             python drift/run_drift.py
           fi
+
+      - name: Carte « d'où viennent les méduses » (la première fois)
+        if: github.event.inputs.mode == '' || github.event.inputs.mode == 'normal'
+        continue-on-error: true
+        env:
+          COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUS_USER }}
+          COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUS_PASSWORD }}
+        run: |
+          if [ ! -f data/connectivite.json ]; then python drift/connect.py --budget 60; else echo "déjà calculée"; fi
+
+      - name: Apprendre sur la Méditerranée
+        if: github.event.inputs.mode == '' || github.event.inputs.mode == 'normal' || github.event.inputs.mode == 'apprentissage'
+        continue-on-error: true
+        env:
+          COPERNICUSMARINE_SERVICE_USERNAME: ${{ secrets.COPERNICUS_USER }}
+          COPERNICUSMARINE_SERVICE_PASSWORD: ${{ secrets.COPERNICUS_PASSWORD }}
+        run: |
+          if [ "${{ github.event.inputs.mode }}" = "apprentissage" ]; then
+            python drift/learn.py --budget 120
+          else
+            python drift/learn.py --budget 25
+          fi
+
+      - name: Recalibrer les poids
+        if: github.event.inputs.mode == '' || github.event.inputs.mode == 'normal' || github.event.inputs.mode == 'apprentissage'
+        continue-on-error: true
+        run: python drift/calibrate.py
 
       - name: Enregistrer le résultat
         run: |
