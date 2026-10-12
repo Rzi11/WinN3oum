@@ -62,6 +62,13 @@ def load_currents_depth(box, start, end):
     return _currents(box, start, end, 0.6)
 
 
+def load_currents_daily(box, start, end):
+    g = _currents(box, start, end, 1.0)
+    g.times = g.times[::24]
+    g.data = {k: v[::24] for k, v in g.data.items()}
+    return g
+
+
 def load_stokes(box, start, end):
     lats, lons = _grid(box); times = _times(start, end)
     U = np.full((len(times), len(lats), len(lons)), -0.03, "float32")

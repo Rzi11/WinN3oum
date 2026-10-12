@@ -21,7 +21,7 @@ import sources as S
 import model as M
 
 
-def coastal_points(mask_lats, mask_lons, sea):
+def coastal_points(mask_lats, mask_lons, sea, box=None):
     """Cases de mer en bord de côte, espacées d'environ VALID_POINT_SPACING_KM, avec leur orientation."""
     ny, nx = sea.shape
     cands = []
@@ -39,7 +39,7 @@ def coastal_points(mask_lats, mask_lons, sea):
                 continue
             face = (math.degrees(math.atan2(vx, vy)) + 360) % 360
             cands.append((float(mask_lats[y]), float(mask_lons[x]), face))
-    rb = C.REGION_BOX
+    rb = box or C.REGION_BOX
     cands = [c for c in cands if rb["lat_min"] + .15 < c[0] < rb["lat_max"] - .15 and rb["lon_min"] + .15 < c[1] < rb["lon_max"] - .15]
     picked = []
     for la, lo, f in sorted(cands):
@@ -126,7 +126,7 @@ def run_validation(predict, gather_obs, jsave, out_path, loaders=None):
         past = [o for o in obs if o["time"] < t_now]
         st = {}
         try:
-            res, _ = predict(t_now, past, st, historical=True, loaders=loaders, beaches=points, box=C.REGION_BOX,
+            res, _ = predict(t_now, past, st, historical=True, loaders=loaders, beaches=points, box=C.REGION_BOX, region=C.REGION_BOX,
                              spacing=C.VALID_SPACING, lookback_days=C.VALID_LOOKBACK_DAYS)
         except Exception as e:
             print(f"[validation] simulation du {start} échouée : {str(e)[:150]}")

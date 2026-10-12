@@ -1,21 +1,28 @@
 """
 Signalements des utilisateurs : les faire compter sans se faire piéger.
 
-Chaque signalement pèse dans le calcul, mais son poids dépend de 5 vérifications croisées :
-  1. Réputation de l'appareil  : signalements passés confirmés / contredits (modèle bêta, part de 50 %).
-                                 Appareil neuf plafonné ; sentinelles (maîtres-nageurs, hôtels…) très fiables.
-  2. Présence sur place        : position du téléphone (si acceptée) à moins de 1,5 km de la plage.
-  3. Plausibilité              : le signalement colle-t-il au modèle (dérive, eau, saison) et à l'espèce possible ?
-  4. Recoupement               : d'autres personnes indépendantes (autres réseaux), iNaturalist/OBIS/GBIF disent pareil ?
-                                 Plusieurs appareils sur le même réseau = une seule voix.
-  5. Contradiction             : les « rien vu » des autres font baisser.
+Trois choses SÉPARÉES (v0.8, après relecture externe) :
+  A. Anti-spam (dans la base, à l'envoi) : limites, doublons, déplacements impossibles, piège à robots.
+  B. Qualité de l'observation (ici) :
+     1. Réputation de l'appareil  : signalements passés confirmés / contredits par d'AUTRES sources (modèle bêta).
+                                    Appareil neuf plafonné ; sentinelles (maîtres-nageurs, hôtels…) très fiables.
+     2. Présence sur place        : position du téléphone (si acceptée) à moins de 1,5 km de la plage.
+     3. Conditions d'observation  : « rien vu » depuis l'eau, longtemps, en eau claire = informatif ;
+                                    « rien vu » depuis le sable, 2 minutes, en eau trouble = peu informatif.
+     4. Espèce compatible avec la saison (sinon un peu moins de poids).
+  C. Accord avec le modèle : NE réduit PLUS le poids d'un signalement. Un désaccord est noté comme une information
+     (le modèle a peut-être raté quelque chose), jamais comme une preuve de mensonge.
+  Recoupement : plusieurs personnes indépendantes, ou une observation iNaturalist/OBIS/GBIF.
+  Même réseau ≠ même personne (hôtel, famille) : les voix d'un même réseau comptent, mais de moins en moins.
+  Contradiction : les « rien vu » des autres font baisser le risque, sans accuser personne.
 
 Fusion : on part du risque du modèle et on ajoute le poids de chaque signalement en « log-cote »
 (méthode bayésienne). Un signalement seul et non vérifié peut faire monter d'un cran, jamais créer
 une alerte « Signalé » : il faut un recoupement.
 
-Chaque nuit, la réputation des appareils est mise à jour : confirmé → plus de poids la fois suivante,
-contredit → moins ; un appareil qui ment souvent est banni sans le savoir (ses envois sont ignorés).
+Chaque nuit, la réputation des appareils est mise à jour : confirmé par d'autres → plus de poids la fois suivante ;
+contredit seulement par des preuves solides (plusieurs « rien vu » sur place au même moment, depuis l'eau), jamais par le
+modèle seul. Un appareil contredit très souvent est ignoré sans le savoir.
 """
 import os, math, json, datetime as dt
 import numpy as np
@@ -43,11 +50,27 @@ def _headers():
     return {"apikey": SUPA_KEY, "Authorization": f"Bearer {SUPA_KEY}", "Content-Type": "application/json"}
 
 
+SELECT_V08 = ("id,created_at,device_id,beach_id,lat,lon,user_lat,user_lon,user_acc,seen,amount,species,stung,ip_hash,status,"
+              "sea_state,clarity,looked_from,looked_min,devices(alpha,beta,role,banned,n_reports)")
+SELECT_V05 = ("id,created_at,device_id,beach_id,lat,lon,user_lat,user_lon,user_acc,seen,amount,species,stung,ip_hash,status,"
+              "devices(alpha,beta,role,banned,n_reports)")
+
+
 def fetch_reports(days=14):
+    """Signalements des derniers jours (colonnes v0.8 si la base a été mise à jour, sinon v0.5)."""
+    import requests
+    try:
+        return _fetch(days, SELECT_V08)
+    except requests.HTTPError:
+        print("[signalements] base pas encore mise à jour (v0.8) : lecture sans les nouvelles colonnes")
+        return _fetch(days, SELECT_V05)
+
+
+def _fetch(days, SELECT):
     import requests
     since = (dt.datetime.utcnow() - dt.timedelta(days=days)).strftime("%Y-%m-%dT%H:%M:%SZ")
     r = requests.get(f"{SUPA_URL}/rest/v1/reports", headers=_headers(), timeout=60, params={
-        "select": "id,created_at,device_id,beach_id,lat,lon,user_lat,user_lon,user_acc,seen,amount,species,stung,ip_hash,status,devices(alpha,beta,role,banned,n_reports)",
+        "select": SELECT,
         "created_at": f"gte.{since}", "status": "neq.rejected", "order": "created_at.asc", "limit": "5000"})
     r.raise_for_status()
     out = []
@@ -57,6 +80,7 @@ def fetch_reports(days=14):
             continue
         x["time"] = np.datetime64(x["created_at"][:16], "m")
         x["dev"] = d
+        x["jelly"] = x.get("seen") is not None          # « pas regardé les méduses » = retour mer/eau seulement
         out.append(x)
     print(f"[signalements] {len(out)} signalements sur {days} jours")
     return out
@@ -86,15 +110,27 @@ def onsite_factor(rep, b):
 
 
 def plausibility(rep, prior, species_names):
-    """Le signalement colle-t-il au reste ? (le modèle n'est pas validé : effet volontairement modéré)."""
-    if rep["seen"]:
-        f = 0.6 + 0.8 * prior                     # 0,6 (modèle dit « très peu probable ») → 1,4
-    else:
-        f = 0.6 + 0.8 * (1 - prior)
+    """Espèce compatible avec la saison et la température ? (L'accord avec le MODÈLE n'entre plus en compte :
+    un premier observateur qui contredit le modèle est souvent celui qui a raison.)"""
     sp = (rep.get("species") or "").lower()
     if rep["seen"] and sp and species_names and not any(sp[:6] in s.lower() for s in species_names):
-        f *= 0.75                                 # espèce hors saison / hors température
-    return float(np.clip(f, 0.4, 1.4))
+        return 0.75
+    return 1.0
+
+
+def observing_quality(rep):
+    """Un « rien vu » n'a de valeur que si on a vraiment pu voir. Un « vu » est peu sensible aux conditions."""
+    if rep.get("seen"):
+        return 1.0
+    q = 1.0
+    if rep.get("looked_from") == "sable":
+        q *= 0.7
+    if rep.get("clarity") == 2:                     # eau trouble
+        q *= 0.5
+    m = rep.get("looked_min")
+    if m is not None and m < 5:
+        q *= 0.6
+    return q
 
 
 def base_llr(t):
@@ -126,10 +162,12 @@ def score_report(rep, b, prior, species_names, ref_time):
     """Poids signé (log-cote) d'un signalement pour un moment donné, avec le détail pour l'explication."""
     t = trust(rep["dev"])
     on, dist = onsite_factor(rep, b)
-    pl = plausibility(rep, prior, species_names)
+    pl = plausibility(rep, prior, species_names) * observing_quality(rep)
     age_h = max(0.0, (ref_time - rep["time"]) / np.timedelta64(1, "h"))
     decay = math.exp(-age_h / 12)
     llr = base_llr(t) * on * pl * decay
+    if t < 0.3:
+        llr = 0.0                                   # appareil souvent contredit par d'autres : ignoré
     if rep["seen"]:
         llr *= 1 + 0.15 * (int(rep.get("amount", 1)) - 1)     # « beaucoup » pèse un peu plus
         if rep.get("stung"):
@@ -143,7 +181,9 @@ def score_report(rep, b, prior, species_names, ref_time):
 
 # ---------------------------------------------------------------- fusion avec le modèle
 def fuse(out, reports, science_obs, beaches, levels):
-    """Modifie le risque de chaque plage (jour 0 et 1) avec les signalements ; ajoute un résumé par plage."""
+    """Modifie le risque de chaque plage (jour 0 et 1) avec les signalements ; ajoute un résumé par plage.
+    Sépare la PREUVE (« observé ») de l'ESTIMATION (niveau du modèle)."""
+    reports = [r for r in reports if r.get("seen") is not None]
     for b in beaches:
         bo = out["beaches"].get(b["id"])
         if bo is None:
@@ -157,47 +197,62 @@ def fuse(out, reports, science_obs, beaches, levels):
                       or (di == 0 and abs((ref - r["time"]) / np.timedelta64(1, "h")) <= 12)]
             if not recent:
                 continue
-            # une voix par appareil (le plus récent), puis une voix par réseau (la plus forte)
+            # une voix par appareil (la plus récente) ; un même réseau peut être plusieurs personnes (hôtel, famille) :
+            # ses voix comptent, mais de moins en moins (1, 1/2, 1/4…)
             latest = {}
             for r in sorted(recent, key=lambda x: x["time"]):
                 latest[r["device_id"]] = r
-            by_net = {}
-            details = []
+            by_net, details = {}, []
             for r in latest.values():
                 llr, det = score_report(r, b, prior, species_names, ref)
                 det.update(seen=r["seen"], amount=r.get("amount", 0))
                 details.append(det)
                 fresh, _ = score_report(r, b, prior, species_names, r["time"])   # poids sans l'effet du temps
-                k = r.get("ip_hash") or r["device_id"]
-                if k not in by_net or abs(llr) > abs(by_net[k][0]):
-                    by_net[k] = (llr, r, fresh)
-            total = sum(v[0] for v in by_net.values())
+                by_net.setdefault(r.get("ip_hash") or r["device_id"], []).append((llr, r, fresh))
+            total = 0.0
+            for votes in by_net.values():
+                votes.sort(key=lambda v: -abs(v[0]))
+                total += sum(v[0] * 0.5 ** k for k, v in enumerate(votes))
             post = sigmoid(logit(max(prior, 0.03)) + total)
-            # recoupement : ≥ 2 réseaux indépendants qui ont vu, ou une sentinelle, ou 1 + observation scientifique
-            pos = [v for v in by_net.values() if v[1]["seen"] and v[2] > 0.2]
+            # recoupement : ≥ 2 réseaux qui ont vu ET au moins une présence prouvée (position) ou ≥ 3 réseaux ;
+            # ou une sentinelle ; ou un signalement + une observation scientifique à < 5 km / 48 h
+            pos_nets = [max(votes, key=lambda v: v[2]) for votes in by_net.values()
+                        if any(v[1]["seen"] and v[2] > 0.2 for v in votes)]
+            onsite = any(onsite_factor(v[1], b)[0] >= 1.0 for v in pos_nets)
             sci = any(o["source"] in ("iNaturalist", "GBIF", "OBIS") and
                       float(M.km_between(o["lat"], o["lon"], b["lat"], b["lon"])) <= 5 and
                       abs((ref - o["time"]) / np.timedelta64(1, "h")) <= 48 for o in science_obs)
-            sentinel = any(v[1]["dev"].get("role") == "sentinelle" and v[1]["seen"] for v in by_net.values())
-            corroborated = len(pos) >= 2 or sentinel or (len(pos) >= 1 and sci)
+            sentinel = any(v[1]["dev"].get("role") == "sentinelle" and v[1]["seen"] for votes in by_net.values() for v in votes)
+            corroborated = (len(pos_nets) >= 2 and onsite) or len(pos_nets) >= 3 or sentinel or (len(pos_nets) >= 1 and sci)
             row["risk_model"] = row["risk"]
             row["risk"] = round(float(post), 2)
             lv = "Faible" if post < levels[0] else "Possible" if post < levels[1] else "Élevé"
-            if corroborated and post >= 0.5:
+            if corroborated:
                 lv = "Signalé"
+                post = max(post, levels[1])
+                row["risk"] = round(float(post), 2)
             elif row["level"] == "Signalé":
                 lv = "Signalé"
             row["level"] = lv
             n_seen = sum(1 for r in latest.values() if r["seen"]); n_none = len(latest) - n_seen
             row["reports"] = dict(seen=n_seen, none_seen=n_none, networks=len(by_net), corroborated=corroborated,
-                                  shift=round(float(post - prior), 2))
+                                  shift=round(float(post - prior), 2),
+                                  desaccord_modele=bool(n_seen and prior < levels[0]))
             msg = (f"{n_seen} baigneur{'s' if n_seen > 1 else ''} en {'ont' if n_seen > 1 else 'a'} vu" if n_seen else "")
             if n_none:
                 msg += (" · " if msg else "") + f"{n_none} « rien vu »"
-            has_sent = any(v[1]["dev"].get("role") == "sentinelle" for v in by_net.values())
+            has_sent = any(v[1]["dev"].get("role") == "sentinelle" for votes in by_net.values() for v in votes)
             tag = " (sentinelle)" if has_sent else " (recoupé)" if corroborated else " (non vérifié)"
             if msg:
                 row["why"] = ([msg + tag] + row.get("why", []))[:3]
+                obs_txt = msg + tag
+                row["observe"] = obs_txt if not row.get("observe") else row["observe"] + " · " + obs_txt
+                if n_seen and corroborated:
+                    row["confiance"] = "observé"
+                elif row.get("confiance") == "insuffisant":
+                    row["confiance"] = "estimation"              # un « rien vu » ou un « vu » isolé est déjà une info
+            if row["reports"]["desaccord_modele"]:
+                row["note_modele"] = "le modèle ne s'y attendait pas : c'est peut-être lui qui se trompe"
     return out
 
 
@@ -205,42 +260,49 @@ def fuse(out, reports, science_obs, beaches, levels):
 def update_reputation(reports, science_obs, out, beaches):
     """
     Pour chaque signalement de plus de 18 h pas encore évalué : est-il confirmé par les AUTRES sources ?
-    Confirmé → +1 confiance. Contredit → +1 méfiance. Le modèle seul ne fait que des petits ajustements.
+    Confirmé → +confiance. Contredit → +méfiance, mais seulement sur preuve solide : un « rien vu » isolé n'accuse
+    personne (on peut regarder à un autre endroit ou à une autre heure), et le modèle seul n'accuse jamais.
     """
     import requests
     now = np.datetime64(dt.datetime.utcnow().strftime("%Y-%m-%dT%H:%M"), "m")
     todo = [r for r in reports if r.get("status") == "new" and (now - r["time"]) > np.timedelta64(18, "h")]
-    delta = {}
-    scored = []
+    jelly = [r for r in reports if r.get("seen") is not None]
+    delta, scored = {}, []
     for r in todo:
         b = match_beach(r, beaches)
-        if b is None:
+        if b is None or r.get("seen") is None:
             scored.append(r["id"]); continue
-        others = [o for o in reports if o["device_id"] != r["device_id"] and (o.get("ip_hash") != r.get("ip_hash") or not r.get("ip_hash"))
+        others = [o for o in jelly if o["device_id"] != r["device_id"]
                   and match_beach(o, beaches) is not None and match_beach(o, beaches)["id"] == b["id"]
-                  and abs((o["time"] - r["time"]) / np.timedelta64(1, "h")) <= 4]
-        agree = sum(1 for o in others if o["seen"] == r["seen"])
-        disagree = sum(1 for o in others if o["seen"] != r["seen"])
+                  and abs((o["time"] - r["time"]) / np.timedelta64(1, "h")) <= 3]
         sci = any(float(M.km_between(o["lat"], o["lon"], b["lat"], b["lon"])) <= 5 and
                   abs((o["time"] - r["time"]) / np.timedelta64(1, "h")) <= 24 for o in science_obs)
+        nets_same = {o.get("ip_hash") or o["device_id"] for o in others if o["seen"] == r["seen"]}
+        nets_same.discard(r.get("ip_hash"))
         da = db = 0.0
         if r["seen"] and sci:
             da += 1
-        da += min(agree, 3) * 0.7
-        db += min(disagree, 3) * 0.7
-        # contradiction forte avec le modèle seulement si personne d'autre ne s'est prononcé
-        if not others and not sci and r["seen"]:
-            prior = None
-            for row in out["beaches"].get(b["id"], {}).get("days", []):
-                if row["date"] == M.local_date(r["time"]):
-                    prior = row.get("risk_model", row["risk"])
-            if prior is not None and prior < 0.1:
-                db += 0.25
+        da += min(len(nets_same), 3) * 0.7
+        if r["seen"]:
+            # contredit seulement par ≥ 2 « rien vu » sur place (position), depuis l'eau, d'au moins 2 réseaux
+            solid = {o.get("ip_hash") or o["device_id"] for o in others
+                     if o["seen"] is False and onsite_factor(o, b)[0] >= 1.0 and o.get("looked_from") != "sable"}
+            solid.discard(r.get("ip_hash"))
+            if len(solid) >= 2 and not nets_same and not sci:
+                db += 0.5
+        else:
+            # un « rien vu » n'est contredit que par des « vu » recoupés (≥ 2 réseaux, ou science) ; poids faible
+            seen_nets = {o.get("ip_hash") or o["device_id"] for o in others if o["seen"]}
+            seen_nets.discard(r.get("ip_hash"))
+            if len(seen_nets) >= 2 or sci:
+                db += 0.3
         d = delta.setdefault(r["device_id"], [0.0, 0.0, r["dev"]])
         d[0] += da; d[1] += db
         scored.append(r["id"])
     n_ban = 0
     for dev_id, (da, db, dev) in delta.items():
+        if da == 0 and db == 0:
+            continue
         a = float(dev.get("alpha", 2)) + da
         bb = float(dev.get("beta", 2)) + db
         body = {"alpha": round(a, 2), "beta": round(bb, 2)}
@@ -252,7 +314,7 @@ def update_reputation(reports, science_obs, out, beaches):
         ids = ",".join(str(x) for x in scored[i:i + 100])
         requests.patch(f"{SUPA_URL}/rest/v1/reports", headers=_headers(), params={"id": f"in.({ids})"},
                        data=json.dumps({"status": "scored"}), timeout=30).raise_for_status()
-    print(f"[réputation] {len(scored)} signalements évalués, {len(delta)} appareils mis à jour, {n_ban} bannis")
+    print(f"[réputation] {len(scored)} signalements évalués, {len(delta)} appareils mis à jour, {n_ban} ignorés")
     return dict(evalues=len(scored), appareils=len(delta), bannis=n_ban)
 
 

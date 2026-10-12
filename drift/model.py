@@ -154,8 +154,9 @@ def beach_exposure(mask_grid, bathy, b):
 
 # ====================================================================== dérive
 class Drift:
-    def __init__(self, cur_s, cur_d, stokes, wind, sea_level, beaches=None):
+    def __init__(self, cur_s, cur_d, stokes, wind, sea_level, beaches=None, region=None):
         self.cs, self.cd, self.st, self.w, self.sl = cur_s, cur_d, stokes, wind, sea_level
+        self.region = region or C.REGION_BOX
         self.beaches = beaches or C.BEACHES
         self.blat = np.array([b["lat"] for b in self.beaches]); self.blon = np.array([b["lon"] for b in self.beaches])
         self.tide_cache = {}
@@ -200,11 +201,13 @@ class Drift:
         j = np.clip(np.rint((px - g.lons[0]) / (g.lons[1] - g.lons[0])).astype(int), 0, len(g.lons) - 1)
         return g.data["u"][k, i, j], g.data["v"][k, i, j]
 
-    def velocity(self, t, py, px, kind):
-        """kind : tableau de 0 (surface) / 1 (migrante)."""
+    def velocity(self, t, py, px, kind, wmult=None):
+        """kind : tableau de 0 (surface) / 1 (migrante). wmult : multiplicateur de prise au vent par méduse (scénarios)."""
         u, v = self._cur(self.cs, t, py, px)
         wu, wv = self._wind(t, py, px)
         windage = np.where(kind == 0, C.TYPES["surface"]["windage"], C.TYPES["migrante"]["windage"])
+        if wmult is not None:
+            windage = windage * wmult
         stk = np.where(kind == 0, C.TYPES["surface"]["stokes"], C.TYPES["migrante"]["stokes"])
         deep = (kind == 1) & is_daytime(t, px)          # pélagie le jour : plus profond, sans vent ni vagues
         if self.cd is not None and deep.any():
@@ -310,7 +313,7 @@ class Drift:
                 nx = x + u2 * C.DT / (M_PER_DEG * cos)
                 landed = ~self.is_sea(t, y, x) | ~self.is_sea(t, ny, nx) | np.isnan(ny)
                 py[act] = np.where(landed, y, ny); px[act] = np.where(landed, x, nx)
-                rb = C.REGION_BOX
+                rb = self.region
                 out = (py[act] < rb["lat_min"] - .3) | (py[act] > rb["lat_max"] + .3) | \
                       (px[act] < rb["lon_min"] - .3) | (px[act] > rb["lon_max"] + .3)
                 li = act[landed]
@@ -343,7 +346,8 @@ def make_seeds(drift, hab, obs, t_now, box=None, spacing=None, lookback_days=Non
     for o in obs:
         if o.get("none_seen") or o["weight"] <= 0:
             continue
-        if not (C.REGION_BOX["lat_min"] <= o["lat"] <= C.REGION_BOX["lat_max"] and C.REGION_BOX["lon_min"] <= o["lon"] <= C.REGION_BOX["lon_max"]):
+        rb = drift.region
+        if not (rb["lat_min"] <= o["lat"] <= rb["lat_max"] and rb["lon_min"] <= o["lon"] <= rb["lon_max"]):
             continue
         age_d = (t_now - o["time"]) / np.timedelta64(1, "D")
         if age_d < 0 or age_d > lookback_days:

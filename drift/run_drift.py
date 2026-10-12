@@ -50,12 +50,13 @@ def to_dt(t64):
 
 
 # ====================================================================== observations
-def gather_obs(t_from, t_to, status, with_news=True):
+def gather_obs(t_from, t_to, status, with_news=True, box=None):
+    box = box or C.REGION_BOX
     d1, d2 = str(t_from)[:10], str(t_to)[:10]
     obs = []
-    for name, fn in (("iNaturalist", lambda: S.load_inaturalist(C.REGION_BOX, d1, d2)),
-                     ("GBIF", lambda: S.load_gbif(C.REGION_BOX, d1, d2)),
-                     ("OBIS", lambda: S.load_obis(C.REGION_BOX, d1, d2)),
+    for name, fn in (("iNaturalist", lambda: S.load_inaturalist(box, d1, d2)),
+                     ("GBIF", lambda: S.load_gbif(box, d1, d2)),
+                     ("OBIS", lambda: S.load_obis(box, d1, d2)),
                      ("signalements", lambda: S.load_reports(P_REPORTS, t_from))):
         try:
             got = fn(); obs += got; status[name] = f"ok ({len(got)})"
@@ -74,9 +75,11 @@ def gather_obs(t_from, t_to, status, with_news=True):
 
 # ====================================================================== prévision
 def predict(t_now, obs, status, history=None, historical=False, loaders=None,
-            beaches=None, box=None, spacing=None, lookback_days=None):
-    """Calcule le risque par plage pour 3 jours à partir de t_now (00:00 UTC)."""
+            beaches=None, box=None, spacing=None, lookback_days=None, region=None):
+    """Calcule le risque par plage pour 3 jours à partir de t_now (00:00 UTC).
+    box = zone des plages et des méduses de fond ; region = zone de dérive (courants, vent, observations)."""
     L = loaders or S
+    region = region or C.REGION_BOX
     beaches = beaches or C.BEACHES
     box = box or C.LOCAL_BOX
     lookback_days = lookback_days or C.LOOKBACK_DAYS
@@ -89,16 +92,16 @@ def predict(t_now, obs, status, history=None, historical=False, loaders=None,
 
     # --- vent (obligatoire)
     if historical:
-        wind = L.load_wind(C.REGION_BOX, 4, start_date=str(t_start - np.timedelta64(3, "D"))[:10], end_date=str(t_end)[:10])
+        wind = L.load_wind(region, 4, start_date=str(t_start - np.timedelta64(3, "D"))[:10], end_date=str(t_end)[:10])
     else:
         past = int((t_now - t_start) / np.timedelta64(1, "D")) + 4
-        wind = L.load_wind(C.REGION_BOX, 4, past_days=min(92, past), forecast_days=4)
+        wind = L.load_wind(region, 4, past_days=min(92, past), forecast_days=4)
     status["vent"] = "ok"
 
     # --- courants de surface (obligatoire pour la dérive, sinon mode secours)
     mode = "derive"
     try:
-        cur_s = M.ensure_ascending(L.load_currents_surface(C.REGION_BOX, s_dt, e_dt)); status["courants surface"] = cur_s.name
+        cur_s = M.ensure_ascending(L.load_currents_surface(region, s_dt, e_dt)); status["courants surface"] = cur_s.name
     except Exception as e:
         cur_s = None; mode = "vent"; status["courants surface"] = f"indisponible : {str(e)[:150]}"
 
@@ -110,8 +113,8 @@ def predict(t_now, obs, status, history=None, historical=False, loaders=None,
 
     cur_d = stokes = None
     if cur_s is not None:
-        cur_d = opt("courants 15 m", lambda: M.ensure_ascending(L.load_currents_depth(C.REGION_BOX, s_dt, e_dt)))
-        stokes = opt("vagues", lambda: M.ensure_ascending(L.load_stokes(C.REGION_BOX, s_dt, e_dt)))
+        cur_d = opt("courants 15 m", lambda: M.ensure_ascending(L.load_currents_depth(region, s_dt, e_dt)))
+        stokes = opt("vagues", lambda: M.ensure_ascending(L.load_stokes(region, s_dt, e_dt)))
     sea_level = opt("marée", lambda: M.ensure_ascending(L.load_sea_level(box, to_dt(t_now - np.timedelta64(1, "D")), e_dt)))
     hab = {}
     try:
@@ -125,7 +128,7 @@ def predict(t_now, obs, status, history=None, historical=False, loaders=None,
     arrivals, n_bg, n_obs = {}, 0, 0
     exposure = {}
     if cur_s is not None:
-        drift = M.Drift(cur_s, cur_d, stokes, wind, sea_level, beaches)
+        drift = M.Drift(cur_s, cur_d, stokes, wind, sea_level, beaches, region)
         seeds, n_bg, n_obs = M.make_seeds(drift, hab, obs, t_now, box, spacing, lookback_days)
         arrivals = drift.run(t_now, t_end, seeds)
         k = cur_s.tindex(t_now)
@@ -178,12 +181,31 @@ def predict(t_now, obs, status, history=None, historical=False, loaders=None,
             moon = M.moon_age_days(t_day + np.timedelta64(12, "h"))
             lunar = 1 + C.LUNAR_WEIGHT * math.cos(2 * math.pi * (moon - 23) / 29.53)
             risk = float(np.clip(season * (C.BASE_PRESENCE + (1 - C.BASE_PRESENCE) * P) * E * strong * lunar, 0, 1))
+            cal = calibration()
+            if cal:
+                # poids appris sur toute la Méditerranée (calibrate.py) — l'effort d'observation est neutralisé
+                x = dict(drift=drift_f, obs=obs_f, calm=1 - wind_f, habitat=hab_f if hab_f is not None else 0.5,
+                         exposure=E, log_arrivals=math.log1p(max(0.0, raw)), from_obs=math.log1p(max(0.0, a["obs"])),
+                         season=season, effort=cal["effort_mean"])
+                vals = [x[k] for k in cal["features"]]
+                if cal.get("feat_min"):                          # pas d'extrapolation hors des données apprises
+                    vals = [min(max(v, a_), b_) for v, a_, b_ in zip(vals, cal["feat_min"], cal["feat_max"])]
+                z = cal["intercept"] + sum(c * v for c, v in zip(cal["coef"], vals))
+                pcal = 1 / (1 + math.exp(-max(-30, min(30, z))))
+                # rang parmi toutes les situations apprises → même échelle que le risque manuel
+                # (80e percentile = seuil « Possible », 95e = « Élevé »)
+                pct = float(np.interp(pcal, cal["quantiles"], np.linspace(0, 1, len(cal["quantiles"])))) if cal.get("quantiles") else 0.5
+                risk = float(np.interp(pct, [0, 0.8, 0.95, 1.0], [0.03, C.LEVELS[0], C.LEVELS[1], 0.9]))
             lv = levels()
             level = "Faible" if risk < lv[0] else "Possible" if risk < lv[1] else "Élevé"
             if signal and d in days[:2]:
                 level = "Signalé"
             why = explain(fac, a, E, strong, season, mode)
-            rows.append(dict(date=d, level=level, risk=round(risk, 2), why=why,
+            # v0.8 : on sépare ce qui a été OBSERVÉ, ce que la physique SUGGÈRE, et la CONFIANCE qu'on peut avoir
+            seen_txt = observed_text(obs, b, t_day)
+            conf = "observé" if seen_txt else confidence(obs, b, t_now, mode)
+            rows.append(dict(date=d, level=level, risk=round(risk, 2), why=why, observe=seen_txt,
+                             transport=transport_parts(fac, a, E, strong, season, mode), confiance=conf,
                              factors=dict({k: round(v, 2) for k, v in fac.items()}, arrivals=round(raw, 1),
                                           from_obs=round(a["obs"], 1), drift_ref=drift_ref, exposure=round(E, 2),
                                           season=season, strong_wind=strong < 1, wind_kmh=round(wspd),
@@ -195,11 +217,25 @@ def predict(t_now, obs, status, history=None, historical=False, loaders=None,
 
 
 _LEVELS = None
+_CAL = "?"
+
+
+def calibration():
+    """Poids appris (data/calibration.json) s'ils ont été adoptés, sinon None."""
+    global _CAL
+    if _CAL == "?":
+        c = jload(os.path.join(DATA, "calibration.json"), {})
+        _CAL = c if c.get("adopted") and c.get("coef") else None
+        if _CAL:
+            print(f"[calibrage] poids appris utilisés (AUC {c.get('auc_cv')} vs manuel {c.get('auc_manual')}, {c.get('n_pos')} observations)")
+    return _CAL
 
 
 def levels():
     """Seuils issus de la dernière validation de la même version du modèle, sinon ceux de config.py."""
     global _LEVELS
+    if _LEVELS is None and calibration():
+        _LEVELS = C.LEVELS                                   # le risque calibré est déjà ramené sur cette échelle
     if _LEVELS is None:
         v = jload(os.path.join(DATA, "validation.json"), {})
         sg = (v.get("summary") or {}).get("seuils_suggeres")
@@ -209,6 +245,66 @@ def levels():
         else:
             _LEVELS = C.LEVELS
     return _LEVELS
+
+
+def observed_text(obs, b, t_day):
+    """Observation scientifique (iNaturalist, GBIF, OBIS) à < 10 km dans les 72 h avant la fin du jour, en clair."""
+    import bancs as BA
+    best = None
+    t_end = t_day + np.timedelta64(24, "h")
+    for o in obs:
+        if o["source"] not in ("iNaturalist", "GBIF", "OBIS") or o.get("none_seen"):
+            continue
+        age_h = (t_end - o["time"]) / np.timedelta64(1, "h")
+        if age_h < 0 or age_h > 72:
+            continue
+        d = float(M.km_between(b["lat"], b["lon"], o["lat"], o["lon"]))
+        if d > 10:
+            continue
+        if best is None or o["time"] > best[0]["time"]:
+            best = (o, d)
+    if best is None:
+        return None
+    o, d = best
+    day = M.local_date(o["time"])
+    return f"{BA.species_fr(o.get('taxon'))} vues à {d:.0f} km le {day[8:10]}/{day[5:7]} ({o['source']})"
+
+
+def confidence(obs, b, t_now, mode):
+    """« insuffisant » s'il n'y a ni courants ni aucune information de terrain (vu ou « rien vu ») à < 60 km en 14 jours."""
+    if mode == "vent":
+        return "insuffisant"
+    for o in obs:
+        if o["source"] == "presse":
+            continue
+        age_d = (t_now - o["time"]) / np.timedelta64(1, "D")
+        if -1 <= age_d <= 14 and float(M.km_between(b["lat"], b["lon"], o["lat"], o["lon"])) <= 60:
+            return "estimation"
+    return "insuffisant"
+
+
+def transport_parts(f, a, E, strong, season, mode):
+    """Ce que suggèrent les courants, le vent et l'eau (sans les observations)."""
+    p = []
+    if a["obs"] > 0:
+        p.append("des méduses vues en mer pourraient dériver jusqu'ici")
+    if mode == "vent":
+        p.append("estimation au vent seul (courants indisponibles)")
+    elif f["drift"] >= 0.5:
+        p.append("courant et vent poussent vers la plage")
+    elif f["drift"] >= 0.2:
+        p.append("un peu de dérive vers la plage")
+    else:
+        p.append("peu de dérive vers la plage")
+    if f.get("habitat", 0.5) >= 0.8:
+        p.append("eau favorable aux méduses")
+    if E >= 1.15:
+        p.append("plage qui retient ce qui flotte")
+    if strong < 1:
+        p.append("vent fort : méduses brassées en profondeur")
+    if season <= 0.3:
+        p.append("hors saison")
+    return p[:3]
 
 
 def explain(f, a, E, strong, season, mode):
@@ -317,15 +413,49 @@ def run_normal(loaders=None, test=False):
             rep_stats = CR.update_reputation(reports, science, res, C.BEACHES)
         except Exception as e:
             print(f"[réputation] échec : {e}")
+    # --- registre des bancs suivis (v0.7) : avancée réelle + projection 8 jours + carnet de bord
+    n_bancs = None
+    try:
+        import bancs as BA
+        bout, alerts = BA.run(t_now, obs, reports, status, loaders)
+        if bout is not None:
+            n_bancs = len(bout["actifs"])
+            apply_banc_alerts(res, alerts)
+    except Exception as e:
+        status["bancs"] = f"erreur : {str(e)[:120]}"
+        print(f"[bancs] erreur : {e}")
+    cal = calibration()
     out = dict(generated=now.replace(microsecond=0).isoformat() + "Z", version=C.VERSION, mode=res["mode"],
+               calibration=(dict(auc=cal["auc_cv"], manual=cal["auc_manual"], n_pos=cal["n_pos"]) if cal else None),
                method="Dérive (courants surface + 15 m, vent, vagues, jour/nuit, marée) × eau favorable × exposition + observations, presse, vent passé, saison. Indicateur non validé.",
                sources=status, particles=res["particles"], days=res["days"], beaches=res["beaches"],
-               observations=summarize_obs(obs), news=articles[:10], reputation=rep_stats)
+               observations=summarize_obs(obs), news=articles[:10], reputation=rep_stats, bancs_suivis=n_bancs)
     jsave(P_OUT, out)
     if not test:
         update_history(raw_today, res["days"][0])
         update_verification(out, obs, t_now)
     print_table(out)
+
+
+def apply_banc_alerts(res, alerts):
+    """Alertes lointaines des bancs suivis → ajoutées aux plages ; pour les 3 jours affichés, un banc en approche
+    (confiance moyenne ou forte, banc encore « fort ») fait passer au moins à « Possible »."""
+    for bid, lst in alerts.items():
+        b = res["beaches"].get(bid)
+        if b is None:
+            continue
+        b["bancs"] = lst
+        for r in b["days"]:
+            for a in lst:
+                if a["du"] <= r["date"] <= a["au"] and a["confiance"] in ("moyenne", "forte") and a["force"] >= 0.4:
+                    r["factors"]["banc"] = a["banc"]
+                    if r["level"] == "Faible":
+                        r["level"] = "Possible"
+                        r["risk"] = max(r["risk"], levels()[0])
+                    msg = f"zone de présence suivie n°{a['banc']} : des scénarios arrivent ici"
+                    if msg not in r["why"]:
+                        r["why"] = [msg] + r["why"][:2]
+                    break
 
 
 def run_replay(loaders=None, max_events=8):
@@ -367,7 +497,7 @@ def run_replay(loaders=None, max_events=8):
     summary = dict(events=len(ok),
                    possible_ou_plus=sum(r["predicted"] != "Faible" for r in ok),
                    rang_moyen=round(float(np.mean([r["rank"] for r in ok])), 2) if ok else None,
-                   note="Rang 1 = la plage observée était celle que le modèle jugeait la plus à risque. Au hasard, le rang moyen serait 4 sur 7.")
+                   note=f"Rang 1 = la plage observée était celle que le modèle jugeait la plus à risque. Au hasard, le rang moyen serait {(len(C.BEACHES) + 1) / 2:g} sur {len(C.BEACHES)}.")
     jsave(P_REPLAY, dict(generated=now.replace(microsecond=0).isoformat() + "Z", version=C.VERSION, summary=summary, results=results))
     print(f"[rejeu] résumé : {json.dumps(summary, ensure_ascii=False)}")
 

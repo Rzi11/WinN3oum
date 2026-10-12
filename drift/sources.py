@@ -151,6 +151,19 @@ def load_habitat(box, start, end):
     return out
 
 
+PHY_MY = "MEDSEA_MULTIYEAR_PHY_006_004"
+
+
+def load_currents_daily(box, start, end):
+    """Courants de surface journaliers sur plusieurs années (réanalyse, puis « interim », puis analyse récente)."""
+    try:
+        return cm_open(PHY_MY, [("cur", "rean", "-d"), ("cur", "my", "P1D"), ("cur", "myint", "P1D"), ("cur", "int", "-d")],
+                       ["uo", "vo"], box, start, end, depth=(0, 1.1), label="courants journaliers (réanalyse)")
+    except Exception as e:
+        print(f"[connectivité] réanalyse indisponible pour cette période ({str(e)[:120]}), essai avec l'analyse récente")
+        return cm_open(PHY, [("cur", "P1D")], ["uo", "vo"], box, start, end, depth=(0, 1.1), label="courants journaliers (analyse)")
+
+
 def load_bathymetry(box):
     return cm_open(PHY, [("static",)], ["deptho"], box, label="fonds marins", parts=(None, "bathy"))
 
@@ -197,7 +210,7 @@ def _inat_taxon_id(name, rank):
 def load_inaturalist(box, d1, d2):
     import requests
     taxa = [("Scyphozoa", "class"), ("Cubozoa", "class"), ("Physalia physalis", "species"),
-            ("Velella velella", "species"), ("Olindias muelleri", "species")]
+            ("Velella velella", "species"), ("Porpita porpita", "species"), ("Olindias muelleri", "species")]
     ids = [i for i in (_inat_taxon_id(n, r) for n, r in taxa) if i]
     if not ids:
         raise RuntimeError("taxons iNaturalist introuvables")
@@ -223,22 +236,38 @@ def load_inaturalist(box, d1, d2):
     return obs
 
 
+# Toutes les « méduses » utiles au baigneur, pas seulement les Scyphozoa (relecture externe) :
+# Cubozoa (cuboméduses), et des Hydrozoa : galion portugais, vélelle, porpite, Olindias.
+GBIF_NAMES = ["Cubozoa", "Physalia physalis", "Velella velella", "Porpita porpita", "Olindias muelleri"]
+
+
+def gbif_keys():
+    keys = [352]                                  # 352 = Scyphozoa (méduses vraies)
+    for name in GBIF_NAMES:
+        try:
+            m = http_get("https://api.gbif.org/v1/species/match", params=dict(name=name), timeout=30, tries=2).json()
+            if m.get("usageKey") and m.get("matchType") in ("EXACT", "FUZZY"):
+                keys.append(int(m["usageKey"]))
+        except Exception as e:
+            print(f"[GBIF] taxon {name} introuvable ({str(e)[:60]})")
+    return keys
+
+
 def load_gbif(box, d1, d2):
     import requests
     obs = []
-    for class_key in (352,):                      # 352 = Scyphozoa (méduses vraies)
-        r = http_get("https://api.gbif.org/v1/occurrence/search", timeout=60, params=dict(
-            classKey=class_key, decimalLatitude=f"{box['lat_min']},{box['lat_max']}",
-            decimalLongitude=f"{box['lon_min']},{box['lon_max']}", eventDate=f"{d1},{d2}",
-            hasCoordinate="true", limit=300))
-        for o in r.json().get("results", []):
-            if "decimalLatitude" not in o or not o.get("eventDate"):
-                continue
-            if "inaturalist" in str(o.get("datasetName", "")).lower():
-                continue                          # déjà pris via iNaturalist
-            obs.append(dict(lat=o["decimalLatitude"], lon=o["decimalLongitude"],
-                            time=np.datetime64(o["eventDate"][:10] + "T12:00", "m"), taxon=o.get("species") or o.get("scientificName", "?"),
-                            source="GBIF", weight=1.0, spread_km=3.0, ref=f"gbif:{o.get('key')}"))
+    r = http_get("https://api.gbif.org/v1/occurrence/search", timeout=60, params=dict(
+        taxonKey=gbif_keys(), decimalLatitude=f"{box['lat_min']},{box['lat_max']}",
+        decimalLongitude=f"{box['lon_min']},{box['lon_max']}", eventDate=f"{d1},{d2}",
+        hasCoordinate="true", limit=300))
+    for o in r.json().get("results", []):
+        if "decimalLatitude" not in o or not o.get("eventDate"):
+            continue
+        if "inaturalist" in str(o.get("datasetName", "")).lower():
+            continue                              # déjà pris via iNaturalist
+        obs.append(dict(lat=o["decimalLatitude"], lon=o["decimalLongitude"],
+                        time=np.datetime64(o["eventDate"][:10] + "T12:00", "m"), taxon=o.get("species") or o.get("scientificName", "?"),
+                        source="GBIF", weight=1.0, spread_km=3.0, ref=f"gbif:{o.get('key')}"))
     print(f"[GBIF] {len(obs)} observations")
     return obs
 
@@ -248,7 +277,7 @@ def load_obis(box, d1, d2):
     poly = (f"POLYGON(({box['lon_min']} {box['lat_min']},{box['lon_max']} {box['lat_min']},"
             f"{box['lon_max']} {box['lat_max']},{box['lon_min']} {box['lat_max']},{box['lon_min']} {box['lat_min']}))")
     obs = []
-    for taxon in ("Scyphozoa", "Cubozoa", "Physalia physalis", "Velella velella"):
+    for taxon in ("Scyphozoa", "Cubozoa", "Physalia physalis", "Velella velella", "Porpita porpita", "Olindias"):
         r = http_get("https://api.obis.org/v3/occurrence", timeout=60, params=dict(
             scientificname=taxon, geometry=poly, startdate=d1, enddate=d2, size=1000))
         for o in r.json().get("results", []):
