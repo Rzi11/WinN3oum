@@ -422,7 +422,7 @@ html.vt-fwd .view:not([hidden]),html.vt-back .view:not([hidden]),html.vt-tab .vi
   </details>
   <footer>
     <p class="slogan">La bonne plage, au bon moment.</p>
-    <p style="font-size:11px;opacity:.6">Version 1.1.2</p>
+    <p style="font-size:11px;opacity:.6">Version 1.1.3</p>
     <p>On compare le vent à l'orientation de chaque plage, puis on ajoute la houle, la marée, le soleil et les nuages. C'est indicatif : respecte toujours les drapeaux et la mer sur place.</p>
   </footer>
 </main>
@@ -1222,6 +1222,8 @@ function showView(v, dir, opt){
   const t=document.startViewTransition(()=>{ if(opt.from) opt.from.style.viewTransitionName=""; go(); const to=opt.to&&opt.to(); if(to) to.style.viewTransitionName="phero"; });
   t.finished.finally(()=>{ root.classList.remove(cls); document.querySelectorAll("[style*='view-transition-name']").forEach(e=>e.style.viewTransitionName=""); });
 }
+// ?vue=carte : ouvre directement un écran (utilisé par le site pour montrer l'app en direct, sans toucher aux réglages)
+const EMBED_VIEW = new URLSearchParams(location.search).get("vue"), EMBED = ["lyoum","carte","retour"].includes(EMBED_VIEW);
 function showViewNow(v){
   SCROLL[VIEW]=window.scrollY; const from=VIEW;
   VIEW=v; ["lyoum","carte","plage","retour"].forEach(x=>$("v-"+x).hidden = x!==v);
@@ -1232,7 +1234,7 @@ function showViewNow(v){
   $("theme").content = v==="carte" ? "#1450A3" : "#F7F5F0";
   if(v==="carte") renderCarte();
   if(v==="plage") markIn($("v-"+v));   // la cascade seulement en ouvrant une plage (pas en changeant d'onglet)
-  try{ if(v!=="plage") localStorage.setItem("wn-view",v); }catch(e){}
+  try{ if(v!=="plage" && !EMBED) localStorage.setItem("wn-view",v); }catch(e){}
 }
 // les éléments d'un écran arrivent en cascade quand on l'ouvre
 function markIn(vEl){ if(!vEl||REDUCE()) return; vEl.classList.remove("in");
@@ -1471,6 +1473,7 @@ async function loadExtras(){
 }
 { const pill=$("tabpill"); pill.style.transition="none"; placePill(); requestAnimationFrame(()=>requestAnimationFrame(()=>pill.style.transition="")); }
 (async()=>{ await loadPlages(); setupReport(); load(); loadExtras();
+  if(EMBED){ if(EMBED_VIEW!=="lyoum") showViewNow(EMBED_VIEW); return; }
   try{ const v=localStorage.getItem("wn-view"); if(v==="carte"||v==="retour") showViewNow(v); }catch(e){} })();
 </script>
 </body>
