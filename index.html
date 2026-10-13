@@ -98,6 +98,10 @@ button{cursor:pointer}
 .wleg{display:flex;gap:12px;font-size:12px;color:var(--muted);margin-top:-2px}
 .wleg span{display:flex;align-items:center;gap:5px} .wleg i{width:30px;height:20px;border-radius:5px;display:flex;align-items:center;justify-content:center;padding:1px}
 .wleg svg{width:100%;height:100%}
+.wleg i.zq{width:24px;height:16px;border-radius:5px}
+.wleg i.ap{width:20px;height:20px;border-radius:50%;padding:0}
+.wleg.alg{gap:10px} .wleg span{white-space:nowrap}
+.barhead b small{font:400 12px var(--body);color:var(--muted);margin-left:5px}
 .hours{display:grid;grid-template-columns:repeat(var(--n,6),minmax(0,1fr));gap:4px;font-size:12px;color:var(--muted);text-align:center}
 .tiles{display:flex;gap:8px}
 .tile{flex:1;min-width:0;background:var(--blue-deep);border-radius:14px;padding:10px 12px}
@@ -459,8 +463,8 @@ html.vt-fwd .view:not([hidden]),html.vt-back .view:not([hidden]),html.vt-tab .vi
       <button class="modebtn" id="mode-btn" type="button" aria-haspopup="true" aria-expanded="false"><span>Tout</span> <small>▼</small></button>
       <div class="menu" id="modes" role="menu" hidden>
         <button role="menuitemradio" data-m="tout" aria-checked="true" type="button">Tout</button>
-        <button role="menuitemradio" data-m="mer" aria-checked="false" type="button">La mer</button>
-        <button role="menuitemradio" data-m="belle" aria-checked="false" type="button">Belle eau</button>
+        <button role="menuitemradio" data-m="mer" aria-checked="false" type="button">Mouj</button>
+        <button role="menuitemradio" data-m="belle" aria-checked="false" type="button">Zarga</button>
         <button role="menuitemradio" data-m="algues" aria-checked="false" type="button">Algues</button>
         <button role="menuitemradio" data-m="vu" aria-checked="false" type="button">Méduses</button>
         <div class="legend" id="legend"></div>
@@ -784,6 +788,10 @@ function algSummary(id, day){
   const parts=[]; if(seen.a3) parts.push(`dans l'eau vers ${seen.a3[0]} h`); if(seen.a2) parts.push("sur le sable"); if(seen.a0&&!parts.length) parts.push("surtout propre");
   return parts.join(", ") || "ça change dans la journée";
 }
+function legMouj(){ const d=el("div","wleg"); [["good","plate"],["warn","ça bouge"],["bad","vagues"]].forEach(([k,t])=>{ const sp=el("span"); const ic=el("i"); ic.style.background=WAVE_BG[k]; ic.innerHTML=waveSVG(k); sp.appendChild(ic); sp.appendChild(document.createTextNode(t)); d.appendChild(sp); }); return d; }
+function legZarga(){ const d=el("div","wleg"); [["#14B8A6","très belle"],["#7FE3D6","belle"],["#E6E0D2","bof"]].forEach(([c,t])=>{ const sp=el("span"); const ic=el("i","zq"); ic.style.background=c; sp.appendChild(ic); sp.appendChild(document.createTextNode(t)); d.appendChild(sp); }); return d; }
+function legAlg(){ const d=el("div","wleg alg"); [["a","aucune"],["p","possible"],["s","sable"],["e","dans l'eau"]].forEach(([k,t])=>{ const sp=el("span"); const ic=el("i","ap"); ic.innerHTML=algSVG(k); sp.appendChild(ic); sp.appendChild(document.createTextNode(t)); d.appendChild(sp); }); return d; }
+function headEl(name, gloss, right){ const h=el("div","barhead"); const b=el("b",null,name); if(gloss) b.appendChild(el("small",null,gloss)); h.appendChild(b); h.appendChild(el("span",null,right)); return h; }
 function algTile(id, label){
   const al=algae(id); const t=el("div","tile"+(al?" withicon":"")); t.appendChild(el("small",null,label)); t.appendChild(el("b",null,al?al.t:"Pas encore de retour")); if(al) t.appendChild(el("em",null,al.sub));
   if(al){ const ic=el("span","ticon"); ic.innerHTML=algIcon(al); t.appendChild(ic); } return t;
@@ -893,7 +901,7 @@ function passFilters(x){
 }
 function renderFilters(n){
   const f=$("filters"); f.innerHTML="";
-  [["alg","Sans algues",()=>algSVG("a")],["mer","Mer plate",()=>merSVG("good")],["belle","Belle eau",()=>TURQ_ICON]].forEach(([k,t,ic])=>{
+  [["alg","Sans algues",()=>algSVG("a")],["mer","Mer plate",()=>merSVG("good")],["belle","Zarga",()=>TURQ_ICON]].forEach(([k,t,ic])=>{
     const b=el("button","fchip"); b.type="button"; b.setAttribute("aria-pressed",String(FILT[k])); const i=el("span"); i.innerHTML=ic(); b.appendChild(i); b.appendChild(document.createTextNode(t+(FILT[k]?" ✓":"")));
     b.onclick=()=>{ FILT[k]=!FILT[k]; tick(); renderLyoum(); }; f.appendChild(b); });
   const on=Object.values(FILT).some(Boolean), note=$("fnote"); note.hidden=!on;
@@ -914,12 +922,11 @@ function renderLyoum(){
   const pr=el("div","pillrow"); pr.appendChild(starBtn(b.id,true)); pr.appendChild(wavePill(st.k,st.k,st.t)); { const ap=algPill(b.id); if(ap) pr.appendChild(ap); } row.appendChild(left); row.appendChild(pr); card.appendChild(row);
   if(r.tier===2){ card.appendChild(el("p","alertbar","Attention : des méduses ont été vues sur toutes les plages en ce moment. Regarde avant d'entrer dans l'eau.")); }
   const pan=el("div","panel");
-  const sh=el("div","barhead"); sh.appendChild(el("b",null,"La mer")); sh.appendChild(el("span",null,seaRun(r.bi,selectedKey))); pan.appendChild(sh);
-  const legW=el("div","wleg"); [["good","plate"],["warn","ça bouge"],["bad","vagues"]].forEach(([k,t])=>{ const sp=el("span"); const ic=el("i"); ic.style.background=WAVE_BG[k]; ic.innerHTML=waveSVG(k); sp.appendChild(ic); sp.appendChild(document.createTextNode(t)); legW.appendChild(sp); });
-  pan.appendChild(barsEl(r.bi,day,HERO_HOURS,"sea",null,hourOf(selectedKey))); pan.appendChild(legW);
-  const bt=bestTurq(r.bi,day); const th=el("div","barhead"); th.appendChild(el("b",null,"Belle eau")); th.appendChild(el("span",null,bt?bt.txt:"pas de soleil")); pan.appendChild(th);
-  pan.appendChild(barsEl(r.bi,day,HERO_HOURS,"turq",null,hourOf(selectedKey)));
-  { const ah=el("div","barhead"); ah.appendChild(el("b",null,"Les algues")); ah.appendChild(el("span",null,algSummary(b.id,day))); pan.appendChild(ah); pan.appendChild(algaeRowEl(b.id,day,HERO_HOURS,null,hourOf(selectedKey))); }
+  pan.appendChild(headEl("Mouj","les vagues",seaRun(r.bi,selectedKey)));
+  pan.appendChild(barsEl(r.bi,day,HERO_HOURS,"sea",null,hourOf(selectedKey))); pan.appendChild(legMouj());
+  const bt=bestTurq(r.bi,day); pan.appendChild(headEl("Zarga","la couleur de l'eau",bt?bt.txt:"pas de soleil"));
+  pan.appendChild(barsEl(r.bi,day,HERO_HOURS,"turq",null,hourOf(selectedKey))); pan.appendChild(legZarga());
+  pan.appendChild(headEl("Les algues",null,algSummary(b.id,day))); pan.appendChild(algaeRowEl(b.id,day,HERO_HOURS,null,hourOf(selectedKey))); pan.appendChild(legAlg());
   pan.appendChild(hoursEl(HERO_HOURS,1));
   const ch=changeAhead(r, selectedKey);
   if(ch){ const c=el("button","change"); c.type="button"; c.innerHTML=IC.turn; const t=el("span"); t.style.flex="1";
@@ -985,11 +992,11 @@ function renderPlage(){
   card.appendChild(meteo); countUp(meteo,"pt");
   const HRS=[7,8,9,10,11,12,13,14,15,16,17,18];
   const pan=el("div","panel");
-  const sh=el("div","barhead"); sh.appendChild(el("b",null,"La mer")); sh.appendChild(el("span",null,seaRun(bi,selectedKey))); pan.appendChild(sh);
-  pan.appendChild(barsEl(bi,day,HRS,"sea","mid",hourOf(selectedKey)));
-  const bt=bestTurq(bi,day); const th=el("div","barhead"); th.appendChild(el("b",null,"Belle eau")); th.appendChild(el("span",null,bt?bt.txt:"pas de soleil")); pan.appendChild(th);
-  pan.appendChild(barsEl(bi,day,HRS,"turq","mid",hourOf(selectedKey)));
-  { const ah=el("div","barhead"); ah.appendChild(el("b",null,"Les algues")); ah.appendChild(el("span",null,algSummary(b.id,day))); pan.appendChild(ah); pan.appendChild(algaeRowEl(b.id,day,HRS,"mid",hourOf(selectedKey))); }
+  pan.appendChild(headEl("Mouj","les vagues",seaRun(bi,selectedKey)));
+  pan.appendChild(barsEl(bi,day,HRS,"sea","mid",hourOf(selectedKey))); pan.appendChild(legMouj());
+  const bt=bestTurq(bi,day); pan.appendChild(headEl("Zarga","la couleur de l'eau",bt?bt.txt:"pas de soleil"));
+  pan.appendChild(barsEl(bi,day,HRS,"turq","mid",hourOf(selectedKey))); pan.appendChild(legZarga());
+  pan.appendChild(headEl("Les algues",null,algSummary(b.id,day))); pan.appendChild(algaeRowEl(b.id,day,HRS,"mid",hourOf(selectedKey))); pan.appendChild(legAlg());
   pan.appendChild(hoursEl(HRS,2)); card.appendChild(pan);
   const tiles=el("div","tiles"); const al=algae(b.id), pe=people(b.id);
   tiles.appendChild(algTile(b.id,"Algues"));
@@ -1082,7 +1089,7 @@ function modeColor(x){
   if(MODE==="vu"){ const p=x.p; if(!p.has) return null; return p.tier?"bad":"good"; }
 }
 const LEG={tout:[["#1E8A5A","Mer plate"],["#B86A0A","Ça bouge"],["#C9362C","Vagues"]], mer:[["#1E8A5A","Mer plate"],["#B86A0A","Ça bouge"],["#C9362C","Trop de vagues"]],
-  belle:[["#14B8A6","Très belle"],["#7FE3D6","Belle"],["#E6E0D2","Moyenne"]],
+  belle:[["#14B8A6","Très belle"],["#7FE3D6","Belle"],["#E6E0D2","Bof"]],
   algues:[["#1E8A5A","Aucune"],["#A0763A","Sur le sable"],["#5E7D2A","Dans l'eau"]],
   vu:[["#1E8A5A","Rien vu"],["#C9362C","Méduses vues"]]};
 function renderCarte(){
