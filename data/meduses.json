@@ -1,5 +1,5 @@
 {
- "generated": "2026-10-12T22:51:30Z",
+ "generated": "2026-10-12T23:40:43Z",
  "version": "v0.8",
  "mode": "derive",
  "calibration": null,
@@ -18,7 +18,7 @@
   "marée": "cmems_mod_med_phy-ssh_anfc_4.2km_PT15M-i",
   "eau favorable": "sst, sal, mld, chl",
   "fonds marins": "cmems_mod_med_phy_anfc_4.2km_static",
-  "bancs": "ok (1 zones suivies, 1 nouvelles, 0 recalées, 0 terminées)"
+  "bancs": "ok (1 zones suivies, 0 nouvelles, 0 recalées, 0 terminées)"
  },
  "particles": {
   "fond": 3290,

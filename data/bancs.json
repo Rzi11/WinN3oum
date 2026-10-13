@@ -1,5 +1,5 @@
 {
- "generated": "2026-10-12T22:55:32Z",
+ "generated": "2026-10-12T23:49:25Z",
  "version": "v0.8",
  "horizon_jours": 8,
  "actifs": [
@@ -22,11 +22,17 @@
    },
    "etalement_km": 16.0,
    "distance_djerba_km": 464,
-   "tendance": "nouveau",
+   "tendance": "stable",
    "cap": "rapproche",
    "message": "Se dirige vers Djerba, sans arriver sur nos plages dans les simulations à 8 jours.",
    "arrivees": [],
    "trace": [
+    {
+     "date": "2026-10-12",
+     "lat": 37.854,
+     "lon": 12.125,
+     "etalement": 16.0
+    },
     {
      "date": "2026-10-12",
      "lat": 37.854,
