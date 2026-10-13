@@ -6,12 +6,20 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Win N3oum">
-<meta name="theme-color" content="#1450A3">
+<meta name="theme-color" content="#F7F5F0" id="theme">
 <title>Win N3oum</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%231450A3'/%3E%3Ctext x='32' y='44' text-anchor='middle' font-family='Arial Black,Arial' font-weight='900' font-size='46' fill='%2314B8A6' transform='rotate(-90 32 32)'%3E3%3C/text%3E%3C/svg%3E">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<link rel="icon" type="image/png" href="icons/icon-192.png">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="preload" href="fonts/baloo-2-latin-800-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/atkinson-hyperlegible-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="fonts/atkinson-hyperlegible-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
 <style>
+/* Polices gardées chez nous : plus rapides, et disponibles sans réseau */
+@font-face{font-family:"Baloo 2";font-weight:600;font-display:swap;src:url(fonts/baloo-2-latin-600-normal.woff2) format("woff2")}
+@font-face{font-family:"Baloo 2";font-weight:800;font-display:swap;src:url(fonts/baloo-2-latin-800-normal.woff2) format("woff2")}
+@font-face{font-family:"Atkinson Hyperlegible";font-weight:400;font-display:swap;src:url(fonts/atkinson-hyperlegible-latin-400-normal.woff2) format("woff2")}
+@font-face{font-family:"Atkinson Hyperlegible";font-weight:700;font-display:swap;src:url(fonts/atkinson-hyperlegible-latin-700-normal.woff2) format("woff2")}
 /* Identité « Pop tunisien » : bleu Sidi Bou, turquoise lagon, blanc chaux, sable, harissa */
 :root{
   color-scheme: light;
@@ -37,7 +45,7 @@ button:active,a.go:active,.cote > button:active,.bub:active,.coin:active,.fav:ac
   @keyframes vin{from{opacity:0;transform:translateY(6px)}}
   .hero.enter{animation:hin .35s cubic-bezier(.2,.8,.2,1)} @keyframes hin{from{opacity:0;transform:translateY(10px) scale(.985)}}
 }
-::view-transition-old(root),::view-transition-new(root){animation-duration:.2s}
+
 button,a,select,input{font-family:inherit}
 button{cursor:pointer}
 :focus-visible{outline:3px solid var(--turq);outline-offset:2px}
@@ -316,7 +324,74 @@ footer .slogan{font:800 20px/1.2 var(--display);color:var(--blue)}
 #dial:focus{outline:none}
 #dial{display:block;width:100%;max-width:360px;margin:0 auto;touch-action:none;user-select:none;-webkit-user-select:none}
 .dialhint{font-size:13px;color:var(--muted);text-align:center;margin:-4px 0 0}
-@media (prefers-reduced-motion:no-preference){ .sheet{animation:up .22s ease-out} @keyframes up{from{transform:translateY(40px);opacity:.4}} }
+
+/* ===================== Fluidité « 2026 » ===================== */
+:root{--spring:cubic-bezier(.22,1.28,.36,1);--ease:cubic-bezier(.2,.8,.2,1)}
+html,body{overscroll-behavior-y:none}
+@media (display-mode: standalone){ body{user-select:none;-webkit-user-select:none} input,select,textarea{user-select:auto;-webkit-user-select:auto} }
+
+/* Transitions entre les écrans : la carte touchée grandit et devient la page de la plage */
+.tabbar{view-transition-name:tabbar}
+::view-transition-group(*){animation-duration:.34s;animation-timing-function:var(--ease)}
+::view-transition-group(phero){animation-duration:.42s;animation-timing-function:cubic-bezier(.2,.9,.22,1);border-radius:28px;overflow:hidden}
+::view-transition-old(phero),::view-transition-new(phero){height:100%;object-fit:cover;object-position:top}
+::view-transition-old(phero){animation:.18s ease-out both vt-fade-out}
+::view-transition-new(phero){animation:.3s .06s ease-out both vt-fade-in}
+html.vt-fwd::view-transition-old(root){animation:.3s var(--ease) both vt-out-left}
+html.vt-fwd::view-transition-new(root){animation:.34s var(--ease) both vt-in-right}
+html.vt-back::view-transition-old(root){animation:.3s var(--ease) both vt-out-right}
+html.vt-back::view-transition-new(root){animation:.34s var(--ease) both vt-in-left}
+html.vt-tab::view-transition-old(root){animation:.16s ease-out both vt-fade-out}
+html.vt-tab::view-transition-new(root){animation:.24s ease-out both vt-in-up}
+@keyframes vt-fade-out{to{opacity:0}} @keyframes vt-fade-in{from{opacity:0}}
+@keyframes vt-out-left{to{transform:translateX(-22%);opacity:.4}} @keyframes vt-in-right{from{transform:translateX(100%)}}
+@keyframes vt-out-right{to{transform:translateX(100%)}} @keyframes vt-in-left{from{transform:translateX(-22%);opacity:.4}}
+@keyframes vt-in-up{from{opacity:0;transform:translateY(8px)}}
+html.vt-fwd .view:not([hidden]),html.vt-back .view:not([hidden]),html.vt-tab .view:not([hidden]){animation:none}
+
+/* Les éléments arrivent l'un après l'autre (seulement à l'ouverture d'un écran) */
+@media (prefers-reduced-motion:no-preference){
+  .view.in .bars i{animation:cell .42s var(--spring) backwards;animation-delay:calc(var(--k,0) * 24ms + 60ms)}
+  @keyframes cell{from{opacity:0;transform:translateY(8px) scale(.7)}}
+  .view.in .wv path{stroke-dasharray:1;animation:draw .7s ease-out backwards;animation-delay:calc(var(--k,0) * 30ms + 140ms)}
+  @keyframes draw{from{stroke-dashoffset:1}}
+  .view.in .sky > div,.view.in .tile,.view.in .cote,.view.in .fav,.view.in .near,.view.in .dcard{animation:rise .45s var(--ease) backwards;animation-delay:calc(var(--k,0) * 45ms + 40ms)}
+  @keyframes rise{from{opacity:0;transform:translateY(12px)}}
+  .coins:not([hidden]) > *{animation:rise .3s var(--ease) backwards;animation-delay:calc(var(--k,0) * 35ms)}
+  .menu:not([hidden]){animation:menu .26s var(--spring);transform-origin:top left} @keyframes menu{from{opacity:0;transform:scale(.85) translateY(-6px)}}
+  .statepill{transition:background-color .3s ease,color .3s ease}
+}
+
+/* Barre du bas : une pastille qui glisse d'un onglet à l'autre */
+.tabpill{position:absolute;top:8px;left:0;height:52px;border-radius:14px;background:var(--chaux);z-index:0;pointer-events:none;
+  transition:transform .42s var(--spring),width .42s var(--spring)}
+.tab{position:relative;z-index:1}
+.tab[aria-selected="true"]{background:transparent}
+@media (prefers-reduced-motion:no-preference){ .tab[aria-selected="true"] svg{animation:hop .45s var(--spring)} @keyframes hop{40%{transform:translateY(-4px) scale(1.12)}} }
+
+/* Le cadran : un panneau qui suit le doigt et rebondit */
+.veil{transition:opacity .25s ease}
+@media (prefers-reduced-motion:no-preference){ .sheet{animation:up .46s var(--spring)} @keyframes up{from{transform:translateY(100%)}} .veil:not([hidden]){animation:vfade .25s ease} @keyframes vfade{from{opacity:0}} }
+
+/* Glisser depuis le bord gauche pour revenir */
+.swiping{position:fixed!important;left:0;right:0;z-index:16;background:var(--chaux);box-shadow:-12px 0 28px rgba(15,36,64,.18);will-change:transform}
+.under{will-change:transform;transition:none}
+
+/* Tirer vers le bas pour mettre à jour */
+.ptr{position:fixed;left:50%;top:calc(env(safe-area-inset-top,0px) - 56px);z-index:25;width:48px;height:48px;margin-left:-24px;border-radius:50%;background:var(--card);
+  box-shadow:0 6px 18px rgba(15,36,64,.18);display:flex;align-items:center;justify-content:center;color:var(--turq);pointer-events:none;opacity:0}
+.ptr svg{width:30px;height:20px;overflow:visible}
+.ptr path{stroke-dasharray:1;stroke-dashoffset:calc(1 - var(--p,0))}
+.ptr.armed{color:var(--blue)}
+.ptr.spin path{stroke-dashoffset:0;animation:ptrw 1s linear infinite} @keyframes ptrw{50%{stroke-dasharray:.4 .6;stroke-dashoffset:-.5}to{stroke-dasharray:1 0;stroke-dashoffset:-1}}
+.ptr.back{transition:transform .35s var(--spring),opacity .25s ease}
+
+/* Petit message en bas */
+.toast{position:fixed;left:50%;bottom:calc(var(--nav-h) + env(safe-area-inset-bottom,0px) + 14px);transform:translate(-50%,20px);opacity:0;z-index:40;
+  background:var(--ink);color:#fff;font:700 14px var(--body);padding:12px 18px;border-radius:999px;box-shadow:0 8px 20px rgba(15,36,64,.3);border:0;white-space:nowrap;
+  transition:transform .4s var(--spring),opacity .2s ease;pointer-events:none}
+.toast.on{transform:translate(-50%,0);opacity:1;pointer-events:auto}
+@media (prefers-reduced-motion:reduce){ .tabpill,.toast,.veil{transition:none} }
 </style>
 </head>
 <body>
@@ -429,6 +504,7 @@ footer .slogan{font:800 20px/1.2 var(--display);color:var(--blue)}
 </main>
 
 <nav class="tabbar" role="tablist" aria-label="Sections">
+  <span class="tabpill" id="tabpill" aria-hidden="true"></span>
   <button class="tab" id="tab-lyoum" role="tab" aria-selected="true" type="button">
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>Lyoum</button>
   <button class="tab" id="tab-carte" role="tab" aria-selected="false" type="button">
@@ -437,6 +513,8 @@ footer .slogan{font:800 20px/1.2 var(--display);color:var(--blue)}
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>Mon retour</button>
 </nav>
 
+<div class="ptr" id="ptr" aria-hidden="true"><svg viewBox="0 0 30 20" fill="none" stroke="currentColor" stroke-width="3.6" stroke-linecap="round"><path pathLength="1" d="M2 12 Q8.5 5 15 12 T28 12"/></svg></div>
+<button class="toast" id="toast" type="button" aria-live="polite"></button>
 <label id="hap" aria-hidden="true" style="position:absolute;left:-9999px;top:0;opacity:0"><input type="checkbox" switch tabindex="-1"></label>
 <div class="veil" id="veil" hidden></div>
 <section class="sheet" id="sheet" hidden role="dialog" aria-modal="true" aria-labelledby="sheet-t">
@@ -626,10 +704,10 @@ function waveSVG(k){ const c=STATE(k==="good"?100:k==="warn"?50:0).c, l=WAVE_LIG
   const body = k==="good" ? `<path d="M5 25 Q17 21 29 25 T53 25 T60 24" stroke="${c}"/><path d="M5 33 Q17 29 29 33 T53 33 T60 32" stroke="${l}"/>`
     : k==="warn" ? `<path d="M4 35 C14 35 18 18 31 17 C40 16.5 45 22.5 42 27.5 C40 30.5 35 29.5 35 25.5" stroke="${c}"/><path d="M4 42 C16 42 22 31 34 31 C44 31 50 40 60 38" stroke="${l}"/>`
     : `<path d="M4 38 C10 38 14 27 18 20 C24 8 40 4 50 10 C58 15 57 26 49 28 C43 29.5 40 24 45 20" stroke="${c}" stroke-width="4.8"/><path d="M4 45 C14 45 20 36 30 35 C40 34 46 42 60 42" stroke="${l}"/><circle cx="57" cy="6" r="2.4" fill="${c}" stroke="none"/><circle cx="60" cy="13" r="1.8" fill="${c}" stroke="none"/>`;
-  return `<svg viewBox="0 0 64 48" aria-hidden="true" fill="none" stroke-width="4.5" stroke-linecap="round">${body}</svg>`; }
+  return `<svg viewBox="0 0 64 48" aria-hidden="true" fill="none" stroke-width="4.5" stroke-linecap="round">${body.replace(/<path /g,'<path pathLength="1" ')}</svg>`; }
 function barsEl(bi, day, hours, kind, cls, selH){
   const d=el("div","bars"+(cls?" "+cls:"")); d.style.setProperty("--n",hours.length);
-  hours.forEach(h=>{ const i=idxOf(`${day}T${pad(h)}:00`); const x=el("i");
+  hours.forEach((h,hk)=>{ const i=idxOf(`${day}T${pad(h)}:00`); const x=el("i"); x.style.setProperty("--k",hk);
     if(i<0){ x.style.background="#E6E0D2"; x.style.opacity=".4"; }
     else { const r=at(bi,i); if(kind==="sea"){ const k=STATE(r.s).k; x.className="wv"; x.style.background=WAVE_BG[k]; x.innerHTML=waveSVG(k); } else x.style.background=TURQ(r.t); }
     if(selH!=null && (h===selH || (hours.length===6 && selH>=h && selH<h+2))) x.classList.add("sel");
@@ -667,6 +745,7 @@ function renderSky(){
    ["drop",sea!=null?`${Math.round(sea)}°`:"—","eau"],
    ["wind",`${Math.round(H.wind_speed_10m[i])} km/h`,localWind(H.wind_direction_10m[i]).split(" ")[0]]].forEach(([ic,v,k])=>{
     const d=html("div",null,IC[ic]); const t=el("div"); t.appendChild(el("b",null,v)); t.appendChild(el("span",null,k)); d.appendChild(t); sky.appendChild(d); });
+  countUp(sky,"sky");
 }
 
 /* ---------- Ça va changer dans la journée ---------- */
@@ -769,7 +848,7 @@ function renderLyoum(){
     g.coins.forEach(c=>{ const cb=el("button","coin"); cb.type="button"; const n=el("span","nm",c.b.short); const al=algae(c.b.id); const extra=[c.p.has?c.p.t:null, al&&al.k!=="good"?`algues : ${al.t.toLowerCase()}`:null].filter(Boolean).join(" · "); if(extra) n.appendChild(el("small",null,extra)); cb.appendChild(n);
       const sc=STATE(c.s); cb.appendChild(el("span","statepill "+(c.tier?"bad":sc.k), c.tier?"Méduses":sc.t)); cb.appendChild(el("span","chev","›")); cb.onclick=()=>openPlage(c.b.id); cl.appendChild(cb); });
     box.appendChild(cl);
-    btn.onclick=()=>{ if(g.coins.length===1){ openPlage(x.b.id); return; } cl.hidden=!cl.hidden; btn.setAttribute("aria-expanded",String(!cl.hidden)); };
+    btn.onclick=()=>{ if(g.coins.length===1){ openPlage(x.b.id); return; } cl.hidden=!cl.hidden; [...cl.children].forEach((c,k)=>c.style.setProperty("--k",k)); tick(); btn.setAttribute("aria-expanded",String(!cl.hidden)); };
     list.appendChild(box);
   });
   renderSky(); renderNear(); renderFavs(); renderLabo();
@@ -777,12 +856,21 @@ function renderLyoum(){
 
 /* ---------- Page d'une plage ---------- */
 let CUR_PLAGE=null, PREV_VIEW="lyoum";
-function openPlage(id){ CUR_PLAGE=id; PREV_VIEW = VIEW==="plage"?PREV_VIEW:VIEW; renderPlage(); showView("plage"); window.scrollTo(0,0); }
+function openPlage(id){
+  const from = LAST_TAP && LAST_TAP.isConnected ? LAST_TAP : null; LAST_TAP=null;
+  const fromPlage = VIEW==="plage"; if(!fromPlage){ PREV_VIEW=VIEW; BACK_TO=from; }
+  try{ fromPlage ? history.replaceState({v:"plage",id},"") : history.pushState({v:"plage",id},""); }catch(e){}
+  showView("plage","fwd",{from, before:()=>{ CUR_PLAGE=id; renderPlage(); }, to:()=>$("v-plage").querySelector(".hero"), after:()=>window.scrollTo(0,0)});
+}
+// Revenir : le bouton, le geste « retour » du téléphone, ou le glissement depuis le bord
+function navBack(){ if(history.state&&history.state.v==="plage") history.back(); else goBack(); }
+function goBack(){ if(VIEW!=="plage") return;
+  showView(PREV_VIEW,"back",{from:$("v-plage").querySelector(".hero"), to:()=>BACK_TO&&BACK_TO.isConnected&&BACK_TO.getClientRects().length?BACK_TO:null}); }
 function renderPlage(){
   const bi=BEACHES.findIndex(b=>b.id===CUR_PLAGE); if(bi<0||!WX) return; const b=BEACHES[bi];
   const i=idxOf(selectedKey); const r=at(bi,i), st=STATE(r.s), day=selectedKey.slice(0,10), H=WX.hourly;
   const cote=COTES.find(c=>c.id===b.cote); const v=$("v-plage"); v.innerHTML="";
-  const back=el("button","back","← Retour"); back.type="button"; back.onclick=()=>showView(PREV_VIEW); v.appendChild(back);
+  const back=el("button","back","← Retour"); back.type="button"; back.onclick=navBack; v.appendChild(back);
   const card=el("div","hero"); v.appendChild(card);
   const row=el("div","row"); const left=el("div");
   left.appendChild(el("div","kicker",[cote&&cote.name!==b.short?cote.name:null, isNow()?"maintenant":`${dayName(day)} ${hourOf(selectedKey)} h`].filter(Boolean).join(" · ")));
@@ -791,7 +879,7 @@ function renderPlage(){
   const meteo=el("div","tiles");
   [["Vent",`${Math.round(H.wind_speed_10m[i])} km/h`,localWind(H.wind_direction_10m[i]).split(" ")[0]],["Eau",sst!=null?`${Math.round(sst)} °C`:"—",null],["UV",H.uv_index?.[i]!=null?`${Math.round(H.uv_index[i])}`:"—",null]]
     .forEach(([k,val,sub])=>{ const t=el("div","tile"); t.appendChild(el("small",null,k)); t.appendChild(el("b",null,val)); if(sub) t.appendChild(el("em",null,sub)); meteo.appendChild(t); });
-  card.appendChild(meteo);
+  card.appendChild(meteo); countUp(meteo,"pt");
   const HRS=[7,8,9,10,11,12,13,14,15,16,17,18];
   const pan=el("div","panel");
   const sh=el("div","barhead"); sh.appendChild(el("b",null,"La mer")); sh.appendChild(el("span",null,seaRun(bi,selectedKey))); pan.appendChild(sh);
@@ -804,7 +892,7 @@ function renderPlage(){
   const t2=el("div","tile"+(pe.tier?" alert":"")); t2.appendChild(el("small",null,"Méduses")); t2.appendChild(el("b",null,pe.t)); if(pe.sub) t2.appendChild(el("em",null,pe.sub)); tiles.appendChild(t2);
   card.appendChild(tiles);
   const act=el("div","pbar"); const go=el("a","go","Yalla"); go.href=mapsUrl(b); go.target="_blank"; go.rel="noopener"; act.appendChild(go);
-  const im=el("button","im","Wselt !"); im.type="button"; im.setAttribute("aria-label","Wselt : je suis arrivé, dire comment c'est"); im.onclick=()=>{ $("v-retour").classList.remove("done"); $("r-beach").value=b.id; showView("retour"); window.scrollTo(0,0); }; act.appendChild(im);
+  const im=el("button","im","Wselt !"); im.type="button"; im.setAttribute("aria-label","Wselt : je suis arrivé, dire comment c'est"); im.onclick=()=>{ $("v-retour").classList.remove("done"); $("r-beach").value=b.id; tabTo("retour"); }; act.appendChild(im);
   v.appendChild(act);
   // Les prochains jours
   const wk=el("section","pbox"); wk.appendChild(el("h3",null,"Les prochains jours"));
@@ -1021,8 +1109,14 @@ function setDialKey(k){ const [lo,hi]=keyBounds(); if(k<lo) k=lo; if(k>hi) k=hi;
 function openDial(){ if(!WX) return; DIAL.key=selectedKey<nowKey()?nowKey():selectedKey;
   // couleurs du cadran : la plage ouverte, sinon la plage n°1 du moment
   const cur=VIEW==="plage"?BEACHES.findIndex(b=>b.id===CUR_PLAGE):-1; const G=ranking(DIAL.key); DIAL.bi = cur>=0 ? cur : (G[0]?G[0].best.bi:0);
-  const sh=$("sheet"); sh.style.transform=""; $("veil").hidden=false; sh.hidden=false; drawDial(); }
-function closeDial(apply){ if(apply){ selectedKey=DIAL.key; renderAll(); } $("veil").hidden=true; $("sheet").hidden=true; }
+  const sh=$("sheet"), vl=$("veil"); clearTimeout(DIAL.closeT); sh.style.transition=""; sh.style.transform=""; vl.style.opacity=""; vl.hidden=false; sh.hidden=false; drawDial(); tick();
+  if(!SHEET_PUSHED){ try{ history.pushState(Object.assign({},history.state,{sheet:1}),""); SHEET_PUSHED=true; }catch(e){} } }
+function closeDial(apply, fromPop){ if(apply){ selectedKey=DIAL.key; renderAll(); }
+  const sh=$("sheet"), vl=$("veil"); if(sh.hidden) return;
+  if(SHEET_PUSHED){ SHEET_PUSHED=false; if(!fromPop){ IGNORE_POP++; history.back(); } }
+  if(REDUCE()){ vl.hidden=true; sh.hidden=true; return; }
+  sh.style.transition="transform .24s cubic-bezier(.4,0,.9,.6)"; sh.style.transform="translateY(105%)"; vl.style.opacity="0";
+  DIAL.closeT=setTimeout(()=>{ sh.hidden=true; vl.hidden=true; sh.style.transition=""; sh.style.transform=""; vl.style.opacity=""; },240); }
 (function setupDial(){
   const svg=$("dial");
   const hourFromEvent=e=>{ const r=svg.getBoundingClientRect(); const x=(e.clientX-r.left)/r.width*358, y=(e.clientY-r.top)/r.height*226;
@@ -1039,11 +1133,15 @@ function closeDial(apply){ if(apply){ selectedKey=DIAL.key; renderAll(); } $("ve
   $("veil").onclick=()=>closeDial(false);
   document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&!$("sheet").hidden) closeDial(false); });
   $("when-btn").onclick=openDial; $("pk-day").onclick=openDial; $("pk-hour").onclick=openDial;
-  const sh=$("sheet"); let y0=null, dy=0;
-  sh.addEventListener("pointerdown",e=>{ if(e.target.closest("#dial")) return; y0=e.clientY; dy=0; });
-  window.addEventListener("pointermove",e=>{ if(y0==null) return; dy=Math.max(0,e.clientY-y0); if(dy>6){ sh.style.transition="none"; sh.style.transform=`translateY(${dy}px)`; } });
-  window.addEventListener("pointerup",()=>{ if(y0==null) return; y0=null; sh.style.transition="transform .18s ease-out";
-    if(dy>80){ sh.style.transform="translateY(110%)"; setTimeout(()=>{ closeDial(false); sh.style.transform=""; },170); } else sh.style.transform=""; });
+  // le panneau suit le doigt ; lâché vite ou assez bas, il se ferme, sinon il rebondit à sa place
+  const sh=$("sheet"), vl=$("veil"); let y0=null, dy=0, ly=0, lt=0, vy=0;
+  sh.addEventListener("pointerdown",e=>{ if(e.target.closest("#dial,button")) return; y0=ly=e.clientY; lt=performance.now(); dy=0; vy=0; });
+  window.addEventListener("pointermove",e=>{ if(y0==null) return; const raw=e.clientY-y0; dy = raw>0 ? raw : raw*0.18;      // vers le haut : ça résiste
+    const now=performance.now(); vy=(e.clientY-ly)/Math.max(1,now-lt); ly=e.clientY; lt=now;
+    if(Math.abs(raw)>4){ sh.style.transition="none"; sh.style.transform=`translateY(${dy}px)`; vl.style.opacity=String(Math.max(0,1-Math.max(0,dy)/(sh.offsetHeight||400))); } });
+  window.addEventListener("pointerup",()=>{ if(y0==null) return; y0=null;
+    if(dy>110 || (dy>20 && vy>0.6)){ closeDial(false); return; }
+    sh.style.transition="transform .5s var(--spring)"; sh.style.transform=""; vl.style.opacity=""; });
 })();
 
 /* ---------- Labo méduses (expérimental, en coulisses) ---------- */
@@ -1078,24 +1176,114 @@ function renderLabo(){
 }
 
 /* ---------- Navigation ---------- */
-let VIEW="lyoum";
+let VIEW="lyoum", BACK_TO=null, LAST_TAP=null, IGNORE_POP=0, SHEET_PUSHED=false;
 const SCROLL={};
-function showView(v){
-  const go=()=>showViewNow(v);
-  if(document.startViewTransition && !matchMedia("(prefers-reduced-motion: reduce)").matches && v!==VIEW) document.startViewTransition(go); else go();
+const REDUCE=()=>matchMedia("(prefers-reduced-motion: reduce)").matches;
+// on retient ce que le doigt a touché, pour que cette carte « devienne » la page de la plage
+document.addEventListener("pointerdown",e=>{ LAST_TAP=e.target.closest(".hero,.dcard,.fav,.near,.coin,.cote,.change")||e.target.closest("button"); },true);
+function showView(v, dir, opt){
+  opt=opt||{};
+  const go=()=>{ opt.before&&opt.before(); showViewNow(v); opt.after&&opt.after(); };
+  if(!document.startViewTransition || REDUCE() || (v===VIEW && !opt.before)){ go(); return; }
+  const root=document.documentElement, cls="vt-"+(dir||"tab"); root.classList.add(cls);
+  if(opt.from) opt.from.style.viewTransitionName="phero";
+  const t=document.startViewTransition(()=>{ if(opt.from) opt.from.style.viewTransitionName=""; go(); const to=opt.to&&opt.to(); if(to) to.style.viewTransitionName="phero"; });
+  t.finished.finally(()=>{ root.classList.remove(cls); document.querySelectorAll("[style*='view-transition-name']").forEach(e=>e.style.viewTransitionName=""); });
 }
 function showViewNow(v){
   SCROLL[VIEW]=window.scrollY; const from=VIEW;
   VIEW=v; ["lyoum","carte","plage","retour"].forEach(x=>$("v-"+x).hidden = x!==v);
-  if(v!=="plage" && from==="plage" && SCROLL[v]!=null) requestAnimationFrame(()=>window.scrollTo(0,SCROLL[v]));
+  if(v!=="plage" && from==="plage" && SCROLL[v]!=null) window.scrollTo(0,SCROLL[v]);
   const tab = v==="plage" ? PREV_VIEW : v;
   ["lyoum","carte","retour"].forEach(x=>$("tab-"+x).setAttribute("aria-selected",String(x===tab)));
+  placePill();
+  $("theme").content = v==="carte" ? "#1450A3" : "#F7F5F0";
   if(v==="carte") renderCarte();
+  if(from!==v || v==="plage") markIn($("v-"+v));
   try{ if(v!=="plage") localStorage.setItem("wn-view",v); }catch(e){}
 }
-$("tab-lyoum").onclick=()=>{ showView("lyoum"); window.scrollTo(0,0); };
-$("tab-carte").onclick=()=>showView("carte");
-$("tab-retour").onclick=()=>{ showView("retour"); window.scrollTo(0,0); };
+// les éléments d'un écran arrivent en cascade quand on l'ouvre
+function markIn(vEl){ if(!vEl||REDUCE()) return; vEl.classList.remove("in");
+  vEl.querySelectorAll(".sky > div,.tile,.cote,.fav,.near,.dcard").forEach(e=>e.style.setProperty("--k",Array.prototype.indexOf.call(e.parentElement.children,e)));
+  void vEl.offsetWidth; vEl.classList.add("in"); clearTimeout(vEl._inT); vEl._inT=setTimeout(()=>vEl.classList.remove("in"),1500); }
+// la pastille de la barre du bas glisse jusqu'à l'onglet choisi
+function placePill(){ const sel=document.querySelector('.tab[aria-selected="true"]'), pill=$("tabpill"); if(!sel) return;
+  pill.style.width=sel.offsetWidth+"px"; pill.style.transform=`translateX(${sel.offsetLeft}px)`; }
+addEventListener("resize",()=>{ const pill=$("tabpill"); pill.style.transition="none"; placePill(); requestAnimationFrame(()=>pill.style.transition=""); });
+function tabTo(v){ if(VIEW===v) { if(v!=="carte") window.scrollTo({top:0,behavior:REDUCE()?"auto":"smooth"}); return; }
+  tick(); if(VIEW==="plage" && history.state&&history.state.v==="plage"){ IGNORE_POP++; history.back(); }
+  showView(v,"tab",{after:()=>{ if(v!=="carte") window.scrollTo(0, VIEW===v&&SCROLL[v]!=null&&v==="lyoum"?SCROLL[v]:0); }}); }
+$("tab-lyoum").onclick=()=>tabTo("lyoum");
+$("tab-carte").onclick=()=>tabTo("carte");
+$("tab-retour").onclick=()=>tabTo("retour");
+try{ if(history.state) history.replaceState(null,""); }catch(e){}
+addEventListener("popstate",e=>{
+  if(IGNORE_POP>0){ IGNORE_POP--; return; }
+  if(!$("sheet").hidden){ closeDial(false,true); return; }
+  if(VIEW==="plage"){ if(e.hasUAVisualTransition) showViewNow(PREV_VIEW); else goBack(); }   // Safari a déjà animé son propre glissement
+});
+
+/* ---------- Gestes : glisser pour revenir, tirer pour mettre à jour ---------- */
+(function gestures(){
+  // 1) Depuis le bord gauche de la page d'une plage : on la pousse avec le doigt et l'écran d'avant apparaît dessous
+  let sw=null;
+  addEventListener("touchstart",e=>{ if(VIEW!=="plage"||e.touches.length!==1||!$("sheet").hidden) return; const t=e.touches[0]; if(t.clientX>28) return;
+    sw={x0:t.clientX,y0:t.clientY,on:false,dx:0,lx:t.clientX,lt:performance.now(),v:0}; },{passive:true});
+  addEventListener("touchmove",e=>{ if(!sw) return; const t=e.touches[0], dx=t.clientX-sw.x0, dy=t.clientY-sw.y0;
+    if(!sw.on){ if(Math.abs(dy)>Math.abs(dx)&&Math.abs(dy)>8){ sw=null; return; } if(dx>8) start(); else return; }
+    if(e.cancelable) e.preventDefault();
+    const now=performance.now(); sw.v=(t.clientX-sw.lx)/Math.max(1,now-sw.lt); sw.lx=t.clientX; sw.lt=now; sw.dx=Math.max(0,dx); paint(sw.dx); },{passive:false});
+  addEventListener("touchend",end); addEventListener("touchcancel",end);
+  function start(){ sw.on=true; const pv=$("v-plage"); sw.pv=pv; sw.under=$("v-"+PREV_VIEW); sw.scroll=scrollY; sw.bar=pv.querySelector(".pbar");
+    if(sw.bar) document.body.appendChild(sw.bar);
+    pv.classList.add("swiping"); pv.style.top=(-scrollY)+"px"; sw.under.hidden=false; sw.under.classList.add("under"); window.scrollTo(0,SCROLL[PREV_VIEW]||0); }
+  function paint(dx){ const W=innerWidth, p=dx/W; sw.pv.style.transform=`translateX(${dx}px)`; if(sw.bar) sw.bar.style.transform=`translateX(${dx}px)`;
+    sw.under.style.transform=`translateX(${-(1-p)*W*0.22}px)`; sw.under.style.opacity=String(.55+.45*p); }
+  function end(){ if(!sw) return; const s=sw; sw=null; if(!s.on) return;
+    const done = s.dx>innerWidth*0.33 || s.v>0.45, W=innerWidth, tr="transform .28s cubic-bezier(.2,.8,.2,1), opacity .28s ease";
+    [s.pv,s.under,s.bar].forEach(x=>x&&(x.style.transition=tr));
+    if(done){ s.pv.style.transform=`translateX(${W}px)`; if(s.bar) s.bar.style.transform=`translateX(${W}px)`; s.under.style.transform="translateX(0)"; s.under.style.opacity="1"; }
+    else { s.pv.style.transform=""; if(s.bar) s.bar.style.transform=""; s.under.style.transform=`translateX(${-W*0.22}px)`; s.under.style.opacity=".55"; }
+    setTimeout(()=>{ s.pv.classList.remove("swiping"); s.pv.style.cssText=""; s.under.classList.remove("under"); s.under.style.cssText="";
+      if(done){ if(s.bar) s.bar.remove(); tick(); showViewNow(PREV_VIEW); window.scrollTo(0,SCROLL[PREV_VIEW]||0);
+        if(history.state&&history.state.v==="plage"){ IGNORE_POP++; history.back(); } }
+      else { s.under.hidden=true; if(s.bar){ s.bar.style.cssText=""; s.pv.appendChild(s.bar); } window.scrollTo(0,s.scroll); } },290); }
+
+  // 2) Sur l'accueil, tout en haut : tirer vers le bas pour mettre à jour (la petite vague se dessine)
+  let pr=null; const ptr=$("ptr");
+  const setP=p=>{ ptr.classList.remove("back"); const q=Math.min(1,p); ptr.style.setProperty("--p",q); ptr.style.transform=`translateY(${q*84+Math.max(0,p-1)*24}px) rotate(${q*180-180}deg)`; ptr.style.opacity=String(Math.min(1,p*1.8)); };
+  addEventListener("touchstart",e=>{ if(VIEW!=="lyoum"||window.scrollY>0||!WX||REFRESHING||!$("sheet").hidden||e.touches.length!==1) return; pr={y0:e.touches[0].clientY,armed:false}; },{passive:true});
+  addEventListener("touchmove",e=>{ if(!pr) return; const dy=e.touches[0].clientY-pr.y0; if(window.scrollY>0){ pr=null; setP(0); return; }
+    const p=Math.max(0,dy)/170; setP(p);
+    if(p>=1&&!pr.armed){ pr.armed=true; tick(); ptr.classList.add("armed"); } else if(p<1&&pr.armed){ pr.armed=false; ptr.classList.remove("armed"); } },{passive:true});
+  addEventListener("touchend",()=>{ if(!pr) return; const armed=pr.armed; pr=null; ptr.classList.add("back");
+    const hide=()=>{ ptr.classList.add("back"); ptr.classList.remove("spin","armed"); ptr.style.transform=""; ptr.style.opacity="0"; };
+    if(armed){ ptr.style.transform="translateY(84px)"; ptr.classList.add("spin"); refresh().finally(hide); } else hide(); });
+})();
+let REFRESHING=false;
+async function refresh(){ REFRESHING=true;
+  try{ const ok=await load(true); if(ok){ loadRecent(); toast("C'est à jour"); } else toast("Pas de réseau pour l'instant"); }
+  finally{ REFRESHING=false; } }
+let TOAST_T=0;
+function toast(msg, onTap, ms){ const t=$("toast"); t.textContent=msg; t.onclick=onTap||null; t.classList.add("on"); clearTimeout(TOAST_T); TOAST_T=setTimeout(()=>t.classList.remove("on"), ms||2400); }
+
+/* ---------- Les chiffres défilent jusqu'à leur valeur ---------- */
+const NUMS=new Map();
+function countUp(root, prefix){
+  root.querySelectorAll("b").forEach((b,k)=>{ const m=b.textContent.match(/^(-?\d+)([\s\S]*)$/); if(!m) return;
+    const to=+m[1], rest=m[2], key=prefix+k, from=NUMS.has(key)?NUMS.get(key):Math.round(to*0.6); NUMS.set(key,to);
+    if(from===to||REDUCE()) return; const t0=performance.now(), D=650;
+    b.textContent=from+rest;
+    const step=now=>{ const x=Math.min(1,(now-t0)/D), e=1-Math.pow(1-x,3); b.textContent=Math.round(from+(to-from)*e)+rest; if(x<1&&b.isConnected) requestAnimationFrame(step); };
+    requestAnimationFrame(step); });
+}
+
+/* ---------- L'app installée sur le téléphone ---------- */
+if("serviceWorker" in navigator && (location.protocol==="https:"||location.hostname==="localhost")){
+  addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
+  navigator.serviceWorker.addEventListener("message",e=>{ if(e.data&&e.data.type==="update"){
+    if(!WX) location.reload(); else toast("Nouvelle version prête · touche pour l'avoir",()=>location.reload(),9000); } });
+}
 let RAF_ALL=0;
 function renderAll(){ if(!WX||RAF_ALL) return; RAF_ALL=requestAnimationFrame(()=>{ RAF_ALL=0; renderLyoum(); if(VIEW==="carte") renderCarte(); if(VIEW==="plage") renderPlage(); }); }
 
@@ -1121,19 +1309,22 @@ function mergeModels(j){
   return {hourly:out};
 }
 function alignTo(times, src, keys){ const map=new Map(src.time.map((t,k)=>[t,k])), o={}; keys.forEach(k=>{ o[k]=times.map(t=>{ const i=map.get(t); return i==null?null:(src[k]?.[i]??null); }); }); return o; }
-async function load(){
+async function load(quiet){
   const base=`latitude=${CENTER.lat}&longitude=${CENTER.lon}&timezone=${encodeURIComponent(TZ)}`;
   const uMulti=`https://api.open-meteo.com/v1/forecast?${base}&hourly=${WXVARS.join(",")}&wind_speed_unit=kmh&past_days=2&forecast_days=7&models=${MODELS.map(m=>m[0]).join(",")}`;
   const uSingle=`https://api.open-meteo.com/v1/forecast?${base}&hourly=${WXVARS.join(",")}&wind_speed_unit=kmh&past_days=2&forecast_days=7`;
   const uMarine=`https://marine-api.open-meteo.com/v1/marine?latitude=${BEACHES.map(b=>b.lat).join(",")}&longitude=${BEACHES.map(b=>b.lon).join(",")}&hourly=wave_height,wave_direction,sea_surface_temperature,sea_level_height_msl&timezone=${encodeURIComponent(TZ)}&past_days=2&forecast_days=7`;
   const uAir=`https://air-quality-api.open-meteo.com/v1/air-quality?${base}&hourly=dust,aerosol_optical_depth&past_days=2&forecast_days=5`;
-  try{ WX=mergeModels(await fetchJSON(uMulti,2)); }
-  catch(e){ try{ WX=await fetchJSON(uSingle); } catch(e2){ showError(e2); return; } }
-  const T=WX.hourly.time;
+  let wx;
+  try{ wx=mergeModels(await fetchJSON(uMulti,quiet?1:2)); }
+  catch(e){ try{ wx=await fetchJSON(uSingle,quiet?1:3); } catch(e2){ if(quiet) return false; showError(e2); return false; } }
+  const T=wx.hourly.time;
   const [mar, air] = await Promise.allSettled([fetchJSON(uMarine,2), fetchJSON(uAir,2)]);
   if(mar.status==="fulfilled"){ const j=mar.value; MARINE=(Array.isArray(j)?j:[j]).map(mm=>({hourly:alignTo(T,mm.hourly,["wave_height","wave_direction","sea_surface_temperature","sea_level_height_msl"])})); }
   AIR = air.status==="fulfilled" ? alignTo(T,air.value.hourly,["dust","aerosol_optical_depth"]) : null;
-  CACHE=new Map(); selectedKey=nowKey(); renderAll();
+  WX=wx; CACHE=new Map(); selectedKey=nowKey(); renderAll();
+  requestAnimationFrame(()=>requestAnimationFrame(()=>markIn($("v-"+VIEW))));
+  return true;
 }
 function showError(e){
   const box=$("error"); box.hidden=false; box.className="error"; $("hero").innerHTML="";
@@ -1245,8 +1436,9 @@ async function loadExtras(){
   try{ const r=await fetch("data/connectivite.json",{cache:"no-store"}); if(r.ok) CONNECT=await r.json(); }catch(e){}
   renderAll();
 }
+{ const pill=$("tabpill"); pill.style.transition="none"; placePill(); requestAnimationFrame(()=>requestAnimationFrame(()=>pill.style.transition="")); }
 (async()=>{ await loadPlages(); setupReport(); load(); loadExtras();
-  try{ const v=localStorage.getItem("wn-view"); if(v==="carte"||v==="retour") showView(v); }catch(e){} })();
+  try{ const v=localStorage.getItem("wn-view"); if(v==="carte"||v==="retour") showViewNow(v); }catch(e){} })();
 </script>
 </body>
 </html>
