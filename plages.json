@@ -1,5 +1,5 @@
 {
- "_aide": "Plages en deux niveaux : 'cotes' (le grand nom, affiché dans le classement) et 'plages' (les coins précis, calculés un par un). Chaque coin a un champ 'cote'. id = identifiant court sans espace (ne pas le changer : l'historique y est rattaché). face = direction vers laquelle la plage regarde la mer (0 = nord, 90 = est). shelter = 1 si abritée. shallow = 1 si très peu profonde. beauty = potentiel turquoise (0-100). source = identifiant dans la recherche du 13/10/2026.",
+ "_aide": "Plages en deux niveaux : 'cotes' (le grand nom, affiché dans le classement) et 'plages' (les coins précis, calculés un par un). Chaque coin a un champ 'cote'. id = identifiant court sans espace (ne pas le changer : l'historique y est rattaché). face = direction vers laquelle la plage regarde la mer (0 = nord, 90 = est). shelter = 1 si abritée. shallow = 1 si très peu profonde. beauty = potentiel turquoise (0-100). source = identifiant dans la recherche du 13/10/2026. Algues (facultatif) : nettoyee = 1 si la plage est ratissée le matin en saison (hôtels) ; herbier = 0 (sable nu devant), 1 (normal) ou 2 (beaucoup d'herbiers tout près).",
  "version": 2,
  "cotes": [
   {"id": "ras-rmel", "name": "Ras R'mel", "desc": "Presqu'île nord, face à Houmt Souk"},

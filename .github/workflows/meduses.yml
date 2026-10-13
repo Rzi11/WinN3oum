@@ -81,11 +81,19 @@ jobs:
         continue-on-error: true
         run: python drift/calibrate.py
 
+      - name: Algues (prévision 7 jours + apprentissage sur les retours)
+        if: github.event.inputs.mode == '' || github.event.inputs.mode == 'normal'
+        continue-on-error: true
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+        run: python drift/algues.py
+
       - name: Enregistrer le résultat
         run: |
           git config user.name  "winn3oum-bot"
           git config user.email "winn3oum-bot@users.noreply.github.com"
           git add data/
-          git commit -m "Méduses : mise à jour du $(date -u +%Y-%m-%d)" || echo "Rien de nouveau"
+          git commit -m "Méduses et algues : mise à jour du $(date -u +%Y-%m-%d)" || echo "Rien de nouveau"
           git pull --rebase
           git push
