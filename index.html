@@ -114,6 +114,13 @@ button{cursor:pointer}
 .legbox{display:flex;flex-direction:column;gap:6px;background:var(--chaux);border-radius:12px;padding:8px 10px}
 .sum3{display:flex;flex-direction:column;gap:6px}
 .sum3 .sr{display:flex;align-items:center;gap:10px;font-size:14px} .sum3 .sr b{font:800 15px var(--display);width:56px;flex-shrink:0} .sum3 .sr i{width:30px;height:30px;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;border-radius:8px} .sum3 .sr i svg{width:100%;height:100%}
+.g3 .gl2{display:flex;flex-direction:column;gap:2px;min-width:0} .g3 .gl2 b{font:800 14px var(--display);line-height:1} .g3 .gl2 small{font-size:11px;color:var(--muted);line-height:1.15}
+.g3.wide .gr{grid-template-columns:96px minmax(0,1fr)}
+.now3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:4px}
+.now3 > div{background:var(--chaux);border-radius:14px;padding:8px 6px;display:flex;flex-direction:column;align-items:center;gap:3px;text-align:center}
+.now3 small{font-size:11px;color:var(--muted);font-weight:700} .now3 b{font-size:13.5px;line-height:1.1} .now3 em{font-style:normal;font-size:11px;color:var(--muted);line-height:1.15}
+.now3 i{width:40px;height:30px;display:inline-flex;align-items:center;justify-content:center;border-radius:9px} .now3 i svg{width:100%;height:100%} .now3 i.c{width:32px;height:32px;border-radius:50%} .now3 i.q{width:34px;height:24px}
+.sumtop{display:flex;flex-wrap:wrap;gap:6px} .sumtop span{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:700;background:var(--chaux);border-radius:999px;padding:3px 10px 3px 3px} .sumtop i{width:24px;height:24px;display:inline-flex;border-radius:50%;overflow:hidden} .sumtop i svg{width:100%;height:100%}
 .sumrow{display:flex;gap:6px;flex-wrap:wrap} .sumrow span{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:700;background:var(--chaux);border-radius:999px;padding:3px 9px 3px 3px} .sumrow i{width:24px;height:24px;display:inline-flex;border-radius:50%;overflow:hidden} .sumrow i svg{width:100%;height:100%}
 .hours{display:grid;grid-template-columns:repeat(var(--n,6),minmax(0,1fr));gap:4px;font-size:12px;color:var(--muted);text-align:center}
 .tiles{display:flex;gap:8px}
@@ -817,6 +824,30 @@ function g3El(bi,id,day,hours,small,selH){
   if(!small){ const r=el("div","gr"); r.appendChild(el("span")); r.appendChild(hoursEl(hours,1)); g.appendChild(r); }
   return g;
 }
+function g3Wide(bi,id,day,hours,selH,key){
+  const g=el("div","g3 wide"); const bt=bestTurq(bi,day);
+  const row=(n,sub,content)=>{ const r=el("div","gr"); const l=el("span","gl2"); l.appendChild(el("b",null,n)); l.appendChild(el("small",null,sub)); r.appendChild(l); r.appendChild(content); g.appendChild(r); };
+  row("Mouj",seaRun(bi,key),barsEl(bi,day,hours,"sea",null,selH));
+  row("Zarga",bt?bt.txt.replace("le plus beau ","belle "):"pas de soleil",barsEl(bi,day,hours,"turq",null,selH));
+  row("Algues",algSummary(id,day),algaeRowEl(id,day,hours,null,selH));
+  const r=el("div","gr"); r.appendChild(el("span")); r.appendChild(hoursEl(hours,1)); g.appendChild(r);
+  return g;
+}
+function now3(bi,id,day,key){
+  const i=idxOf(key); const r=at(bi,i), k=STATE(r.s).k, a=algae(id,key), bt=bestTurq(bi,day);
+  const d=el("div","now3");
+  const add=(lab,iconEl,val,sub)=>{ const c=el("div"); c.appendChild(el("small",null,lab)); c.appendChild(iconEl); c.appendChild(el("b",null,val)); c.appendChild(el("em",null,sub)); d.appendChild(c); };
+  const w=el("i"); w.style.background=WAVE_BG[k]; w.innerHTML=waveSVG(k).replace(/pathLength="1" /g,""); add("Mouj",w,STATE(r.s).t,seaRun(bi,key));
+  const q=el("i","q"); q.style.background=TURQ(r.t); add("Zarga",q,r.t==null?"pas de soleil":zLevel(r.t).replace(/^./,c=>c.toUpperCase()),bt?bt.txt.replace("le plus beau ","belle "):"");
+  const c=el("i","c"); if(a) c.innerHTML=algIcon(a); add("Algues",c,a?(a.ak==="a0"?"Aucune":a.s):"—",algSummary(id,day));
+  return d;
+}
+function sumTop(bi,id,day,key){
+  const d=el("div","sumtop"); const r=at(bi,idxOf(key)), k=STATE(r.s).k, bt=bestTurq(bi,day), a=algae(id,key);
+  const add=(icon,txt,bg)=>{ const sp=el("span"); const i=el("i"); if(bg) i.style.background=bg; i.innerHTML=icon; sp.appendChild(i); sp.appendChild(document.createTextNode(txt)); d.appendChild(sp); };
+  add(merSVG(k),seaRun(bi,key)); add("",bt?bt.txt.replace("le plus beau ","belle "):"pas de soleil",bt&&bt.t>=52?TURQ(bt.t):"#E6E0D2"); if(a) add(algIcon(a),algSummary(id,day));
+  return d;
+}
 function hourSentence(bi,id,key){
   const i=idxOf(key); if(i<0) return null; const r=at(bi,i), k=STATE(r.s).k, a=algae(id,key);
   const d=el("div","hsent"); d.appendChild(el("b",null,`À ${hourOf(key)} h`));
@@ -985,6 +1016,15 @@ function renderLyoum(){
   } else if(LAY==="2"){
     pan.appendChild(g3El(r.bi,b.id,day,HERO_HOURS,false,hourOf(selectedKey)));
     const hs=hourSentence(r.bi,b.id,selectedKey); if(hs) pan.appendChild(hs);
+  } else if(LAY==="4"){
+    pan.appendChild(g3Wide(r.bi,b.id,day,HERO_HOURS,hourOf(selectedKey),selectedKey));
+    const hs=hourSentence(r.bi,b.id,selectedKey); if(hs) pan.appendChild(hs);
+  } else if(LAY==="5"){
+    pan.appendChild(sumTop(r.bi,b.id,day,selectedKey));
+    pan.appendChild(g3El(r.bi,b.id,day,HERO_HOURS,false,hourOf(selectedKey)));
+  } else if(LAY==="6"){
+    pan.appendChild(g3El(r.bi,b.id,day,HERO_HOURS,false,hourOf(selectedKey)));
+    pan.appendChild(now3(r.bi,b.id,day,selectedKey));
   } else if(LAY==="3"){
     pan.appendChild(summary3(r.bi,b.id,day,selectedKey));
     const more=el("button","howto","Heure par heure ▾"); more.type="button"; const det=el("div"); det.hidden=true; det.appendChild(g3El(r.bi,b.id,day,HERO_HOURS,false,hourOf(selectedKey)));
@@ -1004,8 +1044,8 @@ function renderLyoum(){
     c.appendChild(t); if(ch.alt){ c.appendChild(el("span","chev","›")); c.onclick=()=>openPlage(ch.alt.b.id); } else c.style.cursor="default"; pan.appendChild(c); }
   card.appendChild(pan);
   const tiles=el("div","tiles"); const al=algae(b.id), pe=r.p;
-  tiles.appendChild(algTile(b.id,"Algues"));
-  const t2=el("div","tile"+(pe.tier?" alert":"")); t2.appendChild(el("small",null,"Les gens disent")); t2.appendChild(el("b",null,pe.t)); if(pe.sub) t2.appendChild(el("em",null,pe.sub)); tiles.appendChild(t2);
+  if(+LAY<4) tiles.appendChild(algTile(b.id,"Algues"));
+  const t2=el("div","tile"+(pe.tier?" alert":"")); if(+LAY>=4) t2.style.gridColumn="1 / -1"; t2.appendChild(el("small",null,"Les gens disent")); t2.appendChild(el("b",null,pe.t)); if(pe.sub) t2.appendChild(el("em",null,pe.sub)); tiles.appendChild(t2);
   card.appendChild(tiles);
   const go=el("a","go","Yalla"); go.href=mapsUrl(b); go.target="_blank"; go.rel="noopener"; go.setAttribute("aria-label",`Yalla : itinéraire vers ${b.short}`); card.appendChild(go);
   if(top.coins.length>1){ const also=el("div","alsocoins"); also.appendChild(el("span",null,`Aussi à ${top.c.name} :`));
@@ -1019,7 +1059,7 @@ function renderLyoum(){
     const head=el("div","head"); const nm=el("b",null,`${k+2} · ${g.c.name} `); if(g.coins.length>1) nm.appendChild(el("small",null,`mieux côté ${x.b.short}`));
     head.appendChild(nm); { const rt=el("span"); rt.style.cssText="display:flex;align-items:center;gap:6px;flex-shrink:0"; rt.appendChild(x.tier?el("span","statepill bad",x.p.t):wavePill(s2.k,s2.k,s2.t)); const ap=LAY==="0"?algPill(x.b.id):null; if(ap) rt.appendChild(ap); head.appendChild(rt); } btn.appendChild(head);
     if(LAY==="1"||LAY==="2") btn.appendChild(g3El(x.bi,x.b.id,day,HERO_HOURS,true,null));
-    else if(LAY==="3") btn.appendChild(sumRow(x.bi,x.b.id,day,selectedKey));
+    else if(LAY==="3"||+LAY>=4) btn.appendChild(sumRow(x.bi,x.b.id,day,selectedKey));
     else btn.appendChild(barsEl(x.bi,day,HERO_HOURS,"sea","mini"));
     const bt2=bestTurq(x.bi,day); const meta=[]; if(bt2 && LAY==="0") meta.push(bt2.t>=45?bt2.txt.replace("le plus beau","belle eau"):bt2.txt);
     if(x.p.has&&!x.tier) meta.push(x.p.t.toLowerCase());
