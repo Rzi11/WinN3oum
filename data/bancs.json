@@ -1,5 +1,5 @@
 {
- "generated": "2026-10-12T23:49:25Z",
+ "generated": "2026-10-13T04:01:21Z",
  "version": "v0.8",
  "horizon_jours": 8,
  "actifs": [
@@ -10,19 +10,19 @@
    "ne": "2026-10-04",
    "vu_pres": "au large d'Hammamet",
    "source": "iNaturalist",
-   "age_jours": 7,
-   "force": 0.517,
+   "age_jours": 8,
+   "force": 0.488,
    "confirmations": 0,
    "contradictions": 0,
    "dernier_vu": "2026-10-04",
    "position": {
-    "lat": 37.854,
-    "lon": 12.125,
+    "lat": 37.698,
+    "lon": 12.301,
     "lieu": "en pleine mer"
    },
-   "etalement_km": 16.0,
-   "distance_djerba_km": 464,
-   "tendance": "stable",
+   "etalement_km": 24.0,
+   "distance_djerba_km": 452,
+   "tendance": "se rapproche",
    "cap": "rapproche",
    "message": "Se dirige vers Djerba, sans arriver sur nos plages dans les simulations à 8 jours.",
    "arrivees": [],
@@ -38,56 +38,62 @@
      "lat": 37.854,
      "lon": 12.125,
      "etalement": 16.0
+    },
+    {
+     "date": "2026-10-13",
+     "lat": 37.698,
+     "lon": 12.301,
+     "etalement": 24.0
     }
    ],
    "prevision": [
     {
-     "date": "2026-10-12",
-     "lat": 37.838,
-     "lon": 12.21,
-     "etalement": 18.4
-    },
-    {
      "date": "2026-10-13",
-     "lat": 37.577,
-     "lon": 12.306,
-     "etalement": 24.9
+     "lat": 37.586,
+     "lon": 12.303,
+     "etalement": 26.2
     },
     {
      "date": "2026-10-14",
-     "lat": 37.315,
-     "lon": 12.283,
-     "etalement": 24.7
+     "lat": 37.322,
+     "lon": 12.275,
+     "etalement": 27.2
     },
     {
      "date": "2026-10-15",
-     "lat": 37.146,
-     "lon": 12.212,
-     "etalement": 21.3
+     "lat": 37.154,
+     "lon": 12.207,
+     "etalement": 24.5
     },
     {
      "date": "2026-10-16",
-     "lat": 36.996,
-     "lon": 12.219,
-     "etalement": 18.2
+     "lat": 36.999,
+     "lon": 12.218,
+     "etalement": 20.9
     },
     {
      "date": "2026-10-17",
-     "lat": 36.816,
-     "lon": 12.235,
-     "etalement": 15.0
+     "lat": 36.823,
+     "lon": 12.236,
+     "etalement": 16.5
     },
     {
      "date": "2026-10-18",
-     "lat": 36.682,
+     "lat": 36.689,
      "lon": 12.237,
-     "etalement": 13.4
+     "etalement": 14.5
     },
     {
      "date": "2026-10-19",
-     "lat": 36.56,
-     "lon": 12.193,
-     "etalement": 13.6
+     "lat": 36.569,
+     "lon": 12.194,
+     "etalement": 14.7
+    },
+    {
+     "date": "2026-10-20",
+     "lat": 36.449,
+     "lon": 12.118,
+     "etalement": 14.8
     }
    ]
   }

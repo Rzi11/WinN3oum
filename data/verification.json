@@ -142,38 +142,73 @@
   },
   "2026-10-13|aghir": {
    "level": "Possible",
-   "risk": 0.25,
-   "run": "2026-10-12"
+   "risk": 0.26,
+   "run": "2026-10-13"
   },
   "2026-10-13|jmour": {
    "level": "Possible",
    "risk": 0.33,
-   "run": "2026-10-12"
+   "run": "2026-10-13"
   },
   "2026-10-13|kantara": {
    "level": "Possible",
    "risk": 0.29,
-   "run": "2026-10-12"
+   "run": "2026-10-13"
   },
   "2026-10-13|mahrez": {
    "level": "Possible",
-   "risk": 0.25,
-   "run": "2026-10-12"
+   "risk": 0.32,
+   "run": "2026-10-13"
   },
   "2026-10-13|rmel": {
    "level": "Possible",
-   "risk": 0.4,
-   "run": "2026-10-12"
+   "risk": 0.44,
+   "run": "2026-10-13"
   },
   "2026-10-13|seguia": {
    "level": "Possible",
-   "risk": 0.27,
-   "run": "2026-10-12"
+   "risk": 0.25,
+   "run": "2026-10-13"
   },
   "2026-10-13|taguermess": {
    "level": "Possible",
-   "risk": 0.33,
-   "run": "2026-10-12"
+   "risk": 0.36,
+   "run": "2026-10-13"
+  },
+  "2026-10-14|aghir": {
+   "level": "Possible",
+   "risk": 0.29,
+   "run": "2026-10-13"
+  },
+  "2026-10-14|jmour": {
+   "level": "Possible",
+   "risk": 0.24,
+   "run": "2026-10-13"
+  },
+  "2026-10-14|kantara": {
+   "level": "Possible",
+   "risk": 0.29,
+   "run": "2026-10-13"
+  },
+  "2026-10-14|mahrez": {
+   "level": "Possible",
+   "risk": 0.32,
+   "run": "2026-10-13"
+  },
+  "2026-10-14|rmel": {
+   "level": "Possible",
+   "risk": 0.43,
+   "run": "2026-10-13"
+  },
+  "2026-10-14|seguia": {
+   "level": "Possible",
+   "risk": 0.25,
+   "run": "2026-10-13"
+  },
+  "2026-10-14|taguermess": {
+   "level": "Possible",
+   "risk": 0.37,
+   "run": "2026-10-13"
   }
  },
  "observations": [],
