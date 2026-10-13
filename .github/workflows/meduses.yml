@@ -6,11 +6,11 @@ on:
   workflow_dispatch:          # bouton « Run workflow » pour lancer à la main
     inputs:
       mode:
-        description: "normal = prévision + bancs + apprentissage ; rejeu = Djerba sur le passé ; validation = Tunisie-Sicile (~1 h) ; apprentissage = 2 h d'apprentissage méditerranéen ; connectivite = recalculer la carte d'où viennent les méduses (~2 h)"
+        description: "normal = prévision + bancs + apprentissage ; rejeu = Djerba sur le passé ; validation = Tunisie-Sicile (~1 h) ; apprentissage = 2 h d'apprentissage méditerranéen ; connectivite = recalculer la carte d'où viennent les méduses (~2 h) ; algues = seulement la prévision algues (~1 min)"
         required: true
         default: normal
         type: choice
-        options: [normal, rejeu, validation, apprentissage, connectivite]
+        options: [normal, rejeu, validation, apprentissage, connectivite, algues]
 
 permissions:
   contents: write
@@ -48,6 +48,8 @@ jobs:
             python drift/run_drift.py --validate
           elif [ "${{ github.event.inputs.mode }}" = "apprentissage" ]; then
             echo "apprentissage seul"
+          elif [ "${{ github.event.inputs.mode }}" = "algues" ]; then
+            echo "algues seules"
           elif [ "${{ github.event.inputs.mode }}" = "connectivite" ]; then
             python drift/connect.py --budget 140
           else
@@ -82,7 +84,7 @@ jobs:
         run: python drift/calibrate.py
 
       - name: Algues (prévision 7 jours + apprentissage sur les retours)
-        if: github.event.inputs.mode == '' || github.event.inputs.mode == 'normal'
+        if: github.event.inputs.mode == '' || github.event.inputs.mode == 'normal' || github.event.inputs.mode == 'algues'
         continue-on-error: true
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
