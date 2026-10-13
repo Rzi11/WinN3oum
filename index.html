@@ -102,6 +102,19 @@ button{cursor:pointer}
 .wleg i.ap{width:20px;height:20px;border-radius:50%;padding:0}
 .wleg.alg{gap:10px} .wleg span{white-space:nowrap}
 .barhead b small{font:400 12px var(--body);color:var(--muted);margin-left:5px}
+/* variantes de mise en page (proposition) */
+.g3{display:flex;flex-direction:column;gap:6px}
+.g3 .gr{display:grid;grid-template-columns:52px minmax(0,1fr);align-items:center;gap:6px}
+.g3 .gl{font:800 14px var(--display);color:var(--ink);line-height:1}
+.g3.small .gr{grid-template-columns:46px minmax(0,1fr)} .g3.small .gl{font-size:12.5px;color:var(--muted)}
+.g3 .bars.mini i{height:20px} .g3 .bars.mini i.wv{height:22px} .g3 .bars.mini i.al{height:22px}
+.hsent{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;font-size:13.5px;background:var(--chaux);border-radius:12px;padding:8px 10px;margin-top:2px}
+.hsent b{font-weight:800} .hsent span{display:inline-flex;align-items:center;gap:5px} .hsent i{width:22px;height:16px;display:inline-flex} .hsent i svg{width:100%;height:100%} .hsent i.q{width:16px;height:16px;border-radius:4px} .hsent i.c{width:20px;height:20px}
+.howto{all:unset;cursor:pointer;font-size:13px;font-weight:700;color:var(--blue);align-self:flex-start;padding:6px 0;min-height:32px}
+.legbox{display:flex;flex-direction:column;gap:6px;background:var(--chaux);border-radius:12px;padding:8px 10px}
+.sum3{display:flex;flex-direction:column;gap:6px}
+.sum3 .sr{display:flex;align-items:center;gap:10px;font-size:14px} .sum3 .sr b{font:800 15px var(--display);width:56px;flex-shrink:0} .sum3 .sr i{width:30px;height:30px;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;border-radius:8px} .sum3 .sr i svg{width:100%;height:100%}
+.sumrow{display:flex;gap:6px;flex-wrap:wrap} .sumrow span{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:700;background:var(--chaux);border-radius:999px;padding:3px 9px 3px 3px} .sumrow i{width:24px;height:24px;display:inline-flex;border-radius:50%;overflow:hidden} .sumrow i svg{width:100%;height:100%}
 .hours{display:grid;grid-template-columns:repeat(var(--n,6),minmax(0,1fr));gap:4px;font-size:12px;color:var(--muted);text-align:center}
 .tiles{display:flex;gap:8px}
 .tile{flex:1;min-width:0;background:var(--blue-deep);border-radius:14px;padding:10px 12px}
@@ -792,6 +805,48 @@ function legMouj(){ const d=el("div","wleg"); [["good","plate"],["warn","ça bou
 function legZarga(){ const d=el("div","wleg"); [["#14B8A6","très belle"],["#7FE3D6","belle"],["#E6E0D2","bof"]].forEach(([c,t])=>{ const sp=el("span"); const ic=el("i","zq"); ic.style.background=c; sp.appendChild(ic); sp.appendChild(document.createTextNode(t)); d.appendChild(sp); }); return d; }
 function legAlg(){ const d=el("div","wleg alg"); [["a","aucune"],["p","possible"],["s","sable"],["e","dans l'eau"]].forEach(([k,t])=>{ const sp=el("span"); const ic=el("i","ap"); ic.innerHTML=algSVG(k); sp.appendChild(ic); sp.appendChild(document.createTextNode(t)); d.appendChild(sp); }); return d; }
 function headEl(name, gloss, right){ const h=el("div","barhead"); const b=el("b",null,name); if(gloss) b.appendChild(el("small",null,gloss)); h.appendChild(b); h.appendChild(el("span",null,right)); return h; }
+const LAY=(new URLSearchParams(location.search).get("lay"))||"0";
+const zLevel = t => t==null ? "pas de soleil" : t>=68 ? "très belle" : t>=52 ? "belle" : "bof";
+const zColor = t => TURQ(t);
+function g3El(bi,id,day,hours,small,selH){
+  const g=el("div","g3"+(small?" small":""));
+  const row=(lab,content)=>{ const r=el("div","gr"); r.appendChild(el("span","gl",lab)); r.appendChild(content); g.appendChild(r); };
+  row("Mouj",barsEl(bi,day,hours,"sea",small?"mini":null,selH));
+  row("Zarga",barsEl(bi,day,hours,"turq",small?"mini":null,selH));
+  row("Algues",algaeRowEl(id,day,hours,small?"mini":null,selH));
+  if(!small){ const r=el("div","gr"); r.appendChild(el("span")); r.appendChild(hoursEl(hours,1)); g.appendChild(r); }
+  return g;
+}
+function hourSentence(bi,id,key){
+  const i=idxOf(key); if(i<0) return null; const r=at(bi,i), k=STATE(r.s).k, a=algae(id,key);
+  const d=el("div","hsent"); d.appendChild(el("b",null,`À ${hourOf(key)} h`));
+  const s1=el("span"); const w=el("i"); w.innerHTML=waveSVG(k).replace(/pathLength="1" /g,""); s1.appendChild(w); s1.appendChild(document.createTextNode(STATE(r.s).w)); d.appendChild(s1);
+  const s2=el("span"); const q=el("i","q"); q.style.background=zColor(r.t); s2.appendChild(q); s2.appendChild(document.createTextNode(r.t==null?"pas de soleil":`eau ${zLevel(r.t)}`)); d.appendChild(s2);
+  if(a){ const s3=el("span"); const c=el("i","c"); c.innerHTML=algIcon(a); s3.appendChild(c); s3.appendChild(document.createTextNode(a.ak==="a0"?"pas d'algues":`algues ${a.s.toLowerCase()}`)); d.appendChild(s3); }
+  return d;
+}
+function legendToggle(){
+  const wrap=el("div"); wrap.style.cssText="display:flex;flex-direction:column;gap:6px";
+  const b=el("button","howto","Comment lire les couleurs ?"); b.type="button"; const box=el("div","legbox"); box.hidden=true;
+  [["Mouj",legMouj()],["Zarga",legZarga()],["Algues",legAlg()]].forEach(([n,l])=>{ const r=el("div"); r.style.cssText="display:flex;flex-direction:column;gap:3px"; r.appendChild(el("b",null,n)); r.appendChild(l); box.appendChild(r); });
+  b.onclick=()=>{ box.hidden=!box.hidden; b.textContent=box.hidden?"Comment lire les couleurs ?":"Masquer les explications"; };
+  wrap.appendChild(b); wrap.appendChild(box); return wrap;
+}
+function summary3(bi,id,day,key){
+  const g=el("div","sum3"); const bt=bestTurq(bi,day); const a=algae(id,key);
+  const add=(lab,icon,txt,bg)=>{ const r=el("div","sr"); r.appendChild(el("b",null,lab)); const i=el("i"); if(bg) i.style.background=bg; i.innerHTML=icon; r.appendChild(i); r.appendChild(el("span",null,txt)); g.appendChild(r); };
+  const k=STATE(at(bi,idxOf(key)).s).k;
+  add("Mouj",waveSVG(k).replace(/pathLength="1" /g,""),seaRun(bi,key),WAVE_BG[k]);
+  add("Zarga","",bt?bt.txt:"pas de soleil",bt&&bt.t>=52?TURQ(bt.t):"#E6E0D2");
+  add("Algues",a?algIcon(a):"",algSummary(id,day),null);
+  return g;
+}
+function sumRow(bi,id,day,key){
+  const d=el("div","sumrow"); const i0=idxOf(key); const r=at(bi,i0), k=STATE(r.s).k, bt=bestTurq(bi,day), a=algae(id,key);
+  const add=(icon,txt,bg)=>{ const sp=el("span"); const i=el("i"); if(bg) i.style.background=bg; i.innerHTML=icon; sp.appendChild(i); sp.appendChild(document.createTextNode(txt)); d.appendChild(sp); };
+  add("",bt?bt.txt.replace("le plus beau ",""):"pas de soleil",bt&&bt.t>=52?TURQ(bt.t):"#E6E0D2"); if(a) add(algIcon(a),a.ak==="a0"?"pas d'algues":a.s);
+  return d;
+}
 function algTile(id, label){
   const al=algae(id); const t=el("div","tile"+(al?" withicon":"")); t.appendChild(el("small",null,label)); t.appendChild(el("b",null,al?al.t:"Pas encore de retour")); if(al) t.appendChild(el("em",null,al.sub));
   if(al){ const ic=el("span","ticon"); ic.innerHTML=algIcon(al); t.appendChild(ic); } return t;
@@ -922,12 +977,26 @@ function renderLyoum(){
   const pr=el("div","pillrow"); pr.appendChild(starBtn(b.id,true)); pr.appendChild(wavePill(st.k,st.k,st.t)); { const ap=algPill(b.id); if(ap) pr.appendChild(ap); } row.appendChild(left); row.appendChild(pr); card.appendChild(row);
   if(r.tier===2){ card.appendChild(el("p","alertbar","Attention : des méduses ont été vues sur toutes les plages en ce moment. Regarde avant d'entrer dans l'eau.")); }
   const pan=el("div","panel");
+  if(LAY==="1"){
+    pan.appendChild(headEl("Mouj","les vagues",seaRun(r.bi,selectedKey))); pan.appendChild(barsEl(r.bi,day,HERO_HOURS,"sea",null,hourOf(selectedKey)));
+    const bt=bestTurq(r.bi,day); pan.appendChild(headEl("Zarga","la couleur",bt?bt.txt:"pas de soleil")); pan.appendChild(barsEl(r.bi,day,HERO_HOURS,"turq",null,hourOf(selectedKey)));
+    pan.appendChild(headEl("Algues",null,algSummary(b.id,day))); pan.appendChild(algaeRowEl(b.id,day,HERO_HOURS,null,hourOf(selectedKey)));
+    pan.appendChild(hoursEl(HERO_HOURS,1)); pan.appendChild(legendToggle());
+  } else if(LAY==="2"){
+    pan.appendChild(g3El(r.bi,b.id,day,HERO_HOURS,false,hourOf(selectedKey)));
+    const hs=hourSentence(r.bi,b.id,selectedKey); if(hs) pan.appendChild(hs);
+  } else if(LAY==="3"){
+    pan.appendChild(summary3(r.bi,b.id,day,selectedKey));
+    const more=el("button","howto","Heure par heure ▾"); more.type="button"; const det=el("div"); det.hidden=true; det.appendChild(g3El(r.bi,b.id,day,HERO_HOURS,false,hourOf(selectedKey)));
+    more.onclick=()=>{ det.hidden=!det.hidden; more.textContent=det.hidden?"Heure par heure ▾":"Masquer ▴"; }; pan.appendChild(more); pan.appendChild(det);
+  } else {
   pan.appendChild(headEl("Mouj","les vagues",seaRun(r.bi,selectedKey)));
   pan.appendChild(barsEl(r.bi,day,HERO_HOURS,"sea",null,hourOf(selectedKey))); pan.appendChild(legMouj());
   const bt=bestTurq(r.bi,day); pan.appendChild(headEl("Zarga","la couleur de l'eau",bt?bt.txt:"pas de soleil"));
   pan.appendChild(barsEl(r.bi,day,HERO_HOURS,"turq",null,hourOf(selectedKey))); pan.appendChild(legZarga());
   pan.appendChild(headEl("Les algues",null,algSummary(b.id,day))); pan.appendChild(algaeRowEl(b.id,day,HERO_HOURS,null,hourOf(selectedKey))); pan.appendChild(legAlg());
   pan.appendChild(hoursEl(HERO_HOURS,1));
+  }
   const ch=changeAhead(r, selectedKey);
   if(ch){ const c=el("button","change"); c.type="button"; c.innerHTML=IC.turn; const t=el("span"); t.style.flex="1";
     const lead=el("b",null,`${ch.turn?"Le vent tourne":"La mer se lève"} vers ${ch.h} h.`); t.appendChild(lead);
@@ -948,11 +1017,13 @@ function renderLyoum(){
     const x=g.best, s2=STATE(x.s); const box=el("article","cote"+(x.tier?" alert":""));
     const btn=el("button"); btn.type="button"; btn.setAttribute("aria-expanded","false");
     const head=el("div","head"); const nm=el("b",null,`${k+2} · ${g.c.name} `); if(g.coins.length>1) nm.appendChild(el("small",null,`mieux côté ${x.b.short}`));
-    head.appendChild(nm); { const rt=el("span"); rt.style.cssText="display:flex;align-items:center;gap:6px;flex-shrink:0"; rt.appendChild(x.tier?el("span","statepill bad",x.p.t):wavePill(s2.k,s2.k,s2.t)); const ap=algPill(x.b.id); if(ap) rt.appendChild(ap); head.appendChild(rt); } btn.appendChild(head);
-    btn.appendChild(barsEl(x.bi,day,HERO_HOURS,"sea","mini"));
-    const bt2=bestTurq(x.bi,day); const meta=[]; if(bt2) meta.push(bt2.t>=45?bt2.txt.replace("le plus beau","belle eau"):bt2.txt);
+    head.appendChild(nm); { const rt=el("span"); rt.style.cssText="display:flex;align-items:center;gap:6px;flex-shrink:0"; rt.appendChild(x.tier?el("span","statepill bad",x.p.t):wavePill(s2.k,s2.k,s2.t)); const ap=LAY==="0"?algPill(x.b.id):null; if(ap) rt.appendChild(ap); head.appendChild(rt); } btn.appendChild(head);
+    if(LAY==="1"||LAY==="2") btn.appendChild(g3El(x.bi,x.b.id,day,HERO_HOURS,true,null));
+    else if(LAY==="3") btn.appendChild(sumRow(x.bi,x.b.id,day,selectedKey));
+    else btn.appendChild(barsEl(x.bi,day,HERO_HOURS,"sea","mini"));
+    const bt2=bestTurq(x.bi,day); const meta=[]; if(bt2 && LAY==="0") meta.push(bt2.t>=45?bt2.txt.replace("le plus beau","belle eau"):bt2.txt);
     if(x.p.has&&!x.tier) meta.push(x.p.t.toLowerCase());
-    btn.appendChild(el("div","meta",meta.join(" · ")||x.reasons[0]));
+    if(meta.length||LAY==="0") btn.appendChild(el("div","meta",meta.join(" · ")||x.reasons[0]));
     box.appendChild(btn);
     const cl=el("div","coins"); cl.hidden=true;
     g.coins.forEach(c=>{ const cb=el("button","coin"); cb.type="button"; const n=el("span","nm",c.b.short); const al=algae(c.b.id); const extra=[c.p.has?c.p.t:null, algNote(al)?`algues : ${al.t.toLowerCase()}`:null].filter(Boolean).join(" · "); if(extra) n.appendChild(el("small",null,extra)); cb.appendChild(n);
