@@ -341,8 +341,8 @@ html.vt-fwd::view-transition-old(root){animation:.3s var(--ease) both vt-out-lef
 html.vt-fwd::view-transition-new(root){animation:.34s var(--ease) both vt-in-right}
 html.vt-back::view-transition-old(root){animation:.3s var(--ease) both vt-out-right}
 html.vt-back::view-transition-new(root){animation:.34s var(--ease) both vt-in-left}
-html.vt-tab::view-transition-old(root){animation:.16s ease-out both vt-fade-out}
-html.vt-tab::view-transition-new(root){animation:.24s ease-out both vt-in-up}
+html.vt-tab::view-transition-old(root){animation:none;opacity:1}
+html.vt-tab::view-transition-new(root){animation:.18s ease-out both vt-fade-in}
 @keyframes vt-fade-out{to{opacity:0}} @keyframes vt-fade-in{from{opacity:0}}
 @keyframes vt-out-left{to{transform:translateX(-22%);opacity:.4}} @keyframes vt-in-right{from{transform:translateX(100%)}}
 @keyframes vt-out-right{to{transform:translateX(100%)}} @keyframes vt-in-left{from{transform:translateX(-22%);opacity:.4}}
@@ -535,7 +535,7 @@ let BEACHES = [
   {id:"rmel",cote:"ras-rmel",name:"Ras R'mel",short:"Ras R'mel",lat:33.91099,lon:10.90351,face:0,shallow:true,beauty:95,note:"",bnote:""},
   {id:"mahrez",cote:"sidi-mahrez",name:"Sunset",short:"Sunset",lat:33.8638,lon:10.97523,face:20,beauty:85,note:"",bnote:""},
   {id:"taguermess",cote:"ras-taguermess",name:"Yati 1",short:"Yati 1",lat:33.82651,lon:11.05299,face:60,beauty:80,note:"",bnote:""},
-  {id:"seguia",cote:"la-seguia",name:"La Seguia",short:"La Seguia",lat:33.78754,lon:11.0582,face:95,beauty:88,note:"",bnote:""},
+  {id:"seguia",cote:"la-seguia",name:"El Seguia",short:"El Seguia",lat:33.78754,lon:11.0582,face:95,beauty:88,note:"",bnote:""},
   {id:"aghir",cote:"aghir",name:"Aghir",short:"Aghir",lat:33.76479,lon:11.02568,face:125,beauty:85,note:"",bnote:""},
   {id:"jmour",cote:"sidi-jmour",name:"Sidi Jmour",short:"Sidi Jmour",lat:33.83349,lon:10.74849,face:295,shallow:true,beauty:58,note:"",bnote:""},
 ];
@@ -1050,7 +1050,8 @@ function renderBubbles(){
 $("mode-btn").onclick=e=>{ e.stopPropagation(); const m=$("modes"); m.hidden=!m.hidden; $("mode-btn").setAttribute("aria-expanded",String(!m.hidden)); };
 document.addEventListener("click",e=>{ if(!e.target.closest(".modewrap")){ $("modes").hidden=true; $("mode-btn").setAttribute("aria-expanded","false"); } });
 $("modes").querySelectorAll("[data-m]").forEach(c=>c.onclick=()=>{ MODE=c.dataset.m; $("modes").querySelectorAll("[data-m]").forEach(x=>x.setAttribute("aria-checked",String(x===c)));
-  $("mode-btn").querySelector("span").textContent=c.textContent; renderCarte(); });
+  $("mode-btn").querySelector("span").textContent=c.textContent; renderCarte(); tick();
+  setTimeout(()=>{ $("modes").hidden=true; $("mode-btn").setAttribute("aria-expanded","false"); },160); });
 window.addEventListener("resize",()=>{ if(VIEW==="carte"){ MAPBUILT=false; renderCarte(); } else MAPBUILT=false; });
 // déplacer (1 doigt), zoomer (2 doigts, molette, double appui)
 (function setupMapGestures(){
@@ -1199,7 +1200,7 @@ function showViewNow(v){
   placePill();
   $("theme").content = v==="carte" ? "#1450A3" : "#F7F5F0";
   if(v==="carte") renderCarte();
-  if(from!==v || v==="plage") markIn($("v-"+v));
+  if(v==="plage") markIn($("v-"+v));   // la cascade seulement en ouvrant une plage (pas en changeant d'onglet)
   try{ if(v!=="plage") localStorage.setItem("wn-view",v); }catch(e){}
 }
 // les éléments d'un écran arrivent en cascade quand on l'ouvre
