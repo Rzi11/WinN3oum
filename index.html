@@ -1680,7 +1680,7 @@ function resetReport(){
   $("r-seen-opts").hidden=true; $("r-how").hidden=true; $("r-stung").checked=false; $("r-species").value=""; updateSend();
 }
 function updateSend(){ $("r-send").disabled = !(R.sea!=null||R.clar!=null||R.algae!=null||R.seen!=null); }
-const FORM=(new URLSearchParams(location.search).get("form"))||"0";
+const FORM=(new URLSearchParams(location.search).get("form"))||"2";   // 2 = un seul tableau (choisi le 13/10/2026) ; ?form=0,1,3 pour revoir les autres
 const JELLY=(c,bg)=>`<svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="32" fill="${bg}"/><path d="M15 33 C15 19 49 19 49 33 Z" fill="${c}"/><path d="M15 33 q4.25 3 8.5 0 t8.5 0 t8.5 0 t8.5 0" fill="none" stroke="${c}" stroke-width="3" stroke-linecap="round"/><path d="M23 37 q-3 6 0 12 M32 37 q3 7 0 14 M41 37 q-3 6 0 12" fill="none" stroke="${c}" stroke-width="3" stroke-linecap="round"/></svg>`;
 const OKC=`<svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="32" fill="#DDF2E7"/><path d="M20 33 l8.5 8.5 l16 -17" fill="none" stroke="#1E8A5A" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
 const QM=`<svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="32" fill="#EFEBE2"/><text x="32" y="44" text-anchor="middle" font-family="Baloo 2, sans-serif" font-weight="800" font-size="34" fill="#8C97A8">?</text></svg>`;

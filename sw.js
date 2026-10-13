@@ -1,6 +1,6 @@
 /* Win N3oum : garde l'app sur le téléphone pour qu'elle s'ouvre tout de suite.
    La météo (Open-Meteo) et les retours (Supabase) ne passent JAMAIS par ce cache : toujours en direct. */
-const V = "wn-v4";
+const V = "wn-v5";
 const SHELL = ["./", "index.html", "plages.json", "manifest.webmanifest",
   "fonts/baloo-2-latin-600-normal.woff2", "fonts/baloo-2-latin-800-normal.woff2",
   "fonts/atkinson-hyperlegible-latin-400-normal.woff2", "fonts/atkinson-hyperlegible-latin-700-normal.woff2",
