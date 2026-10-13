@@ -28,7 +28,16 @@
 *{box-sizing:border-box}
 [hidden]{display:none!important}
 html,body{margin:0;background:var(--chaux)}
-body{color:var(--ink);font:16px/1.4 var(--body);-webkit-tap-highlight-color:transparent}
+body{color:var(--ink);font:16px/1.4 var(--body);-webkit-tap-highlight-color:transparent;touch-action:manipulation;-webkit-font-smoothing:antialiased}
+/* fluidité : retour visuel au toucher, apparitions douces */
+button,a.go,.cote > button,.bub,.coin,.fav,.near{transition:transform .12s ease, background-color .15s ease, opacity .15s ease}
+button:active,a.go:active,.cote > button:active,.bub:active,.coin:active,.fav:active,.near:active{transform:scale(.97)}
+@media (prefers-reduced-motion:no-preference){
+  .view:not([hidden]){animation:vin .22s ease-out}
+  @keyframes vin{from{opacity:0;transform:translateY(6px)}}
+  .hero.enter{animation:hin .35s cubic-bezier(.2,.8,.2,1)} @keyframes hin{from{opacity:0;transform:translateY(10px) scale(.985)}}
+}
+::view-transition-old(root),::view-transition-new(root){animation-duration:.2s}
 button,a,select,input{font-family:inherit}
 button{cursor:pointer}
 :focus-visible{outline:3px solid var(--turq);outline-offset:2px}
@@ -73,6 +82,61 @@ button{cursor:pointer}
 .alsocoins{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font-size:13px;color:#BFD3F2}
 .alsocoins button{border:0;background:rgba(255,255,255,.14);color:#fff;font:700 13px var(--body);padding:6px 10px;border-radius:999px;min-height:34px}
 .alertbar{margin:0;padding:10px 12px;border-radius:12px;background:var(--harissa);color:#fff;font-weight:700;font-size:15px}
+
+/* Météo du moment */
+.sky{display:flex;gap:6px}
+.sky > div{flex:1;min-width:0;background:var(--card);border-radius:14px;padding:8px 10px;display:flex;align-items:center;gap:8px;color:var(--blue)}
+.sky svg{flex-shrink:0}
+.sky b{display:block;font-size:15px;line-height:1.1;color:var(--ink);white-space:nowrap}
+.sky span{font-size:11px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block}
+/* Étoile (mes plages) */
+.starbtn{border:0;background:transparent;color:var(--turq-light);padding:4px;min-width:40px;min-height:40px;display:flex;align-items:center;justify-content:center;border-radius:999px}
+.starbtn[aria-pressed="true"]{color:var(--turq)}
+.pillrow{display:flex;align-items:center;gap:4px}
+.hero .row > div:first-child{flex:1;min-width:0}
+.hero .kicker{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* Ça va changer */
+.change{all:unset;box-sizing:border-box;cursor:pointer;display:flex;align-items:center;gap:10px;background:var(--sand);border-radius:14px;padding:10px 12px;color:var(--ink);font-size:14px;line-height:1.3}
+.change svg{color:var(--blue-deep);flex-shrink:0} .change .chev{color:var(--blue);font-weight:800}
+/* Mes plages */
+.favs{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;margin:0 -16px;padding:0 16px 2px;scrollbar-width:none}
+.favs::-webkit-scrollbar{display:none}
+.fav{all:unset;box-sizing:border-box;cursor:pointer;flex-shrink:0;width:156px;scroll-snap-align:start;background:var(--card);border-radius:18px;padding:10px 12px;display:flex;flex-direction:column;gap:6px}
+.fav .n{display:flex;align-items:center;gap:6px;color:var(--turq)} .fav .n b{color:var(--ink);font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.fav small{font-size:12px;color:var(--muted)}
+.fav.empty{border:2px dashed var(--line);background:transparent;width:auto;flex:1;color:var(--muted);font-size:14px;justify-content:center}
+.sechead{display:flex;justify-content:space-between;align-items:baseline;padding:0 4px}
+.sechead b{font:800 20px var(--display)} .sechead span{font-size:13px;color:var(--muted)}
+/* La plus proche */
+.near{all:unset;box-sizing:border-box;cursor:pointer;background:var(--card);border-radius:18px;padding:12px 14px;display:flex;align-items:center;gap:12px}
+.near .ic{width:38px;height:38px;border-radius:50%;background:var(--chaux);color:var(--blue);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.near .tx{flex:1;min-width:0} .near b{font-size:15px;display:block} .near small{font-size:13px;color:var(--muted);display:block}
+/* Chargement */
+.skel{background:var(--blue);border-radius:28px;padding:18px;display:flex;flex-direction:column;gap:12px;min-height:420px;overflow:hidden}
+.skel .k{font:700 12px var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--turq-light)}
+.skel .t{height:46px;width:62%;border-radius:14px;background:rgba(255,255,255,.16)}
+.skel .p{background:var(--chaux);border-radius:20px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.skel .l{height:14px;width:40%;border-radius:7px;background:var(--line)}
+.skel .bb{display:grid;grid-template-columns:repeat(6,1fr);gap:4px} .skel .bb i{height:28px;border-radius:8px;background:var(--line)}
+.skel svg{margin-top:auto;width:200%;height:60px}
+@media (prefers-reduced-motion:no-preference){ .skel svg{animation:wave 2.2s linear infinite} @keyframes wave{to{transform:translateX(-50%)}}
+  .skel .t,.skel .l,.skel .bb i{animation:pulse 1.4s ease-in-out infinite} @keyframes pulse{50%{opacity:.55}} }
+/* Barre d'action collée en bas (page plage) */
+.pbar{position:fixed;left:0;right:0;bottom:calc(var(--nav-h) + env(safe-area-inset-bottom,0px));z-index:15;background:rgba(247,245,240,.96);box-shadow:0 -6px 16px rgba(15,36,64,.12);
+  padding:10px 16px;display:grid;grid-template-columns:2fr 1fr;gap:8px;max-width:520px;margin:0 auto}
+.pbar .im{background:var(--blue);color:#fff;font:800 18px var(--display);border:0;border-radius:16px;min-height:50px}
+#v-plage{padding-bottom:calc(env(safe-area-inset-bottom,0px) + var(--nav-h) + 96px)}
+/* Merci */
+.merci{background:var(--blue);color:#fff;border-radius:28px;padding:22px 18px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center}
+.merci .ok{width:64px;height:64px;border-radius:50%;background:var(--turq);color:var(--ink);display:flex;align-items:center;justify-content:center}
+.merci h3{margin:0;font:800 34px/1 var(--display)} .merci p{margin:0;font-size:15px;color:#DCE7F7}
+.merci .said{display:flex;flex-wrap:wrap;justify-content:center;gap:6px} .merci .said span{background:var(--blue-deep);padding:6px 10px;border-radius:999px;font-size:13px;font-weight:700}
+.today{background:var(--card);border-radius:22px;padding:14px;display:flex;flex-direction:column;gap:8px}
+.today h4{margin:0;font:800 18px var(--display)} .today .n3{display:flex;gap:8px}
+.today .n3 div{flex:1;background:var(--chaux);border-radius:14px;padding:10px;text-align:center} .today .n3 b{display:block;font:800 24px var(--display);color:var(--blue)} .today .n3 small{font-size:12px;color:var(--muted)}
+.ghost{border:2px solid var(--line);background:var(--chaux);color:var(--blue);font:800 17px var(--display);border-radius:16px;min-height:50px}
+#v-retour.done > :not(#merci-box){display:none!important}
+@media (prefers-reduced-motion:no-preference){ .merci .ok{animation:pop .45s cubic-bezier(.2,1.6,.4,1)} @keyframes pop{from{transform:scale(.3);opacity:0}} }
 
 /* Autres plages */
 .h2{font:800 20px/1.1 var(--display);margin:4px 4px 0}
@@ -236,8 +300,13 @@ footer .slogan{font:800 20px/1.2 var(--display);color:var(--blue)}
     <h1 class="logo">Win N<span class="three">3</span>oum<span class="q"> ?</span></h1>
     <button class="when-btn" id="when-btn" type="button" aria-haspopup="dialog"><span>Maintenant</span> <small>▼</small></button>
   </header>
+  <div class="sky" id="sky" aria-label="La météo du moment"></div>
   <div id="error" hidden></div>
-  <section id="hero" aria-live="polite"><div class="loading">Ena nchouf el bhar…<small>On regarde le vent, les vagues et la marée.</small></div></section>
+  <section id="hero" aria-live="polite"><div class="skel" aria-label="Chargement"><div class="k">Ena nchouf el bhar…</div><div class="t"></div>
+    <div class="p"><div class="l"></div><div class="bb"><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="l" style="width:45%"></div><div class="bb"><i></i><i></i><i></i><i></i><i></i><i></i></div></div>
+    <svg viewBox="0 0 640 60" preserveAspectRatio="none" aria-hidden="true"><path d="M0 30 Q20 15 40 30 T80 30 T120 30 T160 30 T200 30 T240 30 T280 30 T320 30 T360 30 T400 30 T440 30 T480 30 T520 30 T560 30 T600 30 T640 30" fill="none" stroke="#7FE3D6" stroke-width="5" stroke-linecap="round"/><path d="M0 45 Q20 32 40 45 T80 45 T120 45 T160 45 T200 45 T240 45 T280 45 T320 45 T360 45 T400 45 T440 45 T480 45 T520 45 T560 45 T600 45 T640 45" fill="none" stroke="#14B8A6" stroke-width="5" stroke-linecap="round" opacity=".6"/></svg></div></section>
+  <section id="near-box" hidden></section>
+  <section id="favs-box" style="display:flex;flex-direction:column;gap:8px"></section>
   <section aria-label="Les autres plages" style="display:flex;flex-direction:column;gap:8px">
     <h2 class="h2" id="others-title" hidden>Les autres plages</h2>
     <div class="cotes" id="cotes"></div>
@@ -282,6 +351,7 @@ footer .slogan{font:800 20px/1.2 var(--display);color:var(--blue)}
 
 <!-- ===================== C'était comment ? ===================== -->
 <main id="v-retour" class="view rt" hidden aria-label="C'était comment ?">
+  <div id="merci-box" style="display:flex;flex-direction:column;gap:12px"></div>
   <h2>C'était comment ?</h2>
   <p>Tu es à la plage ou tu en reviens ? Réponds seulement à ce que tu as vu. Ça prend 10 secondes et ça aide tout le monde.</p>
   <label class="l" for="r-beach">La plage</label>
@@ -531,6 +601,85 @@ function barsEl(bi, day, hours, kind, cls, selH){
 }
 function hoursEl(hours, step){ const d=el("div","hours"); d.style.setProperty("--n",hours.length); hours.forEach((h,k)=>d.appendChild(el("div",null,(k%step===0)?`${h}h`:""))); d.setAttribute("aria-hidden","true"); return d; }
 
+/* ---------- Petites icônes (pas d'emoji) ---------- */
+const IC={
+ sun:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M2 12h2M20 12h2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>',
+ drop:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linejoin="round" aria-hidden="true"><path d="M12 3s6 7 6 11a6 6 0 0 1-12 0c0-4 6-11 6-11z"/></svg>',
+ wind:'<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M3 8h11a3 3 0 1 0-3-3M3 16h15a3 3 0 1 1-3 3M3 12h8"/></svg>',
+ star:'<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/></svg>',
+ staro:'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1-4.4-4.3 6.1-.9z"/></svg>',
+ pin:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>',
+ turn:'<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12a8 8 0 0 1 14-5.3M20 4v4h-4M20 12a8 8 0 0 1-14 5.3M4 20v-4h4"/></svg>',
+ check:'<svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>'};
+const html=(tag,cls,inner)=>{ const e=el(tag,cls); e.innerHTML=inner; return e; };   // seulement pour nos icônes fixes
+
+/* ---------- Mes plages (gardées sur le téléphone) ---------- */
+let FAVS=[]; try{ FAVS=JSON.parse(localStorage.getItem("wn-favs")||"[]"); }catch(e){ FAVS=[]; }
+const isFav=id=>FAVS.includes(id);
+function toggleFav(id){ FAVS = isFav(id) ? FAVS.filter(x=>x!==id) : [...FAVS,id]; try{ localStorage.setItem("wn-favs",JSON.stringify(FAVS)); }catch(e){} tick(); renderAll(); }
+function starBtn(id, light){ const b=el("button","starbtn"); b.type="button"; const on=isFav(id); b.setAttribute("aria-pressed",String(on));
+  b.setAttribute("aria-label", on?"Retirer de mes plages":"Ajouter à mes plages"); b.innerHTML = on?IC.star:IC.staro; if(!light) b.style.color=on?"#14B8A6":"#5A6A80";
+  b.onclick=e=>{ e.stopPropagation(); toggleFav(id); }; return b; }
+
+/* ---------- La météo du moment ---------- */
+function renderSky(){
+  const sky=$("sky"); sky.innerHTML=""; const i=idxOf(selectedKey); if(i<0) return; const H=WX.hourly;
+  const ssts=(MARINE||[]).map(m=>m.hourly.sea_surface_temperature[i]).filter(v=>v!=null); const sea=ssts.length?ssts.reduce((a,b)=>a+b,0)/ssts.length:null;
+  const uv=H.uv_index?.[i];
+  [["sun",H.temperature_2m?.[i]!=null?`${Math.round(H.temperature_2m[i])}°`:"—", uv!=null&&uv>=1?`air · UV ${Math.round(uv)}`:"air"],
+   ["drop",sea!=null?`${Math.round(sea)}°`:"—","eau"],
+   ["wind",`${Math.round(H.wind_speed_10m[i])} km/h`,localWind(H.wind_direction_10m[i]).split(" ")[0]]].forEach(([ic,v,k])=>{
+    const d=html("div",null,IC[ic]); const t=el("div"); t.appendChild(el("b",null,v)); t.appendChild(el("span",null,k)); d.appendChild(t); sky.appendChild(d); });
+}
+
+/* ---------- Ça va changer dans la journée ---------- */
+function changeAhead(r, key){
+  const day=key.slice(0,10), h0=hourOf(key), k0=STATE(r.s).k, H=WX.hourly; if(k0==="bad") return null;
+  const rank={good:0,warn:1,bad:2};
+  for(let h=h0+1;h<=18;h++){ const i=idxOf(`${day}T${pad(h)}:00`); if(i<0) break; const st=STATE(at(r.bi,i).s);
+    if(rank[st.k]>rank[k0]){
+      const i0=idxOf(key); const turn=Math.abs(relAngle(H.wind_direction_10m[i],H.wind_direction_10m[i0]))>45;
+      const G=ranking(`${day}T${pad(h)}:00`); const alt=G.map(g=>g.best).find(x=>x.b.id!==r.b.id && STATE(x.s).k==="good" && !x.tier);
+      return {h, turn, alt}; } }
+  return null;
+}
+
+/* ---------- La plus proche de toi ---------- */
+let POS=null, POS_ASKED=false;
+function kmBetween(a,b,c,d){ const R=6371, r=Math.PI/180; const x=(d-b)*r*Math.cos((a+c)/2*r), y=(c-a)*r; return R*Math.hypot(x,y); }
+function askPosition(){ if(!navigator.geolocation) return; POS_ASKED=true;
+  navigator.geolocation.getCurrentPosition(p=>{ POS={lat:p.coords.latitude,lon:p.coords.longitude}; renderAll(); },()=>{ POS=null; renderNear(); },{enableHighAccuracy:false,timeout:10000,maximumAge:300000}); }
+try{ navigator.permissions?.query({name:"geolocation"}).then(p=>{ if(p.state==="granted") askPosition(); }).catch(()=>{}); }catch(e){}
+function renderNear(){
+  const box=$("near-box"); box.innerHTML=""; box.hidden=false;
+  const btn=el("button","near"); btn.type="button"; btn.appendChild(html("span","ic",IC.pin)); const tx=el("span","tx"); btn.appendChild(tx); btn.appendChild(el("span","chev","›"));
+  if(!POS){ tx.appendChild(el("b",null,"La plage la plus proche de toi")); tx.appendChild(el("small",null,POS_ASKED?"Localisation refusée ou indisponible":"Touche pour utiliser ta position (elle reste sur ton téléphone)"));
+    btn.onclick=askPosition; box.appendChild(btn); return; }
+  const i=idxOf(selectedKey); const today=selectedKey.slice(0,10)===nowKey().slice(0,10);
+  const list=BEACHES.map((b,bi)=>{ const r=at(bi,i), p=people(b.id); return {b,bi,...r,tier:today?p.tier:0,km:kmBetween(POS.lat,POS.lon,b.lat,b.lon)}; });
+  const near=list.reduce((a,x)=>!a||x.km<a.km?x:a,null); if(!near||near.km>60){ box.hidden=true; return; }   // pas à Djerba
+  const good=list.filter(x=>STATE(x.s).k==="good"&&!x.tier).sort((a,c)=>a.km-c.km)[0] || near;
+  const min=Math.max(2,Math.round(good.km*1.3/35*60)); const bt=bestTurq(good.bi,selectedKey.slice(0,10));
+  tx.appendChild(el("b",null,`La plus proche de toi : ${good.b.short}`));
+  tx.appendChild(el("small",null,[good.km<1.2?"à pied":`${min} min en voiture`, STATE(good.s).w, bt&&bt.t>=60?bt.txt.replace("le plus beau","belle eau"):null].filter(Boolean).join(" · ")));
+  btn.onclick=()=>openPlage(good.b.id); box.appendChild(btn);
+}
+
+/* ---------- Mes plages ---------- */
+function renderFavs(){
+  const box=$("favs-box"); box.innerHTML=""; const i=idxOf(selectedKey); const day=selectedKey.slice(0,10);
+  const head=el("div","sechead"); head.appendChild(el("b",null,"Mes plages")); head.appendChild(el("span",null,FAVS.length?"":"touche l'étoile pour ajouter")); box.appendChild(head);
+  const row=el("div","favs"); box.appendChild(row);
+  const favs=FAVS.map(id=>BEACHES.findIndex(b=>b.id===id)).filter(k=>k>=0);
+  if(!favs.length){ const e=el("div","fav empty"); e.textContent="Aucune plage pour l'instant. Touche l'étoile à côté du nom d'une plage pour la garder ici."; row.appendChild(e); return; }
+  favs.forEach(bi=>{ const b=BEACHES[bi], r=at(bi,i), p=people(b.id); const f=el("button","fav"); f.type="button";
+    const n=html("div","n",IC.star); n.appendChild(el("b",null,b.short)); f.appendChild(n);
+    f.appendChild(barsEl(bi,day,HERO_HOURS,"sea","mini"));
+    const al=algae(b.id); const bt=bestTurq(bi,day);
+    f.appendChild(el("small",null, p.tier?p.t : [STATE(r.s).t, al&&al.k!=="good"?`algues ${al.t.toLowerCase()}`:null, !al&&bt&&bt.t>=60?bt.txt.replace("le plus beau","belle eau"):null].filter(Boolean).slice(0,2).join(" · ")));
+    f.onclick=()=>openPlage(b.id); row.appendChild(f); });
+}
+
 /* ---------- Accueil ---------- */
 function whenLabel(){ if(isNow()) return "Maintenant"; const d=selectedKey.slice(0,10); const t=nowKey().slice(0,10);
   return `${d===t?"Auj.":dayShort(d)+" "+(+d.slice(8,10))} · ${hourOf(selectedKey)} h`; }
@@ -538,20 +687,26 @@ function renderLyoum(){
   $("when-btn").querySelector("span").textContent=whenLabel();
   const G=ranking(selectedKey); if(!G.length) return;
   const top=G[0], r=top.best, b=r.b, st=STATE(r.s), day=selectedKey.slice(0,10);
-  const hero=$("hero"); hero.innerHTML=""; const card=el("div","hero"); hero.appendChild(card);
+  const hero=$("hero"); const first=!hero.querySelector(".hero"); hero.innerHTML=""; const card=el("div","hero"+(first?" enter":"")); hero.appendChild(card);
   const row=el("div","row"); const left=el("div");
   const multi = top.coins.length>1 || top.c.name!==(b.short||b.name);
   const kick = multi ? `N°1 · ${top.c.name}` : (isNow() ? "N°1 · Ena nqollek win" : `N°1 · ${dayName(day)} ${hourOf(selectedKey)} h`);
   left.appendChild(el("div","kicker", kick));
   const h2=el("h2"); const hb=el("button",null,b.short||b.name); hb.type="button"; hb.onclick=()=>openPlage(b.id); h2.appendChild(hb); left.appendChild(h2);
-  row.appendChild(left); row.appendChild(el("span","statepill "+st.k,st.t)); card.appendChild(row);
+  const pr=el("div","pillrow"); pr.appendChild(starBtn(b.id,true)); pr.appendChild(el("span","statepill "+st.k,st.t)); row.appendChild(left); row.appendChild(pr); card.appendChild(row);
   if(r.tier===2){ card.appendChild(el("p","alertbar","Attention : des méduses ont été vues sur toutes les plages en ce moment. Regarde avant d'entrer dans l'eau.")); }
   const pan=el("div","panel");
   const sh=el("div","barhead"); sh.appendChild(el("b",null,"La mer")); sh.appendChild(el("span",null,seaRun(r.bi,selectedKey))); pan.appendChild(sh);
   pan.appendChild(barsEl(r.bi,day,HERO_HOURS,"sea",null,hourOf(selectedKey)));
   const bt=bestTurq(r.bi,day); const th=el("div","barhead"); th.appendChild(el("b",null,"Belle eau")); th.appendChild(el("span",null,bt?bt.txt:"pas de soleil")); pan.appendChild(th);
   pan.appendChild(barsEl(r.bi,day,HERO_HOURS,"turq",null,hourOf(selectedKey)));
-  pan.appendChild(hoursEl(HERO_HOURS,1)); card.appendChild(pan);
+  pan.appendChild(hoursEl(HERO_HOURS,1));
+  const ch=changeAhead(r, selectedKey);
+  if(ch){ const c=el("button","change"); c.type="button"; c.innerHTML=IC.turn; const t=el("span"); t.style.flex="1";
+    const lead=el("b",null,`${ch.turn?"Le vent tourne":"La mer se lève"} vers ${ch.h} h.`); t.appendChild(lead);
+    t.appendChild(document.createTextNode(ch.alt?` ${ch.h>=12?"L'après-midi":"Ensuite"}, va plutôt à ${ch.alt.b.short}.`:" Profites-en avant."));
+    c.appendChild(t); if(ch.alt){ c.appendChild(el("span","chev","›")); c.onclick=()=>openPlage(ch.alt.b.id); } else c.style.cursor="default"; pan.appendChild(c); }
+  card.appendChild(pan);
   const tiles=el("div","tiles"); const al=algae(b.id), pe=r.p;
   const t1=el("div","tile"); t1.appendChild(el("small",null,"Algues")); t1.appendChild(el("b",null,al?al.t:"Pas encore de retour")); if(al) t1.appendChild(el("em",null,al.sub)); tiles.appendChild(t1);
   const t2=el("div","tile"+(pe.tier?" alert":"")); t2.appendChild(el("small",null,"Les gens disent")); t2.appendChild(el("b",null,pe.t)); if(pe.sub) t2.appendChild(el("em",null,pe.sub)); tiles.appendChild(t2);
@@ -579,7 +734,7 @@ function renderLyoum(){
     btn.onclick=()=>{ if(g.coins.length===1){ openPlage(x.b.id); return; } cl.hidden=!cl.hidden; btn.setAttribute("aria-expanded",String(!cl.hidden)); };
     list.appendChild(box);
   });
-  renderLabo();
+  renderSky(); renderNear(); renderFavs(); renderLabo();
 }
 
 /* ---------- Page d'une plage ---------- */
@@ -593,7 +748,7 @@ function renderPlage(){
   const card=el("div","hero"); v.appendChild(card);
   const row=el("div","row"); const left=el("div");
   left.appendChild(el("div","kicker",[cote&&cote.name!==b.short?cote.name:null, isNow()?"maintenant":`${dayName(day)} ${hourOf(selectedKey)} h`].filter(Boolean).join(" · ")));
-  left.appendChild(el("h2",null,b.short||b.name)); row.appendChild(left); row.appendChild(el("span","statepill "+(r.tier?"bad":st.k), r.tier?"Méduses":st.t)); card.appendChild(row);
+  left.appendChild(el("h2",null,b.short||b.name)); const pr=el("div","pillrow"); pr.appendChild(starBtn(b.id,true)); pr.appendChild(el("span","statepill "+(r.tier?"bad":st.k), r.tier?"Méduses":st.t)); row.appendChild(left); row.appendChild(pr); card.appendChild(row);
   const sst=MARINE?.[bi]?.hourly?.sea_surface_temperature?.[i];
   const meteo=el("div","tiles");
   [["Vent",`${Math.round(H.wind_speed_10m[i])} km/h`,localWind(H.wind_direction_10m[i]).split(" ")[0]],["Eau",sst!=null?`${Math.round(sst)} °C`:"—",null],["UV",H.uv_index?.[i]!=null?`${Math.round(H.uv_index[i])}`:"—",null]]
@@ -610,9 +765,9 @@ function renderPlage(){
   const t1=el("div","tile"); t1.appendChild(el("small",null,"Algues")); t1.appendChild(el("b",null,al?al.t:"Pas encore de retour")); if(al) t1.appendChild(el("em",null,al.sub)); tiles.appendChild(t1);
   const t2=el("div","tile"+(pe.tier?" alert":"")); t2.appendChild(el("small",null,"Méduses")); t2.appendChild(el("b",null,pe.t)); if(pe.sub) t2.appendChild(el("em",null,pe.sub)); tiles.appendChild(t2);
   card.appendChild(tiles);
-  const act=el("div","pact"); const go=el("a","go","Y aller"); go.href=mapsUrl(b); go.target="_blank"; go.rel="noopener"; act.appendChild(go);
-  const im=el("button","im","J'y suis"); im.type="button"; im.onclick=()=>{ $("r-beach").value=b.id; showView("retour"); window.scrollTo(0,0); }; act.appendChild(im);
-  card.appendChild(act);
+  const act=el("div","pbar"); const go=el("a","go","Y aller"); go.href=mapsUrl(b); go.target="_blank"; go.rel="noopener"; act.appendChild(go);
+  const im=el("button","im","Wselt !"); im.type="button"; im.setAttribute("aria-label","Wselt : je suis arrivé, dire comment c'est"); im.onclick=()=>{ $("v-retour").classList.remove("done"); $("r-beach").value=b.id; showView("retour"); window.scrollTo(0,0); }; act.appendChild(im);
+  v.appendChild(act);
   // Les prochains jours
   const wk=el("section","pbox"); wk.appendChild(el("h3",null,"Les prochains jours"));
   const strip=el("div","week"); const t0=nowKey().slice(0,10);
@@ -753,7 +908,7 @@ function renderBubbles(){
     const bt=bestTurq(x.bi,selectedKey.slice(0,10)); mid.appendChild(el("small",null, x.tier?x.p.t : [st.t, bt&&bt.t>=45?bt.txt.replace("le plus beau","belle eau"):null].filter(Boolean).join(" · ")));
     b.appendChild(mid); b.appendChild(barsEl(x.bi,selectedKey.slice(0,10),HERO_HOURS,"sea","mini"));
     b.onclick=()=>openPlage(x.b.id); list.appendChild(b); });
-  const upd=()=>{ const step=list.firstChild?list.firstChild.offsetHeight+8:64; const first=Math.round(list.scrollTop/step); cnt.textContent=`${first+1}–${Math.min(G.length,first+3)} sur ${G.length} · glisse ↕`; };
+  const upd=()=>{ const step=list.firstChild?list.firstChild.offsetHeight+8:64; const first=Math.round(list.scrollTop/step); cnt.textContent=`${first+1}–${Math.min(G.length,first+3)} sur ${G.length}`; };
   list.addEventListener("scroll",upd,{passive:true}); list.scrollTop=keepScroll; upd();
 }
 $("modes").querySelectorAll(".chip").forEach(c=>c.onclick=()=>{ MODE=c.dataset.m; $("modes").querySelectorAll(".chip").forEach(x=>x.setAttribute("aria-pressed",String(x===c))); renderCarte(); });
@@ -873,8 +1028,15 @@ function renderLabo(){
 
 /* ---------- Navigation ---------- */
 let VIEW="lyoum";
+const SCROLL={};
 function showView(v){
+  const go=()=>showViewNow(v);
+  if(document.startViewTransition && !matchMedia("(prefers-reduced-motion: reduce)").matches && v!==VIEW) document.startViewTransition(go); else go();
+}
+function showViewNow(v){
+  SCROLL[VIEW]=window.scrollY; const from=VIEW;
   VIEW=v; ["lyoum","carte","plage","retour"].forEach(x=>$("v-"+x).hidden = x!==v);
+  if(v!=="plage" && from==="plage" && SCROLL[v]!=null) requestAnimationFrame(()=>window.scrollTo(0,SCROLL[v]));
   const tab = v==="plage" ? PREV_VIEW : v;
   ["lyoum","carte","retour"].forEach(x=>$("tab-"+x).setAttribute("aria-selected",String(x===tab)));
   if(v==="carte") renderCarte();
@@ -883,7 +1045,8 @@ function showView(v){
 $("tab-lyoum").onclick=()=>{ showView("lyoum"); window.scrollTo(0,0); };
 $("tab-carte").onclick=()=>showView("carte");
 $("tab-retour").onclick=()=>{ showView("retour"); window.scrollTo(0,0); };
-function renderAll(){ if(!WX) return; renderLyoum(); if(VIEW==="carte") renderCarte(); if(VIEW==="plage") renderPlage(); }
+let RAF_ALL=0;
+function renderAll(){ if(!WX||RAF_ALL) return; RAF_ALL=requestAnimationFrame(()=>{ RAF_ALL=0; renderLyoum(); if(VIEW==="carte") renderCarte(); if(VIEW==="plage") renderPlage(); }); }
 
 /* ---------- Chargement météo ---------- */
 async function fetchJSON(url, tries=3){
@@ -990,9 +1153,28 @@ async function sendReport(){
     if(r.status===404){ r=await supa("/rest/v1/rpc/submit_report",{method:"POST",body:JSON.stringify(v08)}); }   // base pas encore en v0.9
     if(r.status===404 && seen!==null){ r=await supa("/rest/v1/rpc/submit_report",{method:"POST",body:JSON.stringify(base)}); } // base en v0.5
     const js=await r.json();
-    if(r.ok&&js.ok){ msg.className="msg ok"; msg.textContent=`Merci ! C'est enregistré pour ${b.short}.`; resetReport(); loadRecent(); }
+    if(r.ok&&js.ok){ msg.textContent=""; const said=saidList(); resetReport(); showMerci(b, said); await loadRecent(); showMerci(b, said); }
     else { msg.className="msg err"; msg.textContent=(js&&js.err)||"L'envoi n'a pas marché, réessaie dans un moment."; $("r-send").disabled=false; }
   }catch(e){ msg.className="msg err"; msg.textContent="Pas de connexion : réessaie quand tu as du réseau."; $("r-send").disabled=false; }
+}
+function saidList(){ const t=[];
+  if(R.sea!=null) t.push(["Mer plate","Un peu de vagues","Des vagues"][+R.sea]); if(R.clar!=null) t.push(["Eau claire","Eau moyenne","Eau trouble"][+R.clar]);
+  if(R.algae!=null) t.push(["Pas d'algues","Algues sur le sable","Algues dans l'eau","Algues sable + eau"][+R.algae]);
+  if(R.seen==="seen") t.push("Méduses vues"); else if(R.seen==="none") t.push("Rien vu");
+  if(R.when==="today") t.push(`vers ${$("r-hour").value} h`); else if(R.when==="yday") t.push(`hier vers ${$("r-hour").value} h`); return t; }
+function showMerci(b, said){
+  const v=$("v-retour"), box=$("merci-box"); box.innerHTML=""; v.classList.add("done");
+  const m=el("div","merci"); m.appendChild(html("div","ok",IC.check)); m.appendChild(el("h3",null,"Choukran !"));
+  const p=el("p"); p.appendChild(document.createTextNode("Ton retour sur ")); p.appendChild(el("b",null,b.short)); p.appendChild(document.createTextNode(" est en ligne. Il aide tous ceux qui hésitent.")); m.appendChild(p);
+  const sd=el("div","said"); said.forEach(t=>sd.appendChild(el("span",null,t))); m.appendChild(sd); box.appendChild(m);
+  const x=RECENT[b.id];
+  if(x){ const td=el("div","today"); td.appendChild(el("h4",null,`Aujourd'hui à ${b.short}`)); const n3=el("div","n3");
+    const tot=Math.max(+x.n_feedback||0,(+x.seen||0)+(+x.none_seen||0));
+    [[tot,tot>1?"retours":"retour"],[+x.none_seen||0,"rien vu"],[(+x.algae_sand||0)+(+x.algae_water||0),"algues"]].forEach(([n,t])=>{ const d=el("div"); d.appendChild(el("b",null,String(n))); d.appendChild(el("small",null,t)); n3.appendChild(d); });
+    td.appendChild(n3); box.appendChild(td); }
+  const see=el("button","ghost",`Voir ${b.short}`); see.type="button"; see.onclick=()=>openPlage(b.id); box.appendChild(see);
+  const again=el("button","back","Envoyer un autre retour"); again.type="button"; again.style.alignSelf="center"; again.style.color="#1450A3"; again.onclick=()=>{ v.classList.remove("done"); window.scrollTo(0,0); }; box.appendChild(again);
+  window.scrollTo(0,0); tick();
 }
 async function loadRecent(){ try{ const r=await supa("/rest/v1/recent_reports?select=*"); if(!r.ok) return; RECENT={}; (await r.json()).forEach(x=>RECENT[x.beach_id]=x); renderAll(); }catch(e){} }
 
