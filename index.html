@@ -121,6 +121,23 @@ button{cursor:pointer}
 .now3 small{font-size:11px;color:var(--muted);font-weight:700} .now3 b{font-size:13.5px;line-height:1.1} .now3 em{font-style:normal;font-size:11px;color:var(--muted);line-height:1.15}
 .now3 i{width:40px;height:30px;display:inline-flex;align-items:center;justify-content:center;border-radius:9px} .now3 i svg{width:100%;height:100%} .now3 i.c{width:32px;height:32px;border-radius:50%} .now3 i.q{width:34px;height:24px}
 .sumtop{display:flex;flex-wrap:wrap;gap:6px} .sumtop span{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:700;background:var(--chaux);border-radius:999px;padding:3px 10px 3px 3px} .sumtop i{width:24px;height:24px;display:inline-flex;border-radius:50%;overflow:hidden} .sumtop i svg{width:100%;height:100%}
+/* V6 affinée : tableau avec les heures en haut et la colonne de l'heure choisie */
+.tg{display:grid;grid-template-columns:50px repeat(6,minmax(0,1fr));column-gap:4px;row-gap:6px;align-items:center;position:relative}
+.tg .band{grid-row:1 / 5;align-self:stretch;background:#FFFFFF;border-radius:14px;box-shadow:0 0 0 2px var(--ink);margin:-4px -2px;z-index:0}
+.tg > *:not(.band){position:relative;z-index:1}
+.tg .th{font-size:11.5px;color:var(--muted);text-align:center;font-weight:700;padding:2px 0}
+.tg .th.on{color:var(--ink)}
+.tg .rl{font:800 13.5px var(--display);color:var(--ink);line-height:1}
+.tg .c{height:30px;border-radius:9px;display:flex;align-items:center;justify-content:center;cursor:pointer}
+.tg .c svg{height:100%;width:100%}
+.tg .c.w{padding:2px} .tg .c.a{background:transparent} .tg .c.a svg{width:auto;height:30px}
+.tg .caret{grid-row:5;justify-self:center;width:0;height:0;border-left:8px solid transparent;border-right:8px solid transparent;border-top:8px solid var(--ink);margin-top:-2px}
+.nowt{display:flex;align-items:baseline;justify-content:space-between;margin-top:8px}
+.nowt b{font:800 15px var(--display)} .nowt span{font-size:12px;color:var(--muted)}
+.now3.r{gap:8px} .now3.r > div{background:#FFFFFF;padding:10px 6px 9px;gap:4px}
+.now3.r b{font:800 15px/1.1 var(--display)}
+.now3.box{gap:0;background:#FFFFFF;border-radius:16px;overflow:hidden;box-shadow:0 0 0 2px var(--ink)} .now3.box > div{background:transparent;border-radius:0;padding:10px 6px} .now3.box > div + div{border-left:1px solid var(--line)}
+.now3.box b{font:800 15px/1.1 var(--display)}
 .sumrow{display:flex;gap:6px;flex-wrap:wrap} .sumrow span{display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:700;background:var(--chaux);border-radius:999px;padding:3px 9px 3px 3px} .sumrow i{width:24px;height:24px;display:inline-flex;border-radius:50%;overflow:hidden} .sumrow i svg{width:100%;height:100%}
 .hours{display:grid;grid-template-columns:repeat(var(--n,6),minmax(0,1fr));gap:4px;font-size:12px;color:var(--muted);text-align:center}
 .tiles{display:flex;gap:8px}
@@ -842,6 +859,19 @@ function now3(bi,id,day,key){
   const c=el("i","c"); if(a) c.innerHTML=algIcon(a); add("Algues",c,a?(a.ak==="a0"?"Aucune":a.s):"—",algSummary(id,day));
   return d;
 }
+function tableTop(bi,id,day,hours,key,caret){
+  const g=el("div","tg"); const selH=hourOf(key); const si=hours.findIndex(h=>selH>=h&&selH<h+2);
+  if(si>=0){ const band=el("div","band"); band.style.gridColumn=String(si+2); g.appendChild(band); }
+  const pick=h=>()=>{ selectedKey=`${day}T${pad(h)}:00`; tick(); renderAll(); };
+  g.appendChild(el("span")); hours.forEach((h,k)=>{ const t=el("div","th"+(k===si?" on":""),`${h}h`); t.style.gridRow="1"; t.style.gridColumn=String(k+2); g.appendChild(t); });
+  const addRow=(rowN,label,mk)=>{ const l=el("span","rl",label); l.style.gridRow=String(rowN); l.style.gridColumn="1"; g.appendChild(l);
+    hours.forEach((h,k)=>{ const c=mk(h); c.style.gridRow=String(rowN); c.style.gridColumn=String(k+2); c.onclick=pick(h); g.appendChild(c); }); };
+  addRow(2,"Mouj",h=>{ const i=idxOf(`${day}T${pad(h)}:00`); const c=el("div","c w"); if(i<0){c.style.background="#E6E0D2";return c;} const k=STATE(at(bi,i).s).k; c.style.background=WAVE_BG[k]; c.innerHTML=waveSVG(k).replace(/pathLength="1" /g,""); return c; });
+  addRow(3,"Zarga",h=>{ const i=idxOf(`${day}T${pad(h)}:00`); const c=el("div","c"); c.style.background=i<0?"#E6E0D2":TURQ(at(bi,i).t); return c; });
+  addRow(4,"Algues",h=>{ const a=algae(id,`${day}T${pad(h)}:00`); const c=el("div","c a"); if(a) c.innerHTML=algIcon(a); else { c.style.background="#E6E0D2"; } return c; });
+  if(caret && si>=0){ const ca=el("span","caret"); ca.style.gridColumn=String(si+2); g.appendChild(ca); }
+  return g;
+}
 function sumTop(bi,id,day,key){
   const d=el("div","sumtop"); const r=at(bi,idxOf(key)), k=STATE(r.s).k, bt=bestTurq(bi,day), a=algae(id,key);
   const add=(icon,txt,bg)=>{ const sp=el("span"); const i=el("i"); if(bg) i.style.background=bg; i.innerHTML=icon; sp.appendChild(i); sp.appendChild(document.createTextNode(txt)); d.appendChild(sp); };
@@ -1025,6 +1055,10 @@ function renderLyoum(){
   } else if(LAY==="6"){
     pan.appendChild(g3El(r.bi,b.id,day,HERO_HOURS,false,hourOf(selectedKey)));
     pan.appendChild(now3(r.bi,b.id,day,selectedKey));
+  } else if(LAY==="7" || LAY==="8"){
+    pan.appendChild(tableTop(r.bi,b.id,day,HERO_HOURS,selectedKey,LAY==="8"));
+    if(LAY==="7"){ const t=el("div","nowt"); t.appendChild(el("b",null,`À ${hourOf(selectedKey)} h`)); t.appendChild(el("span",null,"touche une heure pour changer")); pan.appendChild(t); }
+    const n=now3(r.bi,b.id,day,selectedKey); n.classList.add(LAY==="8"?"box":"r"); pan.appendChild(n);
   } else if(LAY==="3"){
     pan.appendChild(summary3(r.bi,b.id,day,selectedKey));
     const more=el("button","howto","Heure par heure ▾"); more.type="button"; const det=el("div"); det.hidden=true; det.appendChild(g3El(r.bi,b.id,day,HERO_HOURS,false,hourOf(selectedKey)));
