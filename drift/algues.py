@@ -55,13 +55,13 @@ TAUS_SAND_DAYS = (3, 6, 10, 20)      # demi-vies testées pour le stock sur le s
 TAUS_WATER_H = (8, 18, 36)           # demi-vies testées pour les feuilles dans l'eau
 DEFAULT = dict(tau_s=10, tau_w=18,
                sand=dict(a=-2.2, b=2.0, ref=4.0, off={}),
-               water=dict(a=-2.6, b=2.2, ref=1.5, off={}))
+               water=dict(a=-2.6, b=2.2, ref=7.0, off={}))   # ref : 1 m de vagues de face qui durent ≈ 1 chance sur 2
 ASSIM_DAYS = 7                       # signalements des 7 derniers jours utilisés pour corriger le stock
 CALIB_MIN = 30                       # exemples minimum avant d'apprendre
 CALIB_MIN_CLASS = 6                  # dont au moins 6 « oui » et 6 « non »
 CALIB_MIN_GAIN = 0.01                # il faut battre les réglages actuels (log-loss) d'au moins ça
 OFF_SHRINK = 5.0                     # prudence sur les écarts par plage (plus c'est grand, plus on reste près de 0)
-LEVEL_YES, LEVEL_MAYBE = 0.55, 0.35
+LEVEL_YES, LEVEL_MAYBE = 0.6, 0.35
 
 
 # ====================================================================== outils
@@ -474,10 +474,13 @@ def run(test=False):
     else:
         times, series, status = fetch_series(beaches)
         reps = fetch_algae_reports(beaches)
-    settings = jload(P_SET, {}).get("settings") or json.loads(json.dumps(DEFAULT))
+    saved = jload(P_SET, {})
+    # Tant que rien n'a été appris des retours, on repart des réglages de départ (qui peuvent changer avec le code).
+    settings = saved["settings"] if saved.get("appris") and saved.get("settings") else json.loads(json.dumps(DEFAULT))
     rows = update_examples(reps, beaches, times, series)
     settings, rep = learn(rows, settings, beaches)
-    jsave(P_SET, dict(updated=now_key, version=VERSION, settings=settings, apprentissage=rep,
+    appris = bool(saved.get("appris")) or any(isinstance(rep.get(k), dict) and rep[k].get("adopte") for k in ("sand", "water"))
+    jsave(P_SET, dict(updated=now_key, version=VERSION, appris=appris, settings=settings, apprentissage=rep,
                       plages=explain_offsets(settings, beaches, rep)))
     out = build(beaches, times, series, reps, settings, now_key)
     out["sources"] = dict(status, signalements=len(reps))
