@@ -52,13 +52,19 @@ def _headers():
 
 SELECT_V08 = ("id,created_at,device_id,beach_id,lat,lon,user_lat,user_lon,user_acc,seen,amount,species,stung,ip_hash,status,"
               "sea_state,clarity,looked_from,looked_min,devices(alpha,beta,role,banned,n_reports)")
+SELECT_V09 = ("id,created_at,observed_at,device_id,beach_id,lat,lon,user_lat,user_lon,user_acc,seen,amount,species,stung,ip_hash,status,"
+              "sea_state,clarity,looked_from,looked_min,algae,devices(alpha,beta,role,banned,n_reports)")
 SELECT_V05 = ("id,created_at,device_id,beach_id,lat,lon,user_lat,user_lon,user_acc,seen,amount,species,stung,ip_hash,status,"
               "devices(alpha,beta,role,banned,n_reports)")
 
 
 def fetch_reports(days=14):
-    """Signalements des derniers jours (colonnes v0.8 si la base a été mise à jour, sinon v0.5)."""
+    """Signalements des derniers jours (colonnes v0.9, sinon v0.8, sinon v0.5 selon la mise à jour de la base)."""
     import requests
+    try:
+        return _fetch(days, SELECT_V09)
+    except requests.HTTPError:
+        pass
     try:
         return _fetch(days, SELECT_V08)
     except requests.HTTPError:
@@ -78,7 +84,7 @@ def _fetch(days, SELECT):
         d = x.get("devices") or {}
         if d.get("banned"):
             continue
-        x["time"] = np.datetime64(x["created_at"][:16], "m")
+        x["time"] = np.datetime64((x.get("observed_at") or x["created_at"])[:16], "m")   # v0.9 : l'heure où on a vu
         x["dev"] = d
         x["jelly"] = x.get("seen") is not None          # « pas regardé les méduses » = retour mer/eau seulement
         out.append(x)
