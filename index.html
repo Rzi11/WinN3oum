@@ -220,7 +220,9 @@ footer .slogan{font:800 20px/1.2 var(--display);color:var(--blue)}
 .menu{position:absolute;top:calc(100% + 6px);left:0;background:var(--chaux);border-radius:18px;padding:6px;box-shadow:0 10px 26px rgba(15,36,64,.3);display:flex;flex-direction:column;gap:2px;min-width:220px;z-index:5}
 .menu button{border:0;background:transparent;color:var(--ink);font:700 15px var(--body);text-align:left;padding:10px 12px;border-radius:12px;min-height:44px}
 .menu button[aria-checked="true"]{background:var(--blue);color:#fff}
-.menu .legend{margin:6px 6px 4px;background:#fff}
+.menu .legend{margin:6px 6px 4px;background:#fff;max-width:calc(100vw - 60px)}
+.menu{max-width:calc(100vw - 32px)}
+.statepill.a0{color:var(--good-ink);background:var(--good-bg)} .statepill.a1{color:#6B5426;background:#F5EBD6} .statepill.a2{color:#5C4218;background:#EBDCC0} .statepill.a3{color:#34481A;background:#DDE8CC}
 .deckwrap{position:absolute;z-index:2;left:0;right:0;bottom:calc(var(--nav-h) + env(safe-area-inset-bottom,0px) + 10px);max-width:520px;margin:0 auto;display:flex;flex-direction:column;gap:8px}
 .deck{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 12px 6px;scrollbar-width:none;overscroll-behavior-x:contain}
 .deck::-webkit-scrollbar{display:none}
@@ -664,31 +666,40 @@ function people(id){
   if(x.n_feedback>0 && x.sea_avg!=null){ out.t = x.sea_avg<0.5?"Mer plate":x.sea_avg<1.5?"Un peu de vagues":"Des vagues"; out.sub=`${x.n_feedback} retour${x.n_feedback>1?"s":""} aujourd'hui`; out.has=true; }
   return out;
 }
-function algae(id){
+function algae(id, key=selectedKey){
   // 1. Les retours d'aujourd'hui passent toujours devant.
   const x=RECENT[id];
-  if(x && x.algae_n>0 && selectedKey.slice(0,10)===nowKey().slice(0,10)){
+  if(x && x.algae_n>0 && key.slice(0,10)===nowKey().slice(0,10)){
     const w=+x.algae_water||0, s=+x.algae_sand||0, n=+x.algae_none||0;
     const sub=`${x.algae_n} retour${x.algae_n>1?"s":""} aujourd'hui`;
-    if(w>0 && w>=n) return {t:"Dans l'eau à l'entrée",k:"bad",sub};
-    if(s>0 && s>=n) return {t:"Un peu sur le sable",k:"warn",sub};
-    return {t:"Aucune",k:"good",sub};
+    if(w>0 && w>=n) return {t:"Dans l'eau à l'entrée",s:"Dans l'eau",k:"bad",ak:"a3",sub};
+    if(s>0 && s>=n) return {t:"Un peu sur le sable",s:"Sur le sable",k:"warn",ak:"a2",sub};
+    return {t:"Aucune",s:"Aucune",k:"good",ak:"a0",sub};
   }
   // 2. Sinon, la prévision du modèle algues (data/algues.json), heure par heure.
-  return algaeModel(id);
+  return algaeModel(id, key);
 }
 function keyDiffH(a,b){ const p=k=>{ const [d,t]=k.split("T"); const [Y,M,D]=d.split("-").map(Number); return Date.UTC(Y,M-1,D,+t.slice(0,2)); }; return Math.round((p(a)-p(b))/3600e3); }
-function algaeModel(id){
+function algaeModel(id, key=selectedKey){
   const m=ALG?.beaches?.[id]; if(!m || !ALG.start) return null;
-  const i=keyDiffH(selectedKey, ALG.start); if(i<0 || i>=m.level.length) return null;
+  const i=keyDiffH(key, ALG.start); if(i<0 || i>=m.level.length) return null;
   const lv=m.level[i], ps=m.sand[i], pw=m.water[i];
   const sub="Prévision" + (m.why && i<24 ? ` · ${m.why}` : "");
-  if(lv===3) return {t:"Sans doute dans l'eau",k:"bad",sub,model:true};
-  if(lv===2) return {t:"Sans doute sur le sable",k:"warn",sub,model:true};
-  if(lv===1) return {t:pw>ps?"Possibles dans l'eau":"Possibles sur le sable",k:"warn",sub,model:true,soft:true};
-  return {t:"Sans doute aucune",k:"good",sub,model:true};
+  if(lv===3) return {t:"Sans doute dans l'eau",s:"Dans l'eau",k:"bad",ak:"a3",sub,model:true};
+  if(lv===2) return {t:"Sans doute sur le sable",s:"Sur le sable",k:"warn",ak:"a2",sub,model:true};
+  if(lv===1) return {t:pw>ps?"Possibles dans l'eau":"Possibles sur le sable",s:"Possibles",k:"warn",ak:"a1",sub,model:true,soft:true};
+  return {t:"Sans doute aucune",s:"Aucune",k:"good",ak:"a0",sub,model:true};
 }
 const algNote = a => a && a.k!=="good" && !a.soft;
+const ALGC={a0:"#1E8A5A",a1:"#D9BC85",a2:"#A0763A",a3:"#5E7D2A"};   // aucune · possibles · sable · algues dans l'eau
+function algaeBarsEl(id, day, hours, selH){
+  const d=el("div","bars mini"); d.style.setProperty("--n",hours.length);
+  hours.forEach((h,hk)=>{ const x=el("i"); x.style.setProperty("--k",hk); const a=algae(id,`${day}T${pad(h)}:00`);
+    if(a){ x.style.background=ALGC[a.ak]; if(a.ak==="a0") x.style.opacity=".55"; } else { x.style.background="#E6E0D2"; x.style.opacity=".4"; }
+    if(selH!=null && selH>=h && selH<h+2) x.classList.add("sel");
+    d.appendChild(x); });
+  d.setAttribute("aria-hidden","true"); return d;
+}
 
 /* ---------- Classement : côtes → coins ---------- */
 const cmp=(a,c)=>(a.tier-c.tier)||(c.s-a.s)||((c.t||0)-(a.t||0));
@@ -976,8 +987,8 @@ function buildMap(){
   const mask=sv("mask",{id:"sea",maskUnits:"userSpaceOnUse",x:-200,y:-400,width:900,height:1400},defs);
   sv("rect",{x:-200,y:-400,width:900,height:1400,fill:"#fff"},mask);
   sv("path",{d:MAP_MAIN,fill:"#000","fill-rule":"evenodd"},mask); sv("path",{d:MAP_ISLAND,fill:"#000","fill-rule":"evenodd"},mask);
-  ["good","warn","bad","t1","t2","t0","n"].forEach(k=>{ const g=sv("radialGradient",{id:"g-"+k},defs);
-    const c={good:"#1E8A5A",warn:"#B86A0A",bad:"#C9362C",t1:"#14B8A6",t2:"#7FE3D6",t0:"#E6E0D2",n:"#F7F5F0"}[k];
+  ["good","warn","bad","t1","t2","t0","n","a0","a1","a2","a3"].forEach(k=>{ const g=sv("radialGradient",{id:"g-"+k},defs);
+    const c={good:"#1E8A5A",warn:"#B86A0A",bad:"#C9362C",t1:"#14B8A6",t2:"#7FE3D6",t0:"#E6E0D2",n:"#F7F5F0",a0:"#1E8A5A",a1:"#D9BC85",a2:"#A0763A",a3:"#5E7D2A"}[k];
     sv("stop",{offset:"0","stop-color":c,"stop-opacity":"1"},g); sv("stop",{offset:".6","stop-color":c,"stop-opacity":".8"},g); sv("stop",{offset:"1","stop-color":c,"stop-opacity":"0"},g); });
   sv("rect",{x:-200,y:-400,width:900,height:1400,fill:"#1450A3"},svg);
   sv("g",{id:"glow",mask:"url(#sea)"},svg);
@@ -990,12 +1001,12 @@ function buildMap(){
 function modeColor(x){
   if(MODE==="mer") return x.tier?"bad":STATE(x.s).k;
   if(MODE==="belle") return x.t==null?"n":x.t>=68?"t1":x.t>=52?"t2":"t0";
-  if(MODE==="algues"){ const a=algae(x.b.id); return a?a.k:null; }
+  if(MODE==="algues"){ const a=algae(x.b.id); return a?a.ak:null; }
   if(MODE==="vu"){ const p=x.p; if(!p.has) return null; return p.tier?"bad":"good"; }
 }
 const LEG={mer:[["#1E8A5A","Mer plate"],["#B86A0A","Ça bouge"],["#C9362C","Trop de vagues"]],
   belle:[["#14B8A6","Très belle"],["#7FE3D6","Belle"],["#E6E0D2","Moyenne"]],
-  algues:[["#1E8A5A","Aucune"],["#B86A0A","Sur le sable"],["#C9362C","Dans l'eau"]],
+  algues:[["#1E8A5A","Aucune"],["#A0763A","Sur le sable"],["#5E7D2A","Dans l'eau"]],
   vu:[["#1E8A5A","Rien vu"],["#C9362C","Méduses vues"]]};
 function renderCarte(){
   if(!WX) return; if(!MAPBUILT) buildMap();
@@ -1005,7 +1016,6 @@ function renderCarte(){
   const leg=$("legend"); leg.innerHTML=""; LEG[MODE].forEach(([c,t])=>{ const s=el("span"); const i=el("i"); i.style.background=c; s.appendChild(i); s.appendChild(document.createTextNode(t)); leg.appendChild(s); });
   if(MODE==="belle" && isNight(selectedKey)) leg.appendChild(el("span",null,"nuit"));
   if(MODE==="vu") leg.appendChild(el("span",null,"24 h"));
-  if(MODE==="algues") leg.appendChild(el("span",null,"retours, sinon prévision"));
   renderMarks(); renderBubbles();
 }
 function renderMarks(){
@@ -1052,10 +1062,14 @@ function renderBubbles(){
     const x=g.best, st=STATE(x.s); const c=el("article","dcard"); c.setAttribute("aria-label",`${k+1}. ${g.c.name}`);
     const head=el("div","dh"); const rk=el("span","rk"+(k===0?" one":""),String(k+1)); head.appendChild(rk);
     const nm=el("div","dn"); nm.appendChild(el("b",null,g.c.name)); if(g.coins.length>1) nm.appendChild(el("small",null,`côté ${x.b.short}`)); head.appendChild(nm);
-    head.appendChild(el("span","statepill "+(x.tier?"bad":st.k), x.tier?x.p.t:st.t)); c.appendChild(head);
-    c.appendChild(barsEl(x.bi,day,HERO_HOURS,"sea","mini",hourOf(selectedKey))); c.appendChild(hoursEl(HERO_HOURS,1));
-    const foot=el("div","df"); const bt=bestTurq(x.bi,day); const al=algae(x.b.id);
-    foot.appendChild(el("span","dm",[bt&&bt.t>=45?bt.txt.replace("le plus beau","belle eau"):null, algNote(al)?`algues ${al.t.toLowerCase()}`:null, x.p.has&&!x.tier?x.p.t.toLowerCase():null].filter(Boolean).join(" · ")||"Touche pour voir le détail"));
+    const al=algae(x.b.id), AL=MODE==="algues";
+    if(AL) head.appendChild(el("span","statepill "+(al?al.ak:"a1"), al?al.s:"Pas de donnée"));
+    else head.appendChild(el("span","statepill "+(x.tier?"bad":st.k), x.tier?x.p.t:st.t));
+    c.appendChild(head);
+    c.appendChild(AL ? algaeBarsEl(x.b.id,day,HERO_HOURS,hourOf(selectedKey)) : barsEl(x.bi,day,HERO_HOURS,"sea","mini",hourOf(selectedKey))); c.appendChild(hoursEl(HERO_HOURS,1));
+    const foot=el("div","df"); const bt=bestTurq(x.bi,day);
+    foot.appendChild(el("span","dm", AL ? (al ? (al.model ? `${al.t} · prévision` : `${al.t} · ${al.sub}`) : "Pas encore de retour ni de prévision")
+      : [bt&&bt.t>=45?bt.txt.replace("le plus beau","belle eau"):null, algNote(al)?`algues ${al.t.toLowerCase()}`:null, x.p.has&&!x.tier?x.p.t.toLowerCase():null].filter(Boolean).join(" · ")||"Touche pour voir le détail"));
     const go=el("a","go","Yalla"); go.href=mapsUrl(x.b); go.target="_blank"; go.rel="noopener"; go.onclick=e=>e.stopPropagation(); foot.appendChild(go); c.appendChild(foot);
     c.onclick=()=>openPlage(x.b.id); deck.appendChild(c);
     const dt=el("button","dot"); dt.type="button"; dt.setAttribute("aria-label",`Côte n°${k+1} : ${g.c.name}`); if(k===DECK_I) dt.classList.add("on"); dt.onclick=()=>goDeck(k); dots.appendChild(dt);
