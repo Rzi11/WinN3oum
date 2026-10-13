@@ -837,7 +837,7 @@ function legMouj(){ const d=el("div","wleg"); [["good","plate"],["warn","ça bou
 function legZarga(){ const d=el("div","wleg"); [["#14B8A6","très belle"],["#7FE3D6","belle"],["#E6E0D2","bof"]].forEach(([c,t])=>{ const sp=el("span"); const ic=el("i","zq"); ic.style.background=c; sp.appendChild(ic); sp.appendChild(document.createTextNode(t)); d.appendChild(sp); }); return d; }
 function legAlg(){ const d=el("div","wleg alg"); [["a","aucune"],["p","possible"],["s","sable"],["e","dans l'eau"]].forEach(([k,t])=>{ const sp=el("span"); const ic=el("i","ap"); ic.innerHTML=algSVG(k); sp.appendChild(ic); sp.appendChild(document.createTextNode(t)); d.appendChild(sp); }); return d; }
 function headEl(name, gloss, right){ const h=el("div","barhead"); const b=el("b",null,name); if(gloss) b.appendChild(el("small",null,gloss)); h.appendChild(b); h.appendChild(el("span",null,right)); return h; }
-const LAY=(new URLSearchParams(location.search).get("lay"))||"0";
+const LAY=(new URLSearchParams(location.search).get("lay"))||"7";   // 7 = accueil V6a (choisi le 13/10/2026) ; ?lay=0…8 pour revoir les autres essais
 const zLevel = t => t==null ? "pas de soleil" : t>=68 ? "très belle" : t>=52 ? "belle" : "bof";
 const zColor = t => TURQ(t);
 function g3El(bi,id,day,hours,small,selH){
