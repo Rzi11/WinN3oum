@@ -365,6 +365,45 @@ footer .slogan{font:800 20px/1.2 var(--display);color:var(--blue)}
 .hp{position:absolute;left:-5000px;width:1px;height:1px;overflow:hidden}
 .rt details summary{font-size:13px;color:var(--muted);cursor:pointer}
 .rt details input{font:15px var(--body);padding:10px;border-radius:12px;border:1px solid var(--line);margin-top:8px;width:100%;max-width:260px}
+/* Formulaire redessiné (propositions ?form=1,2,3) */
+.rhero{background:var(--blue);color:#fff;border-radius:28px;padding:18px;display:flex;flex-direction:column;gap:10px}
+.rhero .kicker{margin:0}
+.rhero h2{color:#fff;font:800 clamp(34px,10vw,42px)/.95 var(--display);margin:2px 0 0}
+.rhero > p{margin:0;color:#CFE0F7;font-size:14px}
+.rhero select{background:#fff;font-weight:700}
+.rhero .rlab{font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--turq-light);margin:4px 0 -4px}
+.rhero .opt{background:rgba(255,255,255,.14);color:#fff;min-height:44px;font-size:14px}
+.rhero .opt[aria-pressed="true"]{background:#fff;color:var(--ink)}
+.rhero #r-hour{margin-top:-2px}
+.qcard{background:var(--card);border-radius:22px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.qhead{display:flex;align-items:baseline;gap:8px} .qhead b{font:800 19px var(--display)} .qhead small{font-size:13px;color:var(--muted)}
+.qhead .opt-skip{margin-left:auto;font-size:12px;color:var(--muted)}
+.qcard .opt{background:var(--chaux)}
+.opt.ic{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:10px 4px 9px;font-size:13.5px;line-height:1.15}
+.opt.ic .oi{display:inline-flex;width:46px;height:46px} .opt.ic .oi svg{width:100%;height:100%}
+.opt.ic .oi.sw{width:46px;height:30px;border-radius:9px;margin:8px 0}
+.opt.ic .oi.duo{width:56px} .opt.ic .oi.duo svg{width:34px;height:34px} .opt.ic .oi.duo svg + svg{margin-left:-12px}
+.qcard .opt.ic[aria-pressed="true"],.qrows .opt.ic[aria-pressed="true"],.step .opt.ic[aria-pressed="true"]{background:#fff;color:var(--ink);box-shadow:0 0 0 2.5px var(--ink)}
+.qcard .grid4,.step .grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+/* F2 : un seul tableau */
+.qrows{background:var(--card);border-radius:22px;padding:12px 10px;display:flex;flex-direction:column;gap:4px}
+.qrow{display:grid;grid-template-columns:62px minmax(0,1fr);align-items:center;gap:6px;padding:6px 0}
+.qrow + .qrow{border-top:1px solid var(--line)}
+.qrow .ql{font:800 14px/1 var(--display)} .qrow .ql small{display:block;font:400 11px var(--body);color:var(--muted);margin-top:3px}
+.qrow .grid3,.qrow .grid2,.qrow .grid4{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:4px}
+.qrow .opt.ic{background:transparent;padding:6px 2px;font-size:11.5px;gap:4px;min-height:0}
+.qrow .opt.ic .oi{width:34px;height:34px} .qrow .opt.ic .oi.sw{width:34px;height:22px;margin:6px 0} .qrow .opt.ic .oi.duo{width:44px} .qrow .opt.ic .oi.duo svg{width:26px;height:26px}
+/* F3 : une question à la fois */
+.stepper{display:flex;flex-direction:column;gap:12px}
+.sdots{display:flex;gap:6px;justify-content:center} .sdots i{width:8px;height:8px;border-radius:4px;background:var(--line);transition:width .2s ease, background .2s ease} .sdots i.on{width:22px;background:var(--blue)} .sdots i.done{background:var(--turq)}
+.step{background:var(--card);border-radius:26px;padding:20px 16px;display:flex;flex-direction:column;gap:14px}
+.step .qhead b{font-size:26px} .step .qhead small{font-size:14px}
+.step .opt.ic{min-height:118px;font-size:15px} .step .opt.ic .oi{width:62px;height:62px} .step .opt.ic .oi.sw{width:62px;height:40px;margin:11px 0} .step .opt.ic .oi.duo{width:74px} .step .opt.ic .oi.duo svg{width:46px;height:46px}
+.step .grid4{grid-template-columns:repeat(2,minmax(0,1fr))}
+.snav{display:flex;justify-content:space-between;align-items:center}
+.snav button{all:unset;cursor:pointer;font-weight:700;font-size:15px;color:var(--blue);padding:10px 4px;min-height:24px}
+.snav button:disabled{opacity:.35;cursor:default}
+.recap{display:flex;flex-wrap:wrap;gap:6px} .recap span{display:inline-flex;align-items:center;gap:5px;background:var(--card);border-radius:999px;padding:3px 10px 3px 3px;font-size:13px;font-weight:700} .recap span i{width:24px;height:24px;display:inline-flex} .recap span i svg{width:100%;height:100%;border-radius:50%}
 
 /* Barre du bas */
 .tabbar{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--line);z-index:20;
@@ -815,7 +854,7 @@ function algSVG(k){
   return `<svg viewBox="0 0 64 64" aria-hidden="true"><defs><clipPath id="${id}"><circle cx="32" cy="32" r="32"/></clipPath></defs><g clip-path="url(#${id})"><rect width="64" height="64" fill="#D6EFEB"/>${inner}</g></svg>`;
 }
 const algIcon = a => a ? algSVG(ALG_K[a.ak]) : "";
-function merSVG(k){ return `<svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="32" fill="${WAVE_BG[k]}"/><g transform="translate(8 9) scale(.75)">${waveSVG(k).replace(/^<svg[^>]*>|<\/svg>$/g,"").replace(/pathLength="1" /g,"")}</g></svg>`; }
+function merSVG(k){ return `<svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="32" fill="${WAVE_BG[k]}"/><g transform="translate(8 9) scale(.75)" fill="none" stroke-width="4.5" stroke-linecap="round">${waveSVG(k).replace(/^<svg[^>]*>|<\/svg>$/g,"").replace(/pathLength="1" /g,"")}</g></svg>`; }
 function wavePill(cls, k, text){ const sp=el("span","statepill "+cls); if(k){ const w=el("span","wi"); w.innerHTML=waveSVG(k).replace(/pathLength="1" /g,""); w.querySelector("svg").setAttribute("fill","none"); sp.appendChild(w); } sp.appendChild(document.createTextNode(text)); return sp; }
 function algPill(id){ const a=algae(id); if(!a) return null; const sp=el("span","apill"); sp.innerHTML=algIcon(a); sp.title=`Algues : ${a.t}`; sp.setAttribute("role","img"); sp.setAttribute("aria-label",`Algues : ${a.t}`); return sp; }
 function algaeRowEl(id, day, hours, cls, selH){
@@ -1641,7 +1680,54 @@ function resetReport(){
   $("r-seen-opts").hidden=true; $("r-how").hidden=true; $("r-stung").checked=false; $("r-species").value=""; updateSend();
 }
 function updateSend(){ $("r-send").disabled = !(R.sea!=null||R.clar!=null||R.algae!=null||R.seen!=null); }
+const FORM=(new URLSearchParams(location.search).get("form"))||"0";
+const JELLY=(c,bg)=>`<svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="32" fill="${bg}"/><path d="M15 33 C15 19 49 19 49 33 Z" fill="${c}"/><path d="M15 33 q4.25 3 8.5 0 t8.5 0 t8.5 0 t8.5 0" fill="none" stroke="${c}" stroke-width="3" stroke-linecap="round"/><path d="M23 37 q-3 6 0 12 M32 37 q3 7 0 14 M41 37 q-3 6 0 12" fill="none" stroke="${c}" stroke-width="3" stroke-linecap="round"/></svg>`;
+const OKC=`<svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="32" fill="#DDF2E7"/><path d="M20 33 l8.5 8.5 l16 -17" fill="none" stroke="#1E8A5A" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+const QM=`<svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="32" r="32" fill="#EFEBE2"/><text x="32" y="44" text-anchor="middle" font-family="Baloo 2, sans-serif" font-weight="800" font-size="34" fill="#8C97A8">?</text></svg>`;
+function decorateForm(){
+  if(FORM==="0") return; const v=$("v-retour"); if(v.dataset.dec) return; v.dataset.dec="1";
+  const grp=k=>v.querySelector(`[data-k="${k}"]`);
+  const lab=g=>{ let p=g.previousElementSibling; return p&&p.classList.contains("l")?p:null; };
+  const icon=(o,html,cls)=>{ o.classList.add("ic"); const t=o.textContent; o.dataset.t=t; o.textContent=""; const i=el("span","oi"+(cls?" "+cls:"")); i.innerHTML=html; o.appendChild(i); o.appendChild(document.createTextNode(t)); };
+  // les dessins de l'app sur chaque réponse
+  const sea=grp("sea"); [["good","Plate"],["warn","Ça bouge"],["bad","Vagues"]].forEach(([k,t],i)=>{ const o=sea.children[i]; o.textContent=t; icon(o,merSVG(k)); });
+  const clar=grp("clar"); [["#14B8A6","Turquoise"],["#7FE3D6","Moyenne"],["#CFC6B0","Trouble"]].forEach(([c,t],i)=>{ const o=clar.children[i]; o.textContent=t; icon(o,"","sw"); o.querySelector(".oi").style.background=c; });
+  const alg=grp("algae"); alg.classList.remove("grid2"); alg.classList.add("grid4"); [["a","Aucune"],["s","Sur le sable"],["e","Dans l'eau"]].forEach(([k,t],i)=>{ const o=alg.children[i]; o.textContent=t; icon(o,algSVG(k)); });
+  { const o=alg.children[3]; o.textContent="Les deux"; icon(o,algSVG("s")+algSVG("e"),"duo"); }
+  const seen=grp("seen"); [[OKC,"Rien vu"],[JELLY("#D9467A","#FBE3EC"),"J'en ai vu"],[QM,"Pas regardé"]].forEach(([h,t],i)=>{ const o=seen.children[i]; o.textContent=t; icon(o,h); });
+  // l'en-tête bleu : la plage et le moment
+  const h2=v.querySelector("h2"), intro=v.querySelector(":scope > p"), bl=v.querySelector('label[for="r-beach"]'), bs=$("r-beach"), wg=grp("when"), wl=lab(wg), hr=$("r-hour");
+  const hero=el("div","rhero"); hero.appendChild(el("div","kicker","Mon retour")); h2.textContent="C'était comment ?"; hero.appendChild(h2);
+  intro.textContent="Réponds seulement à ce que tu as vu. 10 secondes, et ça aide tout le monde."; hero.appendChild(intro);
+  bl.className="rlab"; bl.textContent="La plage"; hero.appendChild(bl); hero.appendChild(bs); wl.className="rlab"; wl.textContent="Quand"; hero.appendChild(wl); hero.appendChild(wg); hero.appendChild(hr);
+  v.insertBefore(hero, $("merci-box").nextSibling);
+  const Q=[["sea","Mouj","les vagues"],["clar","Zarga","la couleur de l'eau"],["algae","Les algues",""],["seen","Les méduses",""]];
+  const after=$("r-seen-opts"), how=$("r-how");
+  if(FORM==="1"){
+    let anchor=hero;
+    Q.forEach(([k,n,g])=>{ const gg=grp(k); const l=lab(gg); if(l) l.remove(); const c=el("section","qcard"); const hd=el("div","qhead"); hd.appendChild(el("b",null,n)); if(g) hd.appendChild(el("small",null,g)); c.appendChild(hd); c.appendChild(gg);
+      if(k==="seen"){ c.appendChild(after); c.appendChild(how); } anchor.after(c); anchor=c; });
+  } else if(FORM==="2"){
+    const box=el("section","qrows"); box.appendChild(el("div","qhead")).appendChild(el("b",null,"Ce que tu as vu"));
+    box.firstChild.appendChild(el("small",null,"touche une réponse par ligne"));
+    Q.forEach(([k,n,g])=>{ const gg=grp(k); const l=lab(gg); if(l) l.remove(); const r=el("div","qrow"); const ql=el("div","ql",n.replace("Les a","A").replace("Les m","M")); if(g) ql.appendChild(el("small",null,g)); r.appendChild(ql); r.appendChild(gg); box.appendChild(r); });
+    hero.after(box); box.after(after); after.after(how);
+  } else if(FORM==="3"){
+    const st=el("div","stepper"); const dots=el("div","sdots"); st.appendChild(dots); hero.after(st);
+    const steps=Q.map(([k,n,g],i)=>{ const gg=grp(k); const l=lab(gg); if(l) l.remove(); const c=el("section","step"); const hd=el("div","qhead"); hd.appendChild(el("b",null,n)); if(g) hd.appendChild(el("small",null,g)); hd.appendChild(el("span","opt-skip",`${i+1} / ${Q.length}`)); c.appendChild(hd); c.appendChild(gg); if(k==="seen"){ c.appendChild(after); c.appendChild(how); } st.appendChild(c); dots.appendChild(el("i")); return c; });
+    const nav=el("div","snav"); const prev=el("button",null,"← Retour"); prev.type="button"; const next=el("button",null,"Passer →"); next.type="button"; nav.appendChild(prev); nav.appendChild(next); st.appendChild(nav);
+    const recap=el("div","recap"); st.appendChild(recap);
+    let cur=0; const show=i=>{ cur=Math.max(0,Math.min(steps.length,i)); steps.forEach((c,j)=>c.hidden=j!==cur); [...dots.children].forEach((d,j)=>{ d.className=j===cur?"on":(j<cur?"done":""); });
+      prev.disabled=cur===0; next.hidden=cur>=steps.length; nav.hidden=false;
+      const k=Q[Math.min(cur,steps.length-1)][0]; next.textContent = R[k]!=null ? "Suivant →" : "Passer →";
+      recap.innerHTML=""; recap.hidden=cur<steps.length; if(cur>=steps.length){ Q.forEach(([kk,n])=>{ const o=grp(kk).querySelector('[aria-pressed="true"]'); if(!o) return; const sp=el("span"); const i=el("i"); const oi=o.querySelector(".oi"); if(oi.classList.contains("sw")){ i.style.background=oi.style.background; i.style.borderRadius="50%"; } else i.innerHTML=oi.innerHTML; sp.appendChild(i); sp.appendChild(document.createTextNode(o.dataset.t)); recap.appendChild(sp); }); recap.prepend(el("b",null,"Ton retour :")); } };
+    prev.onclick=()=>show(cur-1); next.onclick=()=>show(cur+1);
+    Q.forEach(([k],i)=>grp(k).addEventListener("click",e=>{ if(!e.target.closest(".opt")) return; setTimeout(()=>{ if(R[k]!=null && !(k==="seen"&&R.seen!=="skip")) show(i+1); else show(i); },320); }));
+    v._showStep=show; show(0);
+  }
+}
 function setupReport(){
+  decorateForm();
   const sel=$("r-beach"); sel.innerHTML="";
   const groups=COTES.length?COTES:[{id:null,name:null}];
   groups.forEach(c=>{ const bs=BEACHES.filter(b=>c.id==null||b.cote===c.id); if(!bs.length) return;
