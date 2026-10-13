@@ -69,7 +69,14 @@ button{cursor:pointer}
 .bars i{display:block;height:28px;border-radius:8px}
 .bars i.sel{outline:2px solid var(--ink);outline-offset:1px}
 .bars.mini i{height:12px;border-radius:4px}
+.bars i.wv{height:36px;display:flex;align-items:center;justify-content:center;padding:2px 3px}
+.bars i.wv svg{width:100%;height:100%;max-width:56px}
+.bars.mini i.wv{height:26px;border-radius:7px;padding:1px 2px}
+.bars.mid i.wv{height:30px;padding:1px}
 .bars.mid i{height:22px;border-radius:6px}
+.wleg{display:flex;gap:12px;font-size:12px;color:var(--muted);margin-top:-2px}
+.wleg span{display:flex;align-items:center;gap:5px} .wleg i{width:30px;height:20px;border-radius:5px;display:flex;align-items:center;justify-content:center;padding:1px}
+.wleg svg{width:100%;height:100%}
 .hours{display:grid;grid-template-columns:repeat(var(--n,6),minmax(0,1fr));gap:4px;font-size:12px;color:var(--muted);text-align:center}
 .tiles{display:flex;gap:8px}
 .tile{flex:1;min-width:0;background:var(--blue-deep);border-radius:14px;padding:10px 12px}
@@ -201,6 +208,26 @@ footer .slogan{font:800 20px/1.2 var(--display);color:var(--blue)}
 .legend > span:last-child:not(:has(i)){color:var(--muted)}
 .legend span{display:flex;align-items:center;gap:6px}
 .legend i{width:10px;height:10px;border-radius:50%;display:inline-block}
+.modewrap{position:relative;align-self:flex-start}
+.modebtn{border:0;background:#fff;color:var(--ink);font:700 14px var(--body);padding:8px 14px;border-radius:999px;min-height:40px;display:flex;align-items:center;gap:6px}
+.modebtn small{font-size:10px}
+.menu{position:absolute;top:calc(100% + 6px);left:0;background:var(--chaux);border-radius:18px;padding:6px;box-shadow:0 10px 26px rgba(15,36,64,.3);display:flex;flex-direction:column;gap:2px;min-width:220px;z-index:5}
+.menu button{border:0;background:transparent;color:var(--ink);font:700 15px var(--body);text-align:left;padding:10px 12px;border-radius:12px;min-height:44px}
+.menu button[aria-checked="true"]{background:var(--blue);color:#fff}
+.menu .legend{margin:6px 6px 4px;background:#fff}
+.deckwrap{position:absolute;z-index:2;left:0;right:0;bottom:calc(var(--nav-h) + env(safe-area-inset-bottom,0px) + 10px);max-width:520px;margin:0 auto;display:flex;flex-direction:column;gap:8px}
+.deck{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 12px 6px;scrollbar-width:none;overscroll-behavior-x:contain}
+.deck::-webkit-scrollbar{display:none}
+.dcard{flex:0 0 calc(100% - 24px);scroll-snap-align:center;box-sizing:border-box;background:var(--chaux);border-radius:24px;padding:14px;box-shadow:0 8px 22px rgba(15,36,64,.3);display:flex;flex-direction:column;gap:8px;cursor:pointer}
+.dh{display:flex;align-items:center;gap:10px}
+.dh .rk{width:30px;height:30px;border-radius:50%;background:var(--blue);color:#fff;font:800 16px var(--display);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.dh .rk.one{background:var(--turq);color:var(--ink)}
+.dn{flex:1;min-width:0} .dn b{display:block;font:800 21px/1.05 var(--display);white-space:nowrap;overflow:hidden;text-overflow:ellipsis} .dn small{font-size:13px;color:var(--muted)}
+.df{display:flex;align-items:center;gap:10px} .df .dm{flex:1;min-width:0;font-size:13px;color:var(--muted)}
+.df .go{min-height:42px;padding:0 22px;font-size:17px;border-radius:14px}
+.dots{display:flex;justify-content:center;gap:6px}
+.dot{border:0;padding:0;width:8px;height:8px;border-radius:4px;background:rgba(247,245,240,.6);transition:width .2s ease, background .2s ease}
+.dot.on{width:20px;background:var(--chaux)}
 .bubbles{position:absolute;z-index:2;left:12px;right:12px;bottom:calc(var(--nav-h) + env(safe-area-inset-bottom,0px) + 12px);max-width:496px;margin:0 auto;
   display:flex;flex-direction:column;gap:8px;pointer-events:none;padding-top:4px}
 .bubbles > *{pointer-events:auto}
@@ -335,15 +362,18 @@ footer .slogan{font:800 20px/1.2 var(--display);color:var(--blue)}
         <button class="pk hour" id="pk-hour" type="button" aria-haspopup="dialog"><span>10 h</span> <small>▼</small></button>
       </div>
     </div>
-    <div class="chips" id="modes" role="group" aria-label="Afficher">
-      <button class="chip" data-m="mer" aria-pressed="true" type="button">La mer</button>
-      <button class="chip" data-m="belle" aria-pressed="false" type="button">Belle eau</button>
-      <button class="chip" data-m="algues" aria-pressed="false" type="button">Algues</button>
-      <button class="chip" data-m="vu" aria-pressed="false" type="button">Méduses</button>
+    <div class="modewrap">
+      <button class="modebtn" id="mode-btn" type="button" aria-haspopup="true" aria-expanded="false"><span>La mer</span> <small>▼</small></button>
+      <div class="menu" id="modes" role="menu" hidden>
+        <button role="menuitemradio" data-m="mer" aria-checked="true" type="button">La mer</button>
+        <button role="menuitemradio" data-m="belle" aria-checked="false" type="button">Belle eau</button>
+        <button role="menuitemradio" data-m="algues" aria-checked="false" type="button">Algues</button>
+        <button role="menuitemradio" data-m="vu" aria-checked="false" type="button">Méduses</button>
+        <div class="legend" id="legend"></div>
+      </div>
     </div>
-    <div class="legend" id="legend"></div>
   </div>
-  <div class="bubbles" id="bubbles"></div>
+  <div class="deckwrap" id="deckwrap"><div class="deck" id="deck"></div><div class="dots" id="dots"></div></div>
 </main>
 
 <!-- ===================== Page d'une plage ===================== -->
@@ -590,11 +620,18 @@ function bestTurq(bi, day){
   return {txt: a===z?`le plus beau vers ${a} h`:`le plus beau ${a} h – ${z+1} h`, ...best};
 }
 const HERO_HOURS=[8,10,12,14,16,18];
+// Le petit dessin de la mer (A3, double trait) : plate / ça bouge / vagues
+const WAVE_LIGHT={good:"#9FD6B8",warn:"#E9C38D",bad:"#EFA49D"}, WAVE_BG={good:"#DDF2E7",warn:"#FBEBD3",bad:"#FBDEDB"};
+function waveSVG(k){ const c=STATE(k==="good"?100:k==="warn"?50:0).c, l=WAVE_LIGHT[k];
+  const body = k==="good" ? `<path d="M5 25 Q17 21 29 25 T53 25 T60 24" stroke="${c}"/><path d="M5 33 Q17 29 29 33 T53 33 T60 32" stroke="${l}"/>`
+    : k==="warn" ? `<path d="M4 35 C14 35 18 18 31 17 C40 16.5 45 22.5 42 27.5 C40 30.5 35 29.5 35 25.5" stroke="${c}"/><path d="M4 42 C16 42 22 31 34 31 C44 31 50 40 60 38" stroke="${l}"/>`
+    : `<path d="M4 38 C10 38 14 27 18 20 C24 8 40 4 50 10 C58 15 57 26 49 28 C43 29.5 40 24 45 20" stroke="${c}" stroke-width="4.8"/><path d="M4 45 C14 45 20 36 30 35 C40 34 46 42 60 42" stroke="${l}"/><circle cx="57" cy="6" r="2.4" fill="${c}" stroke="none"/><circle cx="60" cy="13" r="1.8" fill="${c}" stroke="none"/>`;
+  return `<svg viewBox="0 0 64 48" aria-hidden="true" fill="none" stroke-width="4.5" stroke-linecap="round">${body}</svg>`; }
 function barsEl(bi, day, hours, kind, cls, selH){
   const d=el("div","bars"+(cls?" "+cls:"")); d.style.setProperty("--n",hours.length);
   hours.forEach(h=>{ const i=idxOf(`${day}T${pad(h)}:00`); const x=el("i");
     if(i<0){ x.style.background="#E6E0D2"; x.style.opacity=".4"; }
-    else { const r=at(bi,i); x.style.background = kind==="sea" ? STATE(r.s).c : TURQ(r.t); }
+    else { const r=at(bi,i); if(kind==="sea"){ const k=STATE(r.s).k; x.className="wv"; x.style.background=WAVE_BG[k]; x.innerHTML=waveSVG(k); } else x.style.background=TURQ(r.t); }
     if(selH!=null && (h===selH || (hours.length===6 && selH>=h && selH<h+2))) x.classList.add("sel");
     d.appendChild(x); });
   d.setAttribute("aria-hidden","true"); return d;
@@ -697,7 +734,8 @@ function renderLyoum(){
   if(r.tier===2){ card.appendChild(el("p","alertbar","Attention : des méduses ont été vues sur toutes les plages en ce moment. Regarde avant d'entrer dans l'eau.")); }
   const pan=el("div","panel");
   const sh=el("div","barhead"); sh.appendChild(el("b",null,"La mer")); sh.appendChild(el("span",null,seaRun(r.bi,selectedKey))); pan.appendChild(sh);
-  pan.appendChild(barsEl(r.bi,day,HERO_HOURS,"sea",null,hourOf(selectedKey)));
+  const legW=el("div","wleg"); [["good","plate"],["warn","ça bouge"],["bad","vagues"]].forEach(([k,t])=>{ const sp=el("span"); const ic=el("i"); ic.style.background=WAVE_BG[k]; ic.innerHTML=waveSVG(k); sp.appendChild(ic); sp.appendChild(document.createTextNode(t)); legW.appendChild(sp); });
+  pan.appendChild(barsEl(r.bi,day,HERO_HOURS,"sea",null,hourOf(selectedKey))); pan.appendChild(legW);
   const bt=bestTurq(r.bi,day); const th=el("div","barhead"); th.appendChild(el("b",null,"Belle eau")); th.appendChild(el("span",null,bt?bt.txt:"pas de soleil")); pan.appendChild(th);
   pan.appendChild(barsEl(r.bi,day,HERO_HOURS,"turq",null,hourOf(selectedKey)));
   pan.appendChild(hoursEl(HERO_HOURS,1));
@@ -711,7 +749,7 @@ function renderLyoum(){
   const t1=el("div","tile"); t1.appendChild(el("small",null,"Algues")); t1.appendChild(el("b",null,al?al.t:"Pas encore de retour")); if(al) t1.appendChild(el("em",null,al.sub)); tiles.appendChild(t1);
   const t2=el("div","tile"+(pe.tier?" alert":"")); t2.appendChild(el("small",null,"Les gens disent")); t2.appendChild(el("b",null,pe.t)); if(pe.sub) t2.appendChild(el("em",null,pe.sub)); tiles.appendChild(t2);
   card.appendChild(tiles);
-  const go=el("a","go","Y aller"); go.href=mapsUrl(b); go.target="_blank"; go.rel="noopener"; card.appendChild(go);
+  const go=el("a","go","Yalla"); go.href=mapsUrl(b); go.target="_blank"; go.rel="noopener"; go.setAttribute("aria-label",`Yalla : itinéraire vers ${b.short}`); card.appendChild(go);
   if(top.coins.length>1){ const also=el("div","alsocoins"); also.appendChild(el("span",null,`Aussi à ${top.c.name} :`));
     top.coins.slice(1).forEach(x=>{ const bb=el("button",null,`${x.b.short} · ${x.tier?"méduses vues":STATE(x.s).w}`); bb.type="button"; bb.onclick=()=>openPlage(x.b.id); also.appendChild(bb); }); card.appendChild(also); }
 
@@ -765,7 +803,7 @@ function renderPlage(){
   const t1=el("div","tile"); t1.appendChild(el("small",null,"Algues")); t1.appendChild(el("b",null,al?al.t:"Pas encore de retour")); if(al) t1.appendChild(el("em",null,al.sub)); tiles.appendChild(t1);
   const t2=el("div","tile"+(pe.tier?" alert":"")); t2.appendChild(el("small",null,"Méduses")); t2.appendChild(el("b",null,pe.t)); if(pe.sub) t2.appendChild(el("em",null,pe.sub)); tiles.appendChild(t2);
   card.appendChild(tiles);
-  const act=el("div","pbar"); const go=el("a","go","Y aller"); go.href=mapsUrl(b); go.target="_blank"; go.rel="noopener"; act.appendChild(go);
+  const act=el("div","pbar"); const go=el("a","go","Yalla"); go.href=mapsUrl(b); go.target="_blank"; go.rel="noopener"; act.appendChild(go);
   const im=el("button","im","Wselt !"); im.type="button"; im.setAttribute("aria-label","Wselt : je suis arrivé, dire comment c'est"); im.onclick=()=>{ $("v-retour").classList.remove("done"); $("r-beach").value=b.id; showView("retour"); window.scrollTo(0,0); }; act.appendChild(im);
   v.appendChild(act);
   // Les prochains jours
@@ -890,28 +928,41 @@ function renderMarks(){
         pill(cx+(side==="end"?-8:8)*u, cy, side, x.b.short, 12*u, null, rank===0&&x===g.best, ()=>openPlage(x.b.id)); });
     } else {
       const pts=g.coins.map(x=>XY(x.b.lat,x.b.lon)); const mx=pts.reduce((a,p)=>a+p[0],0)/pts.length, my=pts.reduce((a,p)=>a+p[1],0)/pts.length;
-      pill(mx+dx*u, my+dy*u, anc, g.c.name, (rank===0?15:13)*u, rank+1, rank===0, ()=>openPlage(g.best.b.id));
+      const on = rank===DECK_I;
+      if(on) pill(mx+dx*u, my+dy*u, anc, g.c.name, 15*u, rank+1, true, ()=>openPlage(g.best.b.id));
+      else { const r0=13*u; const cx0=mx+dx*u*0.6, cy0=my+dy*u*0.6; const gg=sv("g",{style:"cursor:pointer",role:"button","aria-label":`${rank+1}. ${g.c.name}`},marks);
+        sv("circle",{cx:cx0,cy:cy0,r:r0,fill:"#F7F5F0",stroke:"#1450A3","stroke-width":2*u},gg);
+        sv("text",{x:cx0,y:cy0+r0*0.42,"text-anchor":"middle","font-family":"Baloo 2, sans-serif","font-weight":"800","font-size":14*u,fill:"#1450A3"},gg).textContent=String(rank+1);
+        gg.addEventListener("click",()=>{ if(MAPDRAG.moved) return; goDeck(rank); }); }
     }
   });
 }
 let MAPDRAG={moved:false};
+let DECK_I=0;
+function goDeck(i){ const d=$("deck"); const card=d.children[i]; if(card) d.scrollTo({left:card.offsetLeft-d.offsetLeft-12,behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"}); }
 function renderBubbles(){
-  const G=ranking(selectedKey);
-  // bulles du classement : toujours 3 visibles, on fait défiler les suivantes dans la liste
-  const bub=$("bubbles"); const keepScroll=bub.querySelector(".blist")?.scrollTop||0; bub.innerHTML="";
-  const bh=el("div","bh"); bh.appendChild(el("b",null,"Le classement")); const cnt=el("span","cnt",`1–${Math.min(3,G.length)} sur ${G.length}`); bh.appendChild(cnt); bub.appendChild(bh);
-  const list=el("div","blist"); bub.appendChild(list);
+  const G=ranking(selectedKey), day=selectedKey.slice(0,10); const deck=$("deck"), dots=$("dots"); deck.innerHTML=""; dots.innerHTML="";
+  if(DECK_I>=G.length) DECK_I=0;
   G.forEach((g,k)=>{
-    const x=g.best, st=STATE(x.s); const b=el("button","bub"); b.type="button"; b.style.borderLeftColor = x.tier?"#E4473C":st.c;
-    b.appendChild(el("span","rk"+(k===0?" one":""),String(k+1)));
-    const mid=el("span"); mid.appendChild(el("b",null,g.coins.length>1?`${g.c.name} · ${x.b.short}`:g.c.name));
-    const bt=bestTurq(x.bi,selectedKey.slice(0,10)); mid.appendChild(el("small",null, x.tier?x.p.t : [st.t, bt&&bt.t>=45?bt.txt.replace("le plus beau","belle eau"):null].filter(Boolean).join(" · ")));
-    b.appendChild(mid); b.appendChild(barsEl(x.bi,selectedKey.slice(0,10),HERO_HOURS,"sea","mini"));
-    b.onclick=()=>openPlage(x.b.id); list.appendChild(b); });
-  const upd=()=>{ const step=list.firstChild?list.firstChild.offsetHeight+8:64; const first=Math.round(list.scrollTop/step); cnt.textContent=`${first+1}–${Math.min(G.length,first+3)} sur ${G.length}`; };
-  list.addEventListener("scroll",upd,{passive:true}); list.scrollTop=keepScroll; upd();
+    const x=g.best, st=STATE(x.s); const c=el("article","dcard"); c.setAttribute("aria-label",`${k+1}. ${g.c.name}`);
+    const head=el("div","dh"); const rk=el("span","rk"+(k===0?" one":""),String(k+1)); head.appendChild(rk);
+    const nm=el("div","dn"); nm.appendChild(el("b",null,g.c.name)); if(g.coins.length>1) nm.appendChild(el("small",null,`côté ${x.b.short}`)); head.appendChild(nm);
+    head.appendChild(el("span","statepill "+(x.tier?"bad":st.k), x.tier?x.p.t:st.t)); c.appendChild(head);
+    c.appendChild(barsEl(x.bi,day,HERO_HOURS,"sea","mini",hourOf(selectedKey))); c.appendChild(hoursEl(HERO_HOURS,1));
+    const foot=el("div","df"); const bt=bestTurq(x.bi,day); const al=algae(x.b.id);
+    foot.appendChild(el("span","dm",[bt&&bt.t>=45?bt.txt.replace("le plus beau","belle eau"):null, al&&al.k!=="good"?`algues ${al.t.toLowerCase()}`:null, x.p.has&&!x.tier?x.p.t.toLowerCase():null].filter(Boolean).join(" · ")||"Touche pour voir le détail"));
+    const go=el("a","go","Yalla"); go.href=mapsUrl(x.b); go.target="_blank"; go.rel="noopener"; go.onclick=e=>e.stopPropagation(); foot.appendChild(go); c.appendChild(foot);
+    c.onclick=()=>openPlage(x.b.id); deck.appendChild(c);
+    const dt=el("button","dot"); dt.type="button"; dt.setAttribute("aria-label",`Côte n°${k+1} : ${g.c.name}`); if(k===DECK_I) dt.classList.add("on"); dt.onclick=()=>goDeck(k); dots.appendChild(dt);
+  });
+  let t=0; deck.onscroll=()=>{ clearTimeout(t); t=setTimeout(()=>{ const w=deck.firstChild?deck.firstChild.offsetWidth+10:300; const i=Math.max(0,Math.min(G.length-1,Math.round(deck.scrollLeft/w)));
+      if(i!==DECK_I){ DECK_I=i; [...dots.children].forEach((d,j)=>d.classList.toggle("on",j===i)); tick(); renderMarks(); } },80); };
+  requestAnimationFrame(()=>{ const w=deck.firstChild?deck.firstChild.offsetWidth+10:0; deck.scrollLeft=DECK_I*w; });
 }
-$("modes").querySelectorAll(".chip").forEach(c=>c.onclick=()=>{ MODE=c.dataset.m; $("modes").querySelectorAll(".chip").forEach(x=>x.setAttribute("aria-pressed",String(x===c))); renderCarte(); });
+$("mode-btn").onclick=e=>{ e.stopPropagation(); const m=$("modes"); m.hidden=!m.hidden; $("mode-btn").setAttribute("aria-expanded",String(!m.hidden)); };
+document.addEventListener("click",e=>{ if(!e.target.closest(".modewrap")){ $("modes").hidden=true; $("mode-btn").setAttribute("aria-expanded","false"); } });
+$("modes").querySelectorAll("[data-m]").forEach(c=>c.onclick=()=>{ MODE=c.dataset.m; $("modes").querySelectorAll("[data-m]").forEach(x=>x.setAttribute("aria-checked",String(x===c)));
+  $("mode-btn").querySelector("span").textContent=c.textContent; renderCarte(); });
 window.addEventListener("resize",()=>{ if(VIEW==="carte"){ MAPBUILT=false; renderCarte(); } else MAPBUILT=false; });
 // déplacer (1 doigt), zoomer (2 doigts, molette, double appui)
 (function setupMapGestures(){
