@@ -1,151 +1,128 @@
 {
- "generated": "2026-10-13T03:52:27Z",
+ "generated": "2026-10-14T04:02:30Z",
  "version": "v0.8",
- "mode": "derive",
+ "mode": "vent",
  "calibration": null,
  "method": "Dérive (courants surface + 15 m, vent, vagues, jour/nuit, marée) × eau favorable × exposition + observations, presse, vent passé, saison. Indicateur non validé.",
  "sources": {
-  "iNaturalist": "ok (1)",
+  "iNaturalist": "indisponible : HTTP 503",
   "GBIF": "ok (0)",
   "OBIS": "ok (0)",
   "signalements": "ok (0)",
   "presse": "ok (0)",
-  "signalements app": "ok (0)",
+  "signalements app": "ok (1)",
   "vent": "ok",
-  "courants surface": "cmems_mod_med_phy-cur_anfc_4.2km-2D_PT1H-m",
-  "courants 15 m": "cmems_mod_med_phy-cur_anfc_4.2km-3D_PT1H-m",
-  "vagues": "cmems_mod_med_wav_anfc_4.2km_PT1H-i",
-  "marée": "cmems_mod_med_phy-ssh_anfc_4.2km_PT15M-i",
-  "eau favorable": "sst, sal, mld, chl",
-  "fonds marins": "cmems_mod_med_phy_anfc_4.2km_static",
-  "bancs": "ok (1 zones suivies, 0 nouvelles, 0 recalées, 0 terminées)"
+  "courants surface": "indisponible : courants surface indisponible ()",
+  "marée": "indisponible : hauteur de mer indisponible ()",
+  "eau favorable": "indisponible",
+  "fonds marins": "indisponible : fonds marins indisponible ()",
+  "bancs": "indisponible : courants surface indisponible ()"
  },
  "particles": {
-  "fond": 3290,
-  "observations": 1
+  "fond": 0,
+  "observations": 0
  },
  "days": [
-  "2026-10-13",
   "2026-10-14",
-  "2026-10-15"
+  "2026-10-15",
+  "2026-10-16"
  ],
  "beaches": {
   "rmel": {
-   "name": "Ras R'mel (île aux flamants)",
-   "exposure": {
-    "opening": 0.31,
-    "depth5km": 6.7
-   },
+   "name": "Ras R'mel",
+   "exposure": {},
    "days": [
-    {
-     "date": "2026-10-13",
-     "level": "Possible",
-     "risk": 0.44,
-     "why": [
-      "courant et vent poussent vers la plage",
-      "plage qui piège les méduses"
-     ],
-     "observe": null,
-     "transport": [
-      "courant et vent poussent vers la plage",
-      "plage qui retient ce qui flotte"
-     ],
-     "confiance": "insuffisant",
-     "factors": {
-      "drift": 0.94,
-      "obs": 0.0,
-      "wind_past": 0.34,
-      "calm": 0.66,
-      "news": 0.0,
-      "habitat": 0.8,
-      "arrivals": 41.5,
-      "from_obs": 0.0,
-      "drift_ref": "échelle fixe (historique en construction)",
-      "exposure": 1.23,
-      "season": 0.55,
-      "strong_wind": false,
-      "wind_kmh": 15,
-      "moon_age": 2.1,
-      "habitat_detail": {
-       "sst": 26.3,
-       "chl": 0.062,
-       "sal": 37.95,
-       "mld": 6.5
-      }
-     }
-    },
     {
      "date": "2026-10-14",
      "level": "Possible",
-     "risk": 0.43,
+     "risk": 0.32,
      "why": [
-      "courant et vent poussent vers la plage",
+      "estimation au vent seul",
       "plage qui piège les méduses"
      ],
      "observe": null,
      "transport": [
-      "courant et vent poussent vers la plage",
+      "estimation au vent seul (courants indisponibles)",
       "plage qui retient ce qui flotte"
      ],
      "confiance": "insuffisant",
      "factors": {
-      "drift": 0.88,
+      "drift": 0.73,
       "obs": 0.0,
       "wind_past": 0.3,
       "calm": 0.7,
       "news": 0.0,
-      "habitat": 0.8,
-      "arrivals": 32.4,
+      "arrivals": 19.9,
       "from_obs": 0.0,
       "drift_ref": "échelle fixe (historique en construction)",
-      "exposure": 1.23,
+      "exposure": 1.15,
       "season": 0.55,
       "strong_wind": false,
-      "wind_kmh": 11,
+      "wind_kmh": 13,
       "moon_age": 3.1,
-      "habitat_detail": {
-       "sst": 25.7,
-       "chl": 0.059,
-       "sal": 37.98,
-       "mld": 6.5
-      }
+      "habitat_detail": {}
      }
     },
     {
      "date": "2026-10-15",
      "level": "Possible",
-     "risk": 0.33,
+     "risk": 0.27,
      "why": [
-      "un peu de dérive vers la plage",
+      "estimation au vent seul",
       "plage qui piège les méduses"
      ],
      "observe": null,
      "transport": [
-      "un peu de dérive vers la plage",
+      "estimation au vent seul (courants indisponibles)",
       "plage qui retient ce qui flotte"
      ],
      "confiance": "insuffisant",
      "factors": {
-      "drift": 0.33,
+      "drift": 0.55,
       "obs": 0.0,
-      "wind_past": 0.38,
-      "calm": 0.62,
+      "wind_past": 0.43,
+      "calm": 0.57,
       "news": 0.0,
-      "habitat": 0.79,
-      "arrivals": 6.1,
+      "arrivals": 12.0,
       "from_obs": 0.0,
       "drift_ref": "échelle fixe (historique en construction)",
-      "exposure": 1.23,
+      "exposure": 1.15,
       "season": 0.55,
       "strong_wind": false,
-      "wind_kmh": 8,
+      "wind_kmh": 10,
       "moon_age": 4.1,
-      "habitat_detail": {
-       "sst": 25.2,
-       "chl": 0.057,
-       "sal": 38.01,
-       "mld": 6.5
-      }
+      "habitat_detail": {}
+     }
+    },
+    {
+     "date": "2026-10-16",
+     "level": "Faible",
+     "risk": 0.16,
+     "why": [
+      "estimation au vent seul",
+      "plage qui piège les méduses"
+     ],
+     "observe": null,
+     "transport": [
+      "estimation au vent seul (courants indisponibles)",
+      "plage qui retient ce qui flotte"
+     ],
+     "confiance": "insuffisant",
+     "factors": {
+      "drift": 0.13,
+      "obs": 0.0,
+      "wind_past": 0.56,
+      "calm": 0.44,
+      "news": 0.0,
+      "arrivals": 2.1,
+      "from_obs": 0.0,
+      "drift_ref": "échelle fixe (historique en construction)",
+      "exposure": 1.15,
+      "season": 0.55,
+      "strong_wind": false,
+      "wind_kmh": 9,
+      "moon_age": 5.1,
+      "habitat_detail": {}
      }
     }
    ],
@@ -168,82 +145,37 @@
     }
    ]
   },
-  "seguia": {
-   "name": "La Seguia",
-   "exposure": {
-    "opening": 0.22,
-    "depth5km": 6.7
-   },
+  "hachen": {
+   "name": "El Hachen",
+   "exposure": {},
    "days": [
-    {
-     "date": "2026-10-13",
-     "level": "Possible",
-     "risk": 0.25,
-     "why": [
-      "peu de dérive vers la plage",
-      "mer calme ces derniers jours"
-     ],
-     "observe": null,
-     "transport": [
-      "peu de dérive vers la plage"
-     ],
-     "confiance": "insuffisant",
-     "factors": {
-      "drift": 0.0,
-      "obs": 0.0,
-      "wind_past": 0.1,
-      "calm": 0.9,
-      "news": 0.0,
-      "habitat": 0.78,
-      "arrivals": 0.0,
-      "from_obs": 0.0,
-      "drift_ref": "échelle fixe (historique en construction)",
-      "exposure": 1.09,
-      "season": 0.55,
-      "strong_wind": false,
-      "wind_kmh": 29,
-      "moon_age": 2.1,
-      "habitat_detail": {
-       "sst": 26.2,
-       "chl": 0.063,
-       "sal": 38.27,
-       "mld": 6.5
-      }
-     }
-    },
     {
      "date": "2026-10-14",
      "level": "Possible",
-     "risk": 0.25,
+     "risk": 0.3,
      "why": [
-      "peu de dérive vers la plage"
+      "estimation au vent seul"
      ],
      "observe": null,
      "transport": [
-      "peu de dérive vers la plage"
+      "estimation au vent seul (courants indisponibles)"
      ],
      "confiance": "insuffisant",
      "factors": {
-      "drift": 0.0,
+      "drift": 0.97,
       "obs": 0.0,
-      "wind_past": 0.1,
-      "calm": 0.9,
+      "wind_past": 0.63,
+      "calm": 0.37,
       "news": 0.0,
-      "habitat": 0.77,
-      "arrivals": 0.0,
+      "arrivals": 54.8,
       "from_obs": 0.0,
       "drift_ref": "échelle fixe (historique en construction)",
-      "exposure": 1.09,
+      "exposure": 1.0,
       "season": 0.55,
       "strong_wind": false,
-      "wind_kmh": 31,
+      "wind_kmh": 34,
       "moon_age": 3.1,
-      "habitat_detail": {
-       "sst": 25.9,
-       "chl": 0.059,
-       "sal": 38.29,
-       "mld": 6.5
-      }
+      "habitat_detail": {}
      }
     },
     {
@@ -251,34 +183,168 @@
      "level": "Possible",
      "risk": 0.25,
      "why": [
-      "peu de dérive vers la plage"
+      "estimation au vent seul"
      ],
      "observe": null,
      "transport": [
-      "peu de dérive vers la plage"
+      "estimation au vent seul (courants indisponibles)"
      ],
      "confiance": "insuffisant",
      "factors": {
-      "drift": 0.0,
+      "drift": 0.85,
       "obs": 0.0,
-      "wind_past": 0.1,
-      "calm": 0.9,
+      "wind_past": 1.0,
+      "calm": 0.0,
       "news": 0.0,
-      "habitat": 0.77,
-      "arrivals": 0.0,
+      "arrivals": 28.2,
       "from_obs": 0.0,
       "drift_ref": "échelle fixe (historique en construction)",
-      "exposure": 1.09,
+      "exposure": 1.0,
       "season": 0.55,
       "strong_wind": false,
-      "wind_kmh": 15,
+      "wind_kmh": 17,
       "moon_age": 4.1,
-      "habitat_detail": {
-       "sst": 25.6,
-       "chl": 0.055,
-       "sal": 38.27,
-       "mld": 6.5
-      }
+      "habitat_detail": {}
+     }
+    },
+    {
+     "date": "2026-10-16",
+     "level": "Faible",
+     "risk": 0.12,
+     "why": [
+      "estimation au vent seul"
+     ],
+     "observe": null,
+     "transport": [
+      "estimation au vent seul (courants indisponibles)"
+     ],
+     "confiance": "insuffisant",
+     "factors": {
+      "drift": 0.19,
+      "obs": 0.0,
+      "wind_past": 1.0,
+      "calm": 0.0,
+      "news": 0.0,
+      "arrivals": 3.1,
+      "from_obs": 0.0,
+      "drift_ref": "échelle fixe (historique en construction)",
+      "exposure": 1.0,
+      "season": 0.55,
+      "strong_wind": false,
+      "wind_kmh": 9,
+      "moon_age": 5.1,
+      "habitat_detail": {}
+     }
+    }
+   ],
+   "species": [
+    {
+     "name": "Pélagie (Pelagia noctiluca)",
+     "sting": "forte"
+    },
+    {
+     "name": "Méduse chou-fleur (Rhizostoma pulmo)",
+     "sting": "faible"
+    },
+    {
+     "name": "Méduse œuf au plat (Cotylorhiza tuberculata)",
+     "sting": "très faible"
+    },
+    {
+     "name": "Rhopilema nomadica (méduse nomade)",
+     "sting": "forte"
+    }
+   ]
+  },
+  "jazira": {
+   "name": "El Jazira",
+   "exposure": {},
+   "days": [
+    {
+     "date": "2026-10-14",
+     "level": "Possible",
+     "risk": 0.3,
+     "why": [
+      "estimation au vent seul"
+     ],
+     "observe": null,
+     "transport": [
+      "estimation au vent seul (courants indisponibles)"
+     ],
+     "confiance": "insuffisant",
+     "factors": {
+      "drift": 0.97,
+      "obs": 0.0,
+      "wind_past": 0.59,
+      "calm": 0.41,
+      "news": 0.0,
+      "arrivals": 53.4,
+      "from_obs": 0.0,
+      "drift_ref": "échelle fixe (historique en construction)",
+      "exposure": 1.0,
+      "season": 0.55,
+      "strong_wind": false,
+      "wind_kmh": 34,
+      "moon_age": 3.1,
+      "habitat_detail": {}
+     }
+    },
+    {
+     "date": "2026-10-15",
+     "level": "Possible",
+     "risk": 0.25,
+     "why": [
+      "estimation au vent seul"
+     ],
+     "observe": null,
+     "transport": [
+      "estimation au vent seul (courants indisponibles)"
+     ],
+     "confiance": "insuffisant",
+     "factors": {
+      "drift": 0.85,
+      "obs": 0.0,
+      "wind_past": 1.0,
+      "calm": 0.0,
+      "news": 0.0,
+      "arrivals": 28.4,
+      "from_obs": 0.0,
+      "drift_ref": "échelle fixe (historique en construction)",
+      "exposure": 1.0,
+      "season": 0.55,
+      "strong_wind": false,
+      "wind_kmh": 17,
+      "moon_age": 4.1,
+      "habitat_detail": {}
+     }
+    },
+    {
+     "date": "2026-10-16",
+     "level": "Faible",
+     "risk": 0.12,
+     "why": [
+      "estimation au vent seul"
+     ],
+     "observe": null,
+     "transport": [
+      "estimation au vent seul (courants indisponibles)"
+     ],
+     "confiance": "insuffisant",
+     "factors": {
+      "drift": 0.17,
+      "obs": 0.0,
+      "wind_past": 1.0,
+      "calm": 0.0,
+      "news": 0.0,
+      "arrivals": 2.9,
+      "from_obs": 0.0,
+      "drift_ref": "échelle fixe (historique en construction)",
+      "exposure": 1.0,
+      "season": 0.55,
+      "strong_wind": false,
+      "wind_kmh": 9,
+      "moon_age": 5.1,
+      "habitat_detail": {}
      }
     }
    ],
@@ -302,80 +368,147 @@
    ]
   },
   "mahrez": {
-   "name": "Sidi Mahrez",
-   "exposure": {
-    "opening": 0.33,
-    "depth5km": 9.9
-   },
+   "name": "Sunset",
+   "exposure": {},
    "days": [
-    {
-     "date": "2026-10-13",
-     "level": "Possible",
-     "risk": 0.32,
-     "why": [
-      "courant et vent poussent vers la plage"
-     ],
-     "observe": null,
-     "transport": [
-      "courant et vent poussent vers la plage"
-     ],
-     "confiance": "insuffisant",
-     "factors": {
-      "drift": 0.6,
-      "obs": 0.0,
-      "wind_past": 0.62,
-      "calm": 0.38,
-      "news": 0.0,
-      "habitat": 0.79,
-      "arrivals": 13.8,
-      "from_obs": 0.0,
-      "drift_ref": "échelle fixe (historique en construction)",
-      "exposure": 1.08,
-      "season": 0.55,
-      "strong_wind": false,
-      "wind_kmh": 29,
-      "moon_age": 2.1,
-      "habitat_detail": {
-       "sst": 26.9,
-       "chl": 0.058,
-       "sal": 38.03,
-       "mld": 9.7
-      }
-     }
-    },
     {
      "date": "2026-10-14",
      "level": "Possible",
-     "risk": 0.32,
+     "risk": 0.3,
      "why": [
-      "courant et vent poussent vers la plage"
+      "estimation au vent seul"
      ],
      "observe": null,
      "transport": [
-      "courant et vent poussent vers la plage"
+      "estimation au vent seul (courants indisponibles)"
      ],
      "confiance": "insuffisant",
      "factors": {
-      "drift": 0.57,
+      "drift": 0.97,
       "obs": 0.0,
-      "wind_past": 0.6,
-      "calm": 0.4,
+      "wind_past": 0.59,
+      "calm": 0.41,
       "news": 0.0,
-      "habitat": 0.79,
-      "arrivals": 12.6,
+      "arrivals": 53.4,
       "from_obs": 0.0,
       "drift_ref": "échelle fixe (historique en construction)",
-      "exposure": 1.08,
+      "exposure": 1.0,
       "season": 0.55,
       "strong_wind": false,
-      "wind_kmh": 31,
+      "wind_kmh": 34,
       "moon_age": 3.1,
-      "habitat_detail": {
-       "sst": 26.4,
-       "chl": 0.056,
-       "sal": 38.03,
-       "mld": 9.8
-      }
+      "habitat_detail": {}
+     }
+    },
+    {
+     "date": "2026-10-15",
+     "level": "Possible",
+     "risk": 0.25,
+     "why": [
+      "estimation au vent seul"
+     ],
+     "observe": null,
+     "transport": [
+      "estimation au vent seul (courants indisponibles)"
+     ],
+     "confiance": "insuffisant",
+     "factors": {
+      "drift": 0.85,
+      "obs": 0.0,
+      "wind_past": 1.0,
+      "calm": 0.0,
+      "news": 0.0,
+      "arrivals": 28.4,
+      "from_obs": 0.0,
+      "drift_ref": "échelle fixe (historique en construction)",
+      "exposure": 1.0,
+      "season": 0.55,
+      "strong_wind": false,
+      "wind_kmh": 17,
+      "moon_age": 4.1,
+      "habitat_detail": {}
+     }
+    },
+    {
+     "date": "2026-10-16",
+     "level": "Faible",
+     "risk": 0.12,
+     "why": [
+      "estimation au vent seul"
+     ],
+     "observe": null,
+     "transport": [
+      "estimation au vent seul (courants indisponibles)"
+     ],
+     "confiance": "insuffisant",
+     "factors": {
+      "drift": 0.17,
+      "obs": 0.0,
+      "wind_past": 1.0,
+      "calm": 0.0,
+      "news": 0.0,
+      "arrivals": 2.9,
+      "from_obs": 0.0,
+      "drift_ref": "échelle fixe (historique en construction)",
+      "exposure": 1.0,
+      "season": 0.55,
+      "strong_wind": false,
+      "wind_kmh": 9,
+      "moon_age": 5.1,
+      "habitat_detail": {}
+     }
+    }
+   ],
+   "species": [
+    {
+     "name": "Pélagie (Pelagia noctiluca)",
+     "sting": "forte"
+    },
+    {
+     "name": "Méduse chou-fleur (Rhizostoma pulmo)",
+     "sting": "faible"
+    },
+    {
+     "name": "Méduse œuf au plat (Cotylorhiza tuberculata)",
+     "sting": "très faible"
+    },
+    {
+     "name": "Rhopilema nomadica (méduse nomade)",
+     "sting": "forte"
+    }
+   ]
+  },
+  "vincci": {
+   "name": "Vincci",
+   "exposure": {},
+   "days": [
+    {
+     "date": "2026-10-14",
+     "level": "Possible",
+     "risk": 0.31,
+     "why": [
+      "estimation au vent seul"
+     ],
+     "observe": null,
+     "transport": [
+      "estimation au vent seul (courants indisponibles)"
+     ],
+     "confiance": "insuffisant",
+     "factors": {
+      "drift": 0.96,
+      "obs": 0.0,
+      "wind_past": 0.44,
+      "calm": 0.56,
+      "news": 0.0,
+      "arrivals": 46.7,
+      "from_obs": 0.0,
+      "drift_ref": "échelle fixe (historique en construction)",
+      "exposure": 1.0,
+      "season": 0.55,
+      "strong_wind": false,
+      "wind_kmh": 34,
+      "moon_age": 3.1,
+      "habitat_detail": {}
      }
     },
     {
@@ -383,34 +516,617 @@
      "level": "Possible",
      "risk": 0.26,
      "why": [
-      "un peu de dérive vers la plage"
+      "estimation au vent seul"
      ],
      "observe": null,
      "transport": [
-      "un peu de dérive vers la plage"
+      "estimation au vent seul (courants indisponibles)"
      ],
      "confiance": "insuffisant",
      "factors": {
-      "drift": 0.3,
+      "drift": 0.84,
+      "obs": 0.0,
+      "wind_past": 0.9,
+      "calm": 0.1,
+      "news": 0.0,
+      "arrivals": 27.6,
+      "from_obs": 0.0,
+      "drift_ref": "échelle fixe (historique en construction)",
+      "exposure": 1.0,
+      "season": 0.55,
+      "strong_wind": false,
+      "wind_kmh": 17,
+      "moon_age": 4.1,
+      "habitat_detail": {}
+     }
+    },
+    {
+     "date": "2026-10-16",
+     "level": "Faible",
+     "risk": 0.11,
+     "why": [
+      "estimation au vent seul"
+     ],
+     "observe": null,
+     "transport": [
+      "estimation au vent seul (courants indisponibles)"
+     ],
+     "confiance": "insuffisant",
+     "factors": {
+      "drift": 0.12,
       "obs": 0.0,
       "wind_past": 1.0,
       "calm": 0.0,
       "news": 0.0,
-      "habitat": 0.79,
-      "arrivals": 5.4,
+      "arrivals": 2.0,
       "from_obs": 0.0,
       "drift_ref": "échelle fixe (historique en construction)",
-      "exposure": 1.08,
+      "exposure": 1.0,
       "season": 0.55,
       "strong_wind": false,
-      "wind_kmh": 15,
+      "wind_kmh": 9,
+      "moon_age": 5.1,
+      "habitat_detail": {}
+     }
+    }
+   ],
+   "species": [
+    {
+     "name": "Pélagie (Pelagia noctiluca)",
+     "sting": "forte"
+    },
+    {
+     "name": "Méduse chou-fleur (Rhizostoma pulmo)",
+     "sting": "faible"
+    },
+    {
+     "name": "Méduse œuf au plat (Cotylorhiza tuberculata)",
+     "sting": "très faible"
+    },
+    {
+     "name": "Rhopilema nomadica (méduse nomade)",
+     "sting": "forte"
+    }
+   ]
+  },
+  "bowling": {
+   "name": "Bowling",
+   "exposure": {},
+   "days": [
+    {
+     "date": "2026-10-14",
+     "level": "Possible",
+     "risk": 0.31,
+     "why": [
+      "estimation au vent seul"
+     ],
+     "observe": null,
+     "transport": [
+      "estimation au vent seul (courants indisponibles)"
+     ],
+     "confiance": "insuffisant",
+     "factors": {
+      "drift": 0.95,
+      "obs": 0.0,
+      "wind_past": 0.38,
+      "calm": 0.62,
+      "news": 0.0,
+      "arrivals": 43.7,
+      "from_obs": 0.0,
+      "drift_ref": "échelle fixe (historique en construction)",
+      "exposure": 1.0,
+      "season": 0.55,
+      "strong_wind": false,
+      "wind_kmh": 34,
+      "moon_age": 3.1,
+      "habitat_detail": {}
+     }
+    },
+    {
+     "date": "2026-10-15",
+     "level": "Possible",
+     "risk": 0.26,
+     "why": [
+      "estimation au vent seul"
+     ],
+     "observe": null,
+     "transport": [
+      "estimation au vent seul (courants indisponibles)"
+     ],
+     "confiance": "insuffisant",
+     "factors": {
+      "drift": 0.83,
+      "obs": 0.0,
+      "wind_past": 0.83,
+      "calm": 0.17,
+      "news": 0.0,
+      "arrivals": 26.9,
+      "from_obs": 0.0,
+      "drift_ref": "échelle fixe (historique en construction)",
+      "exposure": 1.0,
+      "season": 0.55,
+      "strong_wind": false,
+      "wind_kmh": 17,
       "moon_age": 4.1,
-      "habitat_detail": {
-       "sst": 26.0,
-       "chl": 0.054,
-       "sal": 38.03,
-       "mld": 9.7
-      }
+      "habitat_detail": {}
+     }
+    },
+    {
+     "date": "2026-10-16",
+     "level": "Faible",
+     "risk": 0.1,
+     "why": [
+      "estimation au vent seul"
+     ],
+     "observe": null,
+     "transport": [
+      "estimation au vent seul (courants indisponibles)"
+     ],
+     "confiance": "insuffisant",
+     "factors": {
+      "drift": 0.11,
+      "obs": 0.0,
+      "wind_past": 1.0,
+      "calm": 0.0,
+      "news": 0.0,
+      "arrivals": 1.7,
+      "from_obs": 0.0,
+      "drift_ref": "échelle fixe (historique en construction)",
+      "exposure": 1.0,
+      "season": 0.55,
+      "strong_wind": false,
+      "wind_kmh": 9,
+      "moon_age": 5.1,
+      "habitat_detail": {}
+     }
+    }
+   ],
+   "species": [
+    {
+     "name": "Pélagie (Pelagia noctiluca)",
+     "sting": "forte"
+    },
+    {
+     "name": "Méduse chou-fleur (Rhizostoma pulmo)",
+     "sting": "faible"
+    },
+    {
+     "name": "Méduse œuf au plat (Cotylorhiza tuberculata)",
+     "sting": "très faible"
+    },
+    {
+     "name": "Rhopilema nomadica (méduse nomade)",
+     "sting": "forte"
+    }
+   ]
+  },
+  "taguermess": {
+   "name": "Yati 1",
+   "exposure": {},
+   "days": [
+    {
+     "date": "2026-10-14",
+     "level": "Possible",
+     "risk": 0.31,
+     "why": [
+      "estimation au vent seul"
+     ],
+     "observe": null,
+     "transport": [
+      "estimation au vent seul (courants indisponibles)"
+     ],
+     "confiance": "insuffisant",
+     "factors": {
+      "drift": 0.85,
+      "obs": 0.0,
+      "wind_past": 0.21,
+      "calm": 0.79,
+      "news": 0.0,
+      "arrivals": 28.8,
+      "from_obs": 0.0,
+      "drift_ref": "échelle fixe (historique en construction)",
+      "exposure": 1.0,
+      "season": 0.55,
+      "strong_wind": false,
+      "wind_kmh": 34,
+      "moon_age": 3.1,
+      "habitat_detail": {}
+     }
+    },
+    {
+     "date": "2026-10-15",
+     "level": "Possible",
+     "risk": 0.27,
+     "why": [
+      "estimation au vent seul"
+     ],
+     "observe": null,
+     "transport": [
+      "estimation au vent seul (courants indisponibles)"
+     ],
+     "confiance": "insuffisant",
+     "factors": {
+      "drift": 0.77,
+      "obs": 0.0,
+      "wind_past": 0.53,
+      "calm": 0.47,
+      "news": 0.0,
+      "arrivals": 22.3,
+      "from_obs": 0.0,
+      "drift_ref": "échelle fixe (historique en construction)",
+      "exposure": 1.0,
+      "season": 0.55,
+      "strong_wind": false,
+      "wind_kmh": 17,
+      "moon_age": 4.1,
+      "habitat_detail": {}
+     }
+    },
+    {
+     "date": "2026-10-16",
+     "level": "Faible",
+     "risk": 0.11,
+     "why": [
+      "estimation au vent seul"
+     ],
+     "observe": null,
+     "transport": [
+      "estimation au vent seul (courants indisponibles)"
+     ],
+     "confiance": "insuffisant",
+     "factors": {
+      "drift": 0.05,
+      "obs": 0.0,
+      "wind_past": 0.78,
+      "calm": 0.22,
+      "news": 0.0,
+      "arrivals": 0.8,
+      "from_obs": 0.0,
+      "drift_ref": "échelle fixe (historique en construction)",
+      "exposure": 1.0,
+      "season": 0.55,
+      "strong_wind": false,
+      "wind_kmh": 9,
+      "moon_age": 5.1,
+      "habitat_detail": {}
+     }
+    }
+   ],
+   "species": [
+    {
+     "name": "Pélagie (Pelagia noctiluca)",
+     "sting": "forte"
+    },
+    {
+     "name": "Méduse chou-fleur (Rhizostoma pulmo)",
+     "sting": "faible"
+    },
+    {
+     "name": "Méduse œuf au plat (Cotylorhiza tuberculata)",
+     "sting": "très faible"
+    },
+    {
+     "name": "Rhopilema nomadica (méduse nomade)",
+     "sting": "forte"
+    }
+   ]
+  },
+  "yati2": {
+   "name": "Yati 2",
+   "exposure": {},
+   "days": [
+    {
+     "date": "2026-10-14",
+     "level": "Possible",
+     "risk": 0.25,
+     "why": [
+      "estimation au vent seul",
+      "mer calme ces derniers jours"
+     ],
+     "observe": null,
+     "transport": [
+      "estimation au vent seul (courants indisponibles)"
+     ],
+     "confiance": "insuffisant",
+     "factors": {
+      "drift": 0.51,
+      "obs": 0.0,
+      "wind_past": 0.05,
+      "calm": 0.95,
+      "news": 0.0,
+      "arrivals": 10.6,
+      "from_obs": 0.0,
+      "drift_ref": "échelle fixe (historique en construction)",
+      "exposure": 1.0,
+      "season": 0.55,
+      "strong_wind": false,
+      "wind_kmh": 34,
+      "moon_age": 3.1,
+      "habitat_detail": {}
+     }
+    },
+    {
+     "date": "2026-10-15",
+     "level": "Possible",
+     "risk": 0.26,
+     "why": [
+      "estimation au vent seul"
+     ],
+     "observe": null,
+     "transport": [
+      "estimation au vent seul (courants indisponibles)"
+     ],
+     "confiance": "insuffisant",
+     "factors": {
+      "drift": 0.63,
+      "obs": 0.0,
+      "wind_past": 0.17,
+      "calm": 0.83,
+      "news": 0.0,
+      "arrivals": 14.9,
+      "from_obs": 0.0,
+      "drift_ref": "échelle fixe (historique en construction)",
+      "exposure": 1.0,
+      "season": 0.55,
+      "strong_wind": false,
+      "wind_kmh": 17,
+      "moon_age": 4.1,
+      "habitat_detail": {}
+     }
+    },
+    {
+     "date": "2026-10-16",
+     "level": "Faible",
+     "risk": 0.13,
+     "why": [
+      "estimation au vent seul"
+     ],
+     "observe": null,
+     "transport": [
+      "estimation au vent seul (courants indisponibles)"
+     ],
+     "confiance": "insuffisant",
+     "factors": {
+      "drift": 0.02,
+      "obs": 0.0,
+      "wind_past": 0.34,
+      "calm": 0.66,
+      "news": 0.0,
+      "arrivals": 0.4,
+      "from_obs": 0.0,
+      "drift_ref": "échelle fixe (historique en construction)",
+      "exposure": 1.0,
+      "season": 0.55,
+      "strong_wind": false,
+      "wind_kmh": 9,
+      "moon_age": 5.1,
+      "habitat_detail": {}
+     }
+    }
+   ],
+   "species": [
+    {
+     "name": "Pélagie (Pelagia noctiluca)",
+     "sting": "forte"
+    },
+    {
+     "name": "Méduse chou-fleur (Rhizostoma pulmo)",
+     "sting": "faible"
+    },
+    {
+     "name": "Méduse œuf au plat (Cotylorhiza tuberculata)",
+     "sting": "très faible"
+    },
+    {
+     "name": "Rhopilema nomadica (méduse nomade)",
+     "sting": "forte"
+    }
+   ]
+  },
+  "hadria": {
+   "name": "Lella Hadria",
+   "exposure": {},
+   "days": [
+    {
+     "date": "2026-10-14",
+     "level": "Faible",
+     "risk": 0.19,
+     "why": [
+      "estimation au vent seul",
+      "mer calme ces derniers jours"
+     ],
+     "observe": null,
+     "transport": [
+      "estimation au vent seul (courants indisponibles)"
+     ],
+     "confiance": "insuffisant",
+     "factors": {
+      "drift": 0.18,
+      "obs": 0.0,
+      "wind_past": 0.01,
+      "calm": 0.99,
+      "news": 0.0,
+      "arrivals": 3.1,
+      "from_obs": 0.0,
+      "drift_ref": "échelle fixe (historique en construction)",
+      "exposure": 1.0,
+      "season": 0.55,
+      "strong_wind": false,
+      "wind_kmh": 34,
+      "moon_age": 3.1,
+      "habitat_detail": {}
+     }
+    },
+    {
+     "date": "2026-10-15",
+     "level": "Possible",
+     "risk": 0.25,
+     "why": [
+      "estimation au vent seul",
+      "mer calme ces derniers jours"
+     ],
+     "observe": null,
+     "transport": [
+      "estimation au vent seul (courants indisponibles)"
+     ],
+     "confiance": "insuffisant",
+     "factors": {
+      "drift": 0.5,
+      "obs": 0.0,
+      "wind_past": 0.05,
+      "calm": 0.95,
+      "news": 0.0,
+      "arrivals": 10.5,
+      "from_obs": 0.0,
+      "drift_ref": "échelle fixe (historique en construction)",
+      "exposure": 1.0,
+      "season": 0.55,
+      "strong_wind": false,
+      "wind_kmh": 17,
+      "moon_age": 4.1,
+      "habitat_detail": {}
+     }
+    },
+    {
+     "date": "2026-10-16",
+     "level": "Faible",
+     "risk": 0.14,
+     "why": [
+      "estimation au vent seul"
+     ],
+     "observe": null,
+     "transport": [
+      "estimation au vent seul (courants indisponibles)"
+     ],
+     "confiance": "insuffisant",
+     "factors": {
+      "drift": 0.01,
+      "obs": 0.0,
+      "wind_past": 0.16,
+      "calm": 0.84,
+      "news": 0.0,
+      "arrivals": 0.2,
+      "from_obs": 0.0,
+      "drift_ref": "échelle fixe (historique en construction)",
+      "exposure": 1.0,
+      "season": 0.55,
+      "strong_wind": false,
+      "wind_kmh": 9,
+      "moon_age": 5.1,
+      "habitat_detail": {}
+     }
+    }
+   ],
+   "species": [
+    {
+     "name": "Pélagie (Pelagia noctiluca)",
+     "sting": "forte"
+    },
+    {
+     "name": "Méduse chou-fleur (Rhizostoma pulmo)",
+     "sting": "faible"
+    },
+    {
+     "name": "Méduse œuf au plat (Cotylorhiza tuberculata)",
+     "sting": "très faible"
+    },
+    {
+     "name": "Rhopilema nomadica (méduse nomade)",
+     "sting": "forte"
+    }
+   ]
+  },
+  "seguia": {
+   "name": "El Seguia",
+   "exposure": {},
+   "days": [
+    {
+     "date": "2026-10-14",
+     "level": "Faible",
+     "risk": 0.16,
+     "why": [
+      "estimation au vent seul",
+      "mer calme ces derniers jours"
+     ],
+     "observe": null,
+     "transport": [
+      "estimation au vent seul (courants indisponibles)"
+     ],
+     "confiance": "insuffisant",
+     "factors": {
+      "drift": 0.05,
+      "obs": 0.0,
+      "wind_past": 0.01,
+      "calm": 0.99,
+      "news": 0.0,
+      "arrivals": 0.7,
+      "from_obs": 0.0,
+      "drift_ref": "échelle fixe (historique en construction)",
+      "exposure": 1.0,
+      "season": 0.55,
+      "strong_wind": false,
+      "wind_kmh": 34,
+      "moon_age": 3.1,
+      "habitat_detail": {}
+     }
+    },
+    {
+     "date": "2026-10-15",
+     "level": "Possible",
+     "risk": 0.23,
+     "why": [
+      "estimation au vent seul",
+      "mer calme ces derniers jours"
+     ],
+     "observe": null,
+     "transport": [
+      "estimation au vent seul (courants indisponibles)"
+     ],
+     "confiance": "insuffisant",
+     "factors": {
+      "drift": 0.42,
+      "obs": 0.0,
+      "wind_past": 0.02,
+      "calm": 0.98,
+      "news": 0.0,
+      "arrivals": 8.2,
+      "from_obs": 0.0,
+      "drift_ref": "échelle fixe (historique en construction)",
+      "exposure": 1.0,
+      "season": 0.55,
+      "strong_wind": false,
+      "wind_kmh": 17,
+      "moon_age": 4.1,
+      "habitat_detail": {}
+     }
+    },
+    {
+     "date": "2026-10-16",
+     "level": "Faible",
+     "risk": 0.14,
+     "why": [
+      "estimation au vent seul"
+     ],
+     "observe": null,
+     "transport": [
+      "estimation au vent seul (courants indisponibles)"
+     ],
+     "confiance": "insuffisant",
+     "factors": {
+      "drift": 0.01,
+      "obs": 0.0,
+      "wind_past": 0.1,
+      "calm": 0.9,
+      "news": 0.0,
+      "arrivals": 0.1,
+      "from_obs": 0.0,
+      "drift_ref": "échelle fixe (historique en construction)",
+      "exposure": 1.0,
+      "season": 0.55,
+      "strong_wind": false,
+      "wind_kmh": 9,
+      "moon_age": 5.1,
+      "habitat_detail": {}
      }
     }
    ],
@@ -435,117 +1151,94 @@
   },
   "aghir": {
    "name": "Aghir",
-   "exposure": {
-    "opening": 0.28,
-    "depth5km": 7.3
-   },
+   "exposure": {},
    "days": [
     {
-     "date": "2026-10-13",
-     "level": "Possible",
-     "risk": 0.26,
+     "date": "2026-10-14",
+     "level": "Faible",
+     "risk": 0.14,
      "why": [
-      "peu de dérive vers la plage",
-      "mer calme ces derniers jours"
+      "estimation au vent seul"
      ],
      "observe": null,
      "transport": [
-      "peu de dérive vers la plage"
+      "estimation au vent seul (courants indisponibles)"
      ],
      "confiance": "insuffisant",
      "factors": {
-      "drift": 0.06,
+      "drift": 0.0,
       "obs": 0.0,
-      "wind_past": 0.08,
-      "calm": 0.92,
+      "wind_past": 0.1,
+      "calm": 0.9,
       "news": 0.0,
-      "habitat": 0.78,
-      "arrivals": 0.9,
+      "arrivals": 0.0,
       "from_obs": 0.0,
       "drift_ref": "échelle fixe (historique en construction)",
-      "exposure": 1.08,
+      "exposure": 1.0,
       "season": 0.55,
       "strong_wind": false,
-      "wind_kmh": 29,
-      "moon_age": 2.1,
-      "habitat_detail": {
-       "sst": 26.2,
-       "chl": 0.063,
-       "sal": 38.27,
-       "mld": 6.5
-      }
+      "wind_kmh": 34,
+      "moon_age": 3.1,
+      "habitat_detail": {}
      }
     },
     {
-     "date": "2026-10-14",
-     "level": "Possible",
-     "risk": 0.29,
+     "date": "2026-10-15",
+     "level": "Faible",
+     "risk": 0.15,
      "why": [
-      "peu de dérive vers la plage",
+      "estimation au vent seul"
+     ],
+     "observe": null,
+     "transport": [
+      "estimation au vent seul (courants indisponibles)"
+     ],
+     "confiance": "insuffisant",
+     "factors": {
+      "drift": 0.01,
+      "obs": 0.0,
+      "wind_past": 0.1,
+      "calm": 0.9,
+      "news": 0.0,
+      "arrivals": 0.2,
+      "from_obs": 0.0,
+      "drift_ref": "échelle fixe (historique en construction)",
+      "exposure": 1.0,
+      "season": 0.55,
+      "strong_wind": false,
+      "wind_kmh": 17,
+      "moon_age": 4.1,
+      "habitat_detail": {}
+     }
+    },
+    {
+     "date": "2026-10-16",
+     "level": "Faible",
+     "risk": 0.15,
+     "why": [
+      "estimation au vent seul",
       "mer calme ces derniers jours"
      ],
      "observe": null,
      "transport": [
-      "peu de dérive vers la plage"
+      "estimation au vent seul (courants indisponibles)"
      ],
      "confiance": "insuffisant",
      "factors": {
-      "drift": 0.19,
+      "drift": 0.0,
       "obs": 0.0,
       "wind_past": 0.01,
       "calm": 0.99,
       "news": 0.0,
-      "habitat": 0.77,
-      "arrivals": 3.2,
+      "arrivals": 0.0,
       "from_obs": 0.0,
       "drift_ref": "échelle fixe (historique en construction)",
-      "exposure": 1.08,
+      "exposure": 1.0,
       "season": 0.55,
       "strong_wind": false,
-      "wind_kmh": 31,
-      "moon_age": 3.1,
-      "habitat_detail": {
-       "sst": 25.9,
-       "chl": 0.059,
-       "sal": 38.29,
-       "mld": 6.5
-      }
-     }
-    },
-    {
-     "date": "2026-10-15",
-     "level": "Possible",
-     "risk": 0.28,
-     "why": [
-      "peu de dérive vers la plage",
-      "mer calme ces derniers jours"
-     ],
-     "observe": null,
-     "transport": [
-      "peu de dérive vers la plage"
-     ],
-     "confiance": "insuffisant",
-     "factors": {
-      "drift": 0.17,
-      "obs": 0.0,
-      "wind_past": 0.02,
-      "calm": 0.98,
-      "news": 0.0,
-      "habitat": 0.77,
-      "arrivals": 2.8,
-      "from_obs": 0.0,
-      "drift_ref": "échelle fixe (historique en construction)",
-      "exposure": 1.08,
-      "season": 0.55,
-      "strong_wind": false,
-      "wind_kmh": 15,
-      "moon_age": 4.1,
-      "habitat_detail": {
-       "sst": 25.6,
-       "chl": 0.055,
-       "sal": 38.27,
-       "mld": 6.5
-      }
+      "wind_kmh": 9,
+      "moon_age": 5.1,
+      "habitat_detail": {}
      }
     }
    ],
@@ -568,254 +1261,95 @@
     }
    ]
   },
-  "taguermess": {
-   "name": "Ras Taguermess",
-   "exposure": {
-    "opening": 0.58,
-    "depth5km": 11.5
-   },
+  "yahya": {
+   "name": "Cheikh Yahya",
+   "exposure": {},
    "days": [
     {
-     "date": "2026-10-13",
-     "level": "Possible",
-     "risk": 0.36,
-     "why": [
-      "courant et vent poussent vers la plage"
-     ],
-     "observe": null,
-     "transport": [
-      "courant et vent poussent vers la plage"
-     ],
-     "confiance": "insuffisant",
-     "factors": {
-      "drift": 0.85,
-      "obs": 0.0,
-      "wind_past": 0.27,
-      "calm": 0.73,
-      "news": 0.0,
-      "habitat": 0.79,
-      "arrivals": 28.5,
-      "from_obs": 0.0,
-      "drift_ref": "échelle fixe (historique en construction)",
-      "exposure": 1.05,
-      "season": 0.55,
-      "strong_wind": false,
-      "wind_kmh": 29,
-      "moon_age": 2.1,
-      "habitat_detail": {
-       "sst": 26.7,
-       "chl": 0.061,
-       "sal": 38.14,
-       "mld": 7.1
-      }
-     }
-    },
-    {
      "date": "2026-10-14",
-     "level": "Possible",
-     "risk": 0.37,
+     "level": "Faible",
+     "risk": 0.2,
      "why": [
-      "courant et vent poussent vers la plage"
+      "estimation au vent seul"
      ],
      "observe": null,
      "transport": [
-      "courant et vent poussent vers la plage"
+      "estimation au vent seul (courants indisponibles)"
      ],
      "confiance": "insuffisant",
      "factors": {
-      "drift": 0.85,
+      "drift": 0.29,
       "obs": 0.0,
-      "wind_past": 0.18,
-      "calm": 0.82,
+      "wind_past": 0.13,
+      "calm": 0.87,
       "news": 0.0,
-      "habitat": 0.78,
-      "arrivals": 28.4,
+      "arrivals": 5.1,
       "from_obs": 0.0,
       "drift_ref": "échelle fixe (historique en construction)",
-      "exposure": 1.05,
+      "exposure": 1.0,
       "season": 0.55,
       "strong_wind": false,
-      "wind_kmh": 31,
+      "wind_kmh": 13,
       "moon_age": 3.1,
-      "habitat_detail": {
-       "sst": 26.4,
-       "chl": 0.056,
-       "sal": 38.13,
-       "mld": 7.1
-      }
+      "habitat_detail": {}
      }
     },
     {
      "date": "2026-10-15",
-     "level": "Possible",
-     "risk": 0.3,
+     "level": "Faible",
+     "risk": 0.18,
      "why": [
-      "un peu de dérive vers la plage"
+      "estimation au vent seul"
      ],
      "observe": null,
      "transport": [
-      "un peu de dérive vers la plage"
+      "estimation au vent seul (courants indisponibles)"
      ],
      "confiance": "insuffisant",
      "factors": {
-      "drift": 0.47,
+      "drift": 0.22,
       "obs": 0.0,
-      "wind_past": 0.45,
-      "calm": 0.55,
+      "wind_past": 0.14,
+      "calm": 0.86,
       "news": 0.0,
-      "habitat": 0.79,
-      "arrivals": 9.5,
+      "arrivals": 3.8,
       "from_obs": 0.0,
       "drift_ref": "échelle fixe (historique en construction)",
-      "exposure": 1.05,
+      "exposure": 1.0,
       "season": 0.55,
       "strong_wind": false,
-      "wind_kmh": 15,
+      "wind_kmh": 10,
       "moon_age": 4.1,
-      "habitat_detail": {
-       "sst": 26.1,
-       "chl": 0.052,
-       "sal": 38.1,
-       "mld": 7.1
-      }
-     }
-    }
-   ],
-   "species": [
-    {
-     "name": "Pélagie (Pelagia noctiluca)",
-     "sting": "forte"
-    },
-    {
-     "name": "Méduse chou-fleur (Rhizostoma pulmo)",
-     "sting": "faible"
-    },
-    {
-     "name": "Méduse œuf au plat (Cotylorhiza tuberculata)",
-     "sting": "très faible"
-    },
-    {
-     "name": "Rhopilema nomadica (méduse nomade)",
-     "sting": "forte"
-    }
-   ]
-  },
-  "kantara": {
-   "name": "El Kantara",
-   "exposure": {
-    "opening": 0.0,
-    "depth5km": 6.7
-   },
-   "days": [
-    {
-     "date": "2026-10-13",
-     "level": "Possible",
-     "risk": 0.29,
-     "why": [
-      "peu de dérive vers la plage",
-      "plage qui piège les méduses"
-     ],
-     "observe": null,
-     "transport": [
-      "peu de dérive vers la plage",
-      "plage qui retient ce qui flotte"
-     ],
-     "confiance": "insuffisant",
-     "factors": {
-      "drift": 0.0,
-      "obs": 0.0,
-      "wind_past": 0.18,
-      "calm": 0.82,
-      "news": 0.0,
-      "habitat": 0.77,
-      "arrivals": 0.0,
-      "from_obs": 0.0,
-      "drift_ref": "échelle fixe (historique en construction)",
-      "exposure": 1.27,
-      "season": 0.55,
-      "strong_wind": false,
-      "wind_kmh": 29,
-      "moon_age": 2.1,
-      "habitat_detail": {
-       "sst": 26.2,
-       "chl": 0.063,
-       "sal": 38.33,
-       "mld": 6.5
-      }
+      "habitat_detail": {}
      }
     },
     {
-     "date": "2026-10-14",
+     "date": "2026-10-16",
      "level": "Possible",
-     "risk": 0.29,
+     "risk": 0.23,
      "why": [
-      "peu de dérive vers la plage",
-      "plage qui piège les méduses"
+      "estimation au vent seul"
      ],
      "observe": null,
      "transport": [
-      "peu de dérive vers la plage",
-      "plage qui retient ce qui flotte"
+      "estimation au vent seul (courants indisponibles)"
      ],
      "confiance": "insuffisant",
      "factors": {
-      "drift": 0.0,
+      "drift": 0.46,
       "obs": 0.0,
-      "wind_past": 0.19,
-      "calm": 0.81,
+      "wind_past": 0.16,
+      "calm": 0.84,
       "news": 0.0,
-      "habitat": 0.77,
-      "arrivals": 0.0,
+      "arrivals": 9.2,
       "from_obs": 0.0,
       "drift_ref": "échelle fixe (historique en construction)",
-      "exposure": 1.27,
+      "exposure": 1.0,
       "season": 0.55,
       "strong_wind": false,
-      "wind_kmh": 31,
-      "moon_age": 3.1,
-      "habitat_detail": {
-       "sst": 25.8,
-       "chl": 0.059,
-       "sal": 38.35,
-       "mld": 6.5
-      }
-     }
-    },
-    {
-     "date": "2026-10-15",
-     "level": "Possible",
-     "risk": 0.29,
-     "why": [
-      "peu de dérive vers la plage",
-      "plage qui piège les méduses"
-     ],
-     "observe": null,
-     "transport": [
-      "peu de dérive vers la plage",
-      "plage qui retient ce qui flotte"
-     ],
-     "confiance": "insuffisant",
-     "factors": {
-      "drift": 0.0,
-      "obs": 0.0,
-      "wind_past": 0.19,
-      "calm": 0.81,
-      "news": 0.0,
-      "habitat": 0.77,
-      "arrivals": 0.0,
-      "from_obs": 0.0,
-      "drift_ref": "échelle fixe (historique en construction)",
-      "exposure": 1.27,
-      "season": 0.55,
-      "strong_wind": false,
-      "wind_kmh": 15,
-      "moon_age": 4.1,
-      "habitat_detail": {
-       "sst": 25.3,
-       "chl": 0.056,
-       "sal": 38.37,
-       "mld": 6.5
-      }
+      "wind_kmh": 9,
+      "moon_age": 5.1,
+      "habitat_detail": {}
      }
     }
    ],
@@ -840,114 +1374,93 @@
   },
   "jmour": {
    "name": "Sidi Jmour",
-   "exposure": {
-    "opening": 0.36,
-    "depth5km": 6.7
-   },
+   "exposure": {},
    "days": [
     {
-     "date": "2026-10-13",
+     "date": "2026-10-14",
      "level": "Possible",
-     "risk": 0.33,
+     "risk": 0.21,
      "why": [
-      "courant et vent poussent vers la plage"
+      "estimation au vent seul"
      ],
      "observe": null,
      "transport": [
-      "courant et vent poussent vers la plage"
+      "estimation au vent seul (courants indisponibles)"
      ],
      "confiance": "insuffisant",
      "factors": {
-      "drift": 0.61,
+      "drift": 0.35,
       "obs": 0.0,
       "wind_past": 0.15,
       "calm": 0.85,
       "news": 0.0,
-      "habitat": 0.76,
-      "arrivals": 14.0,
+      "arrivals": 6.5,
       "from_obs": 0.0,
       "drift_ref": "échelle fixe (historique en construction)",
-      "exposure": 1.07,
+      "exposure": 1.0,
       "season": 0.55,
       "strong_wind": false,
-      "wind_kmh": 15,
-      "moon_age": 2.1,
-      "habitat_detail": {
-       "sst": 26.1,
-       "chl": 0.064,
-       "sal": 38.55,
-       "mld": 6.5
-      }
-     }
-    },
-    {
-     "date": "2026-10-14",
-     "level": "Possible",
-     "risk": 0.24,
-     "why": [
-      "peu de dérive vers la plage"
-     ],
-     "observe": null,
-     "transport": [
-      "peu de dérive vers la plage"
-     ],
-     "confiance": "insuffisant",
-     "factors": {
-      "drift": 0.0,
-      "obs": 0.0,
-      "wind_past": 0.14,
-      "calm": 0.86,
-      "news": 0.0,
-      "habitat": 0.76,
-      "arrivals": 0.0,
-      "from_obs": 0.0,
-      "drift_ref": "échelle fixe (historique en construction)",
-      "exposure": 1.07,
-      "season": 0.55,
-      "strong_wind": false,
-      "wind_kmh": 11,
+      "wind_kmh": 13,
       "moon_age": 3.1,
-      "habitat_detail": {
-       "sst": 25.6,
-       "chl": 0.059,
-       "sal": 38.54,
-       "mld": 6.5
-      }
+      "habitat_detail": {}
      }
     },
     {
      "date": "2026-10-15",
-     "level": "Possible",
-     "risk": 0.24,
+     "level": "Faible",
+     "risk": 0.19,
      "why": [
-      "peu de dérive vers la plage"
+      "estimation au vent seul"
      ],
      "observe": null,
      "transport": [
-      "peu de dérive vers la plage"
+      "estimation au vent seul (courants indisponibles)"
      ],
      "confiance": "insuffisant",
      "factors": {
-      "drift": 0.0,
+      "drift": 0.26,
       "obs": 0.0,
-      "wind_past": 0.14,
-      "calm": 0.86,
+      "wind_past": 0.17,
+      "calm": 0.83,
       "news": 0.0,
-      "habitat": 0.76,
-      "arrivals": 0.0,
+      "arrivals": 4.6,
       "from_obs": 0.0,
       "drift_ref": "échelle fixe (historique en construction)",
-      "exposure": 1.07,
+      "exposure": 1.0,
       "season": 0.55,
       "strong_wind": false,
-      "wind_kmh": 8,
+      "wind_kmh": 10,
       "moon_age": 4.1,
-      "habitat_detail": {
-       "sst": 25.1,
-       "chl": 0.056,
-       "sal": 38.49,
-       "mld": 6.5
-      }
+      "habitat_detail": {}
+     }
+    },
+    {
+     "date": "2026-10-16",
+     "level": "Possible",
+     "risk": 0.22,
+     "why": [
+      "estimation au vent seul"
+     ],
+     "observe": null,
+     "transport": [
+      "estimation au vent seul (courants indisponibles)"
+     ],
+     "confiance": "insuffisant",
+     "factors": {
+      "drift": 0.43,
+      "obs": 0.0,
+      "wind_past": 0.2,
+      "calm": 0.8,
+      "news": 0.0,
+      "arrivals": 8.5,
+      "from_obs": 0.0,
+      "drift_ref": "échelle fixe (historique en construction)",
+      "exposure": 1.0,
+      "season": 0.55,
+      "strong_wind": false,
+      "wind_kmh": 9,
+      "moon_age": 5.1,
+      "habitat_detail": {}
      }
     }
    ],
@@ -972,20 +1485,14 @@
   }
  },
  "observations": {
-  "count": {
-   "iNaturalist": 1
-  },
-  "recent": [
-   {
-    "date": "2026-10-04",
-    "lat": 36.928,
-    "lon": 10.28,
-    "source": "iNaturalist",
-    "taxon": "Phyllorhiza punctata"
-   }
-  ]
+  "count": {},
+  "recent": []
  },
  "news": [],
- "reputation": null,
- "bancs_suivis": 1
+ "reputation": {
+  "evalues": 1,
+  "appareils": 0,
+  "bannis": 0
+ },
+ "bancs_suivis": null
 }
