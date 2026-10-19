@@ -1,5 +1,5 @@
 {
- "generated": "2026-10-18T04:05:33Z",
+ "generated": "2026-10-19T04:11:37Z",
  "version": "v0.8",
  "horizon_jours": 8,
  "actifs": [
@@ -10,19 +10,19 @@
    "ne": "2026-10-17",
    "vu_pres": "au large d'Hammamet",
    "source": "iNaturalist",
-   "age_jours": 0,
-   "force": 0.788,
+   "age_jours": 1,
+   "force": 0.744,
    "confirmations": 0,
    "contradictions": 0,
    "dernier_vu": "2026-10-17",
    "position": {
-    "lat": 36.814,
-    "lon": 10.415,
+    "lat": 36.818,
+    "lon": 10.406,
     "lieu": "au large d'Hammamet"
    },
-   "etalement_km": 2.8,
+   "etalement_km": 3.2,
    "distance_djerba_km": 339,
-   "tendance": "nouveau",
+   "tendance": "stable",
    "cap": "reste",
    "message": "Reste dans sa zone, pas de menace pour Djerba d'ici 8 jours.",
    "arrivees": [],
@@ -32,56 +32,62 @@
      "lat": 36.814,
      "lon": 10.415,
      "etalement": 2.8
+    },
+    {
+     "date": "2026-10-19",
+     "lat": 36.818,
+     "lon": 10.406,
+     "etalement": 3.2
     }
    ],
    "prevision": [
     {
-     "date": "2026-10-18",
-     "lat": 36.817,
-     "lon": 10.41,
-     "etalement": 3.0
-    },
-    {
      "date": "2026-10-19",
-     "lat": 36.824,
-     "lon": 10.402,
-     "etalement": 2.9
+     "lat": 36.82,
+     "lon": 10.401,
+     "etalement": 2.8
     },
     {
      "date": "2026-10-20",
-     "lat": 36.863,
-     "lon": 10.389,
-     "etalement": 2.1
+     "lat": 36.856,
+     "lon": 10.39,
+     "etalement": 2.7
     },
     {
      "date": "2026-10-21",
-     "lat": 36.884,
-     "lon": 10.391,
-     "etalement": 2.5
+     "lat": 36.867,
+     "lon": 10.387,
+     "etalement": 1.9
     },
     {
      "date": "2026-10-22",
-     "lat": 36.87,
-     "lon": 10.419,
-     "etalement": 1.5
+     "lat": 36.853,
+     "lon": 10.409,
+     "etalement": 1.7
     },
     {
      "date": "2026-10-23",
-     "lat": 36.854,
-     "lon": 10.446,
-     "etalement": 1.1
+     "lat": 36.831,
+     "lon": 10.434,
+     "etalement": 1.5
     },
     {
      "date": "2026-10-24",
-     "lat": 36.848,
-     "lon": 10.455,
-     "etalement": 0.8
+     "lat": 36.823,
+     "lon": 10.457,
+     "etalement": 1.4
     },
     {
      "date": "2026-10-25",
-     "lat": 36.845,
-     "lon": 10.487,
-     "etalement": 0.3
+     "lat": 36.822,
+     "lon": 10.506,
+     "etalement": 1.4
+    },
+    {
+     "date": "2026-10-26",
+     "lat": 36.828,
+     "lon": 10.537,
+     "etalement": 0.0
     }
    ]
   },
@@ -92,18 +98,18 @@
    "ne": "2026-10-04",
    "vu_pres": "au large d'Hammamet",
    "source": "iNaturalist",
-   "age_jours": 13,
-   "force": 0.366,
+   "age_jours": 14,
+   "force": 0.345,
    "confirmations": 0,
    "contradictions": 0,
    "dernier_vu": "2026-10-04",
    "position": {
-    "lat": 36.857,
-    "lon": 12.185,
+    "lat": 36.777,
+    "lon": 12.208,
     "lieu": "près de Pantelleria"
    },
-   "etalement_km": 23.9,
-   "distance_djerba_km": 359,
+   "etalement_km": 28.0,
+   "distance_djerba_km": 352,
    "tendance": "se rapproche",
    "cap": "rapproche",
    "message": "Se dirige vers Djerba, sans arriver sur nos plages dans les simulations à 8 jours.",
@@ -150,56 +156,62 @@
      "lat": 36.857,
      "lon": 12.185,
      "etalement": 23.9
+    },
+    {
+     "date": "2026-10-19",
+     "lat": 36.777,
+     "lon": 12.208,
+     "etalement": 28.0
     }
    ],
    "prevision": [
     {
-     "date": "2026-10-18",
-     "lat": 36.843,
-     "lon": 12.198,
-     "etalement": 26.7
-    },
-    {
      "date": "2026-10-19",
-     "lat": 36.806,
-     "lon": 12.221,
-     "etalement": 32.1
+     "lat": 36.785,
+     "lon": 12.203,
+     "etalement": 31.6
     },
     {
      "date": "2026-10-20",
-     "lat": 36.832,
-     "lon": 12.304,
-     "etalement": 40.3
+     "lat": 36.77,
+     "lon": 12.24,
+     "etalement": 39.8
     },
     {
      "date": "2026-10-21",
-     "lat": 36.865,
-     "lon": 12.454,
-     "etalement": 44.7
+     "lat": 36.742,
+     "lon": 12.324,
+     "etalement": 45.3
     },
     {
      "date": "2026-10-22",
-     "lat": 36.772,
-     "lon": 12.675,
-     "etalement": 48.1
+     "lat": 36.592,
+     "lon": 12.433,
+     "etalement": 49.2
     },
     {
      "date": "2026-10-23",
-     "lat": 36.552,
-     "lon": 12.783,
-     "etalement": 51.2
+     "lat": 36.396,
+     "lon": 12.448,
+     "etalement": 52.2
     },
     {
      "date": "2026-10-24",
-     "lat": 36.374,
-     "lon": 12.76,
+     "lat": 36.221,
+     "lon": 12.453,
      "etalement": 46.5
     },
     {
      "date": "2026-10-25",
-     "lat": 36.245,
-     "lon": 12.689,
-     "etalement": 40.6
+     "lat": 36.019,
+     "lon": 12.518,
+     "etalement": 41.1
+    },
+    {
+     "date": "2026-10-26",
+     "lat": 35.861,
+     "lon": 12.726,
+     "etalement": 42.9
     }
    ]
   }
