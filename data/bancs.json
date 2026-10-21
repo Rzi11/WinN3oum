@@ -1,90 +1,8 @@
 {
- "generated": "2026-10-20T04:07:30Z",
+ "generated": "2026-10-21T04:09:25Z",
  "version": "v0.8",
  "horizon_jours": 8,
  "actifs": [
-  {
-   "id": 2,
-   "nom": "Zone n°2 · méduses chou-fleur repérées au large d'Hammamet le 17/10",
-   "espece": "méduses chou-fleur",
-   "ne": "2026-10-17",
-   "vu_pres": "au large d'Hammamet",
-   "source": "iNaturalist",
-   "age_jours": 2,
-   "force": 0.702,
-   "confirmations": 0,
-   "contradictions": 0,
-   "dernier_vu": "2026-10-17",
-   "position": {
-    "lat": 36.835,
-    "lon": 10.398,
-    "lieu": "au large d'Hammamet"
-   },
-   "etalement_km": 2.5,
-   "distance_djerba_km": 341,
-   "tendance": "stable",
-   "cap": "reste",
-   "message": "Reste dans sa zone, pas de menace pour Djerba d'ici 8 jours.",
-   "arrivees": [],
-   "trace": [
-    {
-     "date": "2026-10-18",
-     "lat": 36.814,
-     "lon": 10.415,
-     "etalement": 2.8
-    },
-    {
-     "date": "2026-10-19",
-     "lat": 36.818,
-     "lon": 10.406,
-     "etalement": 3.2
-    },
-    {
-     "date": "2026-10-20",
-     "lat": 36.835,
-     "lon": 10.398,
-     "etalement": 2.5
-    }
-   ],
-   "prevision": [
-    {
-     "date": "2026-10-20",
-     "lat": 36.849,
-     "lon": 10.394,
-     "etalement": 1.9
-    },
-    {
-     "date": "2026-10-21",
-     "lat": 36.871,
-     "lon": 10.389,
-     "etalement": 2.1
-    },
-    {
-     "date": "2026-10-22",
-     "lat": 36.846,
-     "lon": 10.417,
-     "etalement": 1.6
-    },
-    {
-     "date": "2026-10-23",
-     "lat": 36.824,
-     "lon": 10.44,
-     "etalement": 1.5
-    },
-    {
-     "date": "2026-10-24",
-     "lat": 36.815,
-     "lon": 10.459,
-     "etalement": 1.5
-    },
-    {
-     "date": "2026-10-25",
-     "lat": 36.807,
-     "lon": 10.498,
-     "etalement": 1.7
-    }
-   ]
-  },
   {
    "id": 1,
    "nom": "Zone n°1 · méduses repérées au large d'Hammamet le 04/10",
@@ -92,19 +10,19 @@
    "ne": "2026-10-04",
    "vu_pres": "au large d'Hammamet",
    "source": "iNaturalist",
-   "age_jours": 15,
-   "force": 0.326,
+   "age_jours": 16,
+   "force": 0.308,
    "confirmations": 0,
    "contradictions": 0,
    "dernier_vu": "2026-10-04",
    "position": {
-    "lat": 36.754,
-    "lon": 12.226,
+    "lat": 36.822,
+    "lon": 12.28,
     "lieu": "au large de Pantelleria"
    },
-   "etalement_km": 34.7,
-   "distance_djerba_km": 350,
-   "tendance": "stable",
+   "etalement_km": 42.8,
+   "distance_djerba_km": 358,
+   "tendance": "s'éloigne",
    "cap": "rapproche",
    "message": "Se dirige vers Djerba, sans arriver sur nos plages dans les simulations à 8 jours.",
    "arrivees": [],
@@ -162,61 +80,74 @@
      "lat": 36.754,
      "lon": 12.226,
      "etalement": 34.7
+    },
+    {
+     "date": "2026-10-21",
+     "lat": 36.822,
+     "lon": 12.28,
+     "etalement": 42.8
     }
    ],
    "prevision": [
     {
-     "date": "2026-10-20",
-     "lat": 36.788,
-     "lon": 12.247,
-     "etalement": 39.7
-    },
-    {
      "date": "2026-10-21",
-     "lat": 36.802,
-     "lon": 12.376,
-     "etalement": 44.5
+     "lat": 36.819,
+     "lon": 12.361,
+     "etalement": 44.8
     },
     {
      "date": "2026-10-22",
-     "lat": 36.645,
-     "lon": 12.525,
-     "etalement": 46.9
+     "lat": 36.653,
+     "lon": 12.485,
+     "etalement": 47.2
     },
     {
      "date": "2026-10-23",
-     "lat": 36.492,
-     "lon": 12.536,
-     "etalement": 48.5
+     "lat": 36.503,
+     "lon": 12.493,
+     "etalement": 49.7
     },
     {
      "date": "2026-10-24",
-     "lat": 36.358,
-     "lon": 12.53,
-     "etalement": 45.8
+     "lat": 36.364,
+     "lon": 12.526,
+     "etalement": 49.9
     },
     {
      "date": "2026-10-25",
-     "lat": 36.176,
-     "lon": 12.561,
-     "etalement": 40.3
+     "lat": 36.154,
+     "lon": 12.612,
+     "etalement": 45.1
     },
     {
      "date": "2026-10-26",
-     "lat": 36.039,
-     "lon": 12.715,
-     "etalement": 40.1
+     "lat": 35.964,
+     "lon": 12.756,
+     "etalement": 45.0
     },
     {
      "date": "2026-10-27",
-     "lat": 35.861,
-     "lon": 12.872,
-     "etalement": 45.1
+     "lat": 35.729,
+     "lon": 12.871,
+     "etalement": 49.6
+    },
+    {
+     "date": "2026-10-28",
+     "lat": 35.577,
+     "lon": 12.971,
+     "etalement": 53.7
     }
    ]
   }
  ],
- "termines": [],
+ "termines": [
+  {
+   "id": 2,
+   "nom": "Zone n°2 · méduses chou-fleur repérées au large d'Hammamet le 17/10",
+   "fin": "2026-10-21",
+   "raison": "arrivé à la côte ou sorti de la zone (au large d'Hammamet)"
+  }
+ ],
  "carnet": {
   "par_delai": {},
   "surprises": 0,
