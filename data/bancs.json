@@ -1,90 +1,8 @@
 {
- "generated": "2026-10-23T04:10:36Z",
+ "generated": "2026-10-24T04:06:51Z",
  "version": "v0.8",
  "horizon_jours": 8,
  "actifs": [
-  {
-   "id": 3,
-   "nom": "Zone n°3 · méduses repérées près de Kélibia le 22/10",
-   "espece": "méduses",
-   "ne": "2026-10-22",
-   "vu_pres": "près de Kélibia",
-   "source": "iNaturalist",
-   "age_jours": 0,
-   "force": 0.788,
-   "confirmations": 0,
-   "contradictions": 0,
-   "dernier_vu": "2026-10-22",
-   "position": {
-    "lat": 36.753,
-    "lon": 11.132,
-    "lieu": "près de Kélibia"
-   },
-   "etalement_km": 3.0,
-   "distance_djerba_km": 329,
-   "tendance": "nouveau",
-   "cap": "rapproche",
-   "message": "Se dirige vers Djerba, sans arriver sur nos plages dans les simulations à 8 jours.",
-   "arrivees": [],
-   "trace": [
-    {
-     "date": "2026-10-23",
-     "lat": 36.753,
-     "lon": 11.132,
-     "etalement": 3.0
-    }
-   ],
-   "prevision": [
-    {
-     "date": "2026-10-23",
-     "lat": 36.743,
-     "lon": 11.152,
-     "etalement": 3.8
-    },
-    {
-     "date": "2026-10-24",
-     "lat": 36.703,
-     "lon": 11.232,
-     "etalement": 7.8
-    },
-    {
-     "date": "2026-10-25",
-     "lat": 36.446,
-     "lon": 11.329,
-     "etalement": 17.0
-    },
-    {
-     "date": "2026-10-26",
-     "lat": 36.156,
-     "lon": 11.395,
-     "etalement": 25.7
-    },
-    {
-     "date": "2026-10-27",
-     "lat": 35.901,
-     "lon": 11.449,
-     "etalement": 33.2
-    },
-    {
-     "date": "2026-10-28",
-     "lat": 35.747,
-     "lon": 11.515,
-     "etalement": 36.7
-    },
-    {
-     "date": "2026-10-29",
-     "lat": 35.621,
-     "lon": 11.615,
-     "etalement": 41.1
-    },
-    {
-     "date": "2026-10-30",
-     "lat": 35.535,
-     "lon": 11.665,
-     "etalement": 44.6
-    }
-   ]
-  },
   {
    "id": 1,
    "nom": "Zone n°1 · méduses repérées au large d'Hammamet le 04/10",
@@ -92,21 +10,21 @@
    "ne": "2026-10-04",
    "vu_pres": "au large d'Hammamet",
    "source": "iNaturalist",
-   "age_jours": 18,
-   "force": 0.275,
+   "age_jours": 19,
+   "force": 0.26,
    "confirmations": 0,
    "contradictions": 0,
    "dernier_vu": "2026-10-04",
    "position": {
-    "lat": 36.477,
-    "lon": 12.472,
-    "lieu": "au large de Pantelleria"
+    "lat": 36.334,
+    "lon": 12.491,
+    "lieu": "au large de Linosa"
    },
-   "etalement_km": 52.5,
-   "distance_djerba_km": 330,
+   "etalement_km": 54.5,
+   "distance_djerba_km": 316,
    "tendance": "se rapproche",
-   "cap": "rapproche",
-   "message": "Se dirige vers Djerba, sans arriver sur nos plages dans les simulations à 8 jours.",
+   "cap": "reste",
+   "message": "Reste dans sa zone, pas de menace pour Djerba d'ici 8 jours.",
    "arrivees": [],
    "trace": [
     {
@@ -180,56 +98,150 @@
      "lat": 36.477,
      "lon": 12.472,
      "etalement": 52.5
+    },
+    {
+     "date": "2026-10-24",
+     "lat": 36.334,
+     "lon": 12.491,
+     "etalement": 54.5
     }
    ],
    "prevision": [
     {
-     "date": "2026-10-23",
-     "lat": 36.411,
-     "lon": 12.491,
-     "etalement": 54.0
-    },
-    {
      "date": "2026-10-24",
-     "lat": 36.286,
-     "lon": 12.524,
-     "etalement": 53.7
+     "lat": 36.298,
+     "lon": 12.515,
+     "etalement": 53.4
     },
     {
      "date": "2026-10-25",
-     "lat": 36.035,
-     "lon": 12.606,
-     "etalement": 45.9
+     "lat": 36.046,
+     "lon": 12.594,
+     "etalement": 46.6
     },
     {
      "date": "2026-10-26",
-     "lat": 35.856,
-     "lon": 12.725,
-     "etalement": 39.5
+     "lat": 35.854,
+     "lon": 12.712,
+     "etalement": 40.4
     },
     {
      "date": "2026-10-27",
-     "lat": 35.733,
+     "lat": 35.714,
      "lon": 12.897,
-     "etalement": 42.0
+     "etalement": 42.8
     },
     {
      "date": "2026-10-28",
-     "lat": 35.641,
-     "lon": 13.027,
-     "etalement": 47.4
+     "lat": 35.634,
+     "lon": 13.051,
+     "etalement": 46.2
     },
     {
      "date": "2026-10-29",
-     "lat": 35.572,
-     "lon": 13.126,
-     "etalement": 51.5
+     "lat": 35.602,
+     "lon": 13.198,
+     "etalement": 48.7
     },
     {
      "date": "2026-10-30",
-     "lat": 35.538,
-     "lon": 13.176,
-     "etalement": 56.0
+     "lat": 35.635,
+     "lon": 13.301,
+     "etalement": 51.8
+    },
+    {
+     "date": "2026-10-31",
+     "lat": 35.678,
+     "lon": 13.392,
+     "etalement": 56.9
+    }
+   ]
+  },
+  {
+   "id": 3,
+   "nom": "Zone n°3 · méduses repérées près de Kélibia le 22/10",
+   "espece": "méduses",
+   "ne": "2026-10-22",
+   "vu_pres": "près de Kélibia",
+   "source": "iNaturalist",
+   "age_jours": 1,
+   "force": 0.744,
+   "confirmations": 0,
+   "contradictions": 0,
+   "dernier_vu": "2026-10-22",
+   "position": {
+    "lat": 36.737,
+    "lon": 11.17,
+    "lieu": "près de Kélibia"
+   },
+   "etalement_km": 4.8,
+   "distance_djerba_km": 328,
+   "tendance": "stable",
+   "cap": "rapproche",
+   "message": "Se dirige vers Djerba, sans arriver sur nos plages dans les simulations à 8 jours.",
+   "arrivees": [],
+   "trace": [
+    {
+     "date": "2026-10-23",
+     "lat": 36.753,
+     "lon": 11.132,
+     "etalement": 3.0
+    },
+    {
+     "date": "2026-10-24",
+     "lat": 36.737,
+     "lon": 11.17,
+     "etalement": 4.8
+    }
+   ],
+   "prevision": [
+    {
+     "date": "2026-10-24",
+     "lat": 36.699,
+     "lon": 11.229,
+     "etalement": 7.8
+    },
+    {
+     "date": "2026-10-25",
+     "lat": 36.432,
+     "lon": 11.326,
+     "etalement": 17.1
+    },
+    {
+     "date": "2026-10-26",
+     "lat": 36.138,
+     "lon": 11.405,
+     "etalement": 27.0
+    },
+    {
+     "date": "2026-10-27",
+     "lat": 35.876,
+     "lon": 11.477,
+     "etalement": 36.0
+    },
+    {
+     "date": "2026-10-28",
+     "lat": 35.732,
+     "lon": 11.585,
+     "etalement": 41.4
+    },
+    {
+     "date": "2026-10-29",
+     "lat": 35.601,
+     "lon": 11.686,
+     "etalement": 45.4
+    },
+    {
+     "date": "2026-10-30",
+     "lat": 35.507,
+     "lon": 11.727,
+     "etalement": 46.0
+    },
+    {
+     "date": "2026-10-31",
+     "lat": 35.42,
+     "lon": 11.758,
+     "etalement": 46.3
     }
    ]
   }
