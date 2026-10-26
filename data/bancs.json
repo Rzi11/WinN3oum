@@ -1,8 +1,108 @@
 {
- "generated": "2026-10-25T04:10:00Z",
+ "generated": "2026-10-26T04:11:39Z",
  "version": "v0.8",
  "horizon_jours": 8,
  "actifs": [
+  {
+   "id": 3,
+   "nom": "Zone n°3 · méduses repérées près de Kélibia le 22/10",
+   "espece": "méduses",
+   "ne": "2026-10-22",
+   "vu_pres": "près de Kélibia",
+   "source": "iNaturalist",
+   "age_jours": 3,
+   "force": 0.663,
+   "confirmations": 0,
+   "contradictions": 0,
+   "dernier_vu": "2026-10-22",
+   "position": {
+    "lat": 36.285,
+    "lon": 11.385,
+    "lieu": "au large de Kélibia"
+   },
+   "etalement_km": 21.3,
+   "distance_djerba_km": 280,
+   "tendance": "se rapproche",
+   "cap": "rapproche",
+   "message": "Se dirige vers Djerba, sans arriver sur nos plages dans les simulations à 8 jours.",
+   "arrivees": [],
+   "trace": [
+    {
+     "date": "2026-10-23",
+     "lat": 36.753,
+     "lon": 11.132,
+     "etalement": 3.0
+    },
+    {
+     "date": "2026-10-24",
+     "lat": 36.737,
+     "lon": 11.17,
+     "etalement": 4.8
+    },
+    {
+     "date": "2026-10-25",
+     "lat": 36.585,
+     "lon": 11.303,
+     "etalement": 12.1
+    },
+    {
+     "date": "2026-10-26",
+     "lat": 36.285,
+     "lon": 11.385,
+     "etalement": 21.3
+    }
+   ],
+   "prevision": [
+    {
+     "date": "2026-10-26",
+     "lat": 36.168,
+     "lon": 11.444,
+     "etalement": 24.8
+    },
+    {
+     "date": "2026-10-27",
+     "lat": 35.889,
+     "lon": 11.5,
+     "etalement": 32.7
+    },
+    {
+     "date": "2026-10-28",
+     "lat": 35.712,
+     "lon": 11.633,
+     "etalement": 38.3
+    },
+    {
+     "date": "2026-10-29",
+     "lat": 35.593,
+     "lon": 11.727,
+     "etalement": 41.2
+    },
+    {
+     "date": "2026-10-30",
+     "lat": 35.481,
+     "lon": 11.784,
+     "etalement": 43.7
+    },
+    {
+     "date": "2026-10-31",
+     "lat": 35.35,
+     "lon": 11.849,
+     "etalement": 47.1
+    },
+    {
+     "date": "2026-11-01",
+     "lat": 35.231,
+     "lon": 11.976,
+     "etalement": 51.0
+    },
+    {
+     "date": "2026-11-02",
+     "lat": 35.077,
+     "lon": 12.038,
+     "etalement": 54.3
+    }
+   ]
+  },
   {
    "id": 1,
    "nom": "Zone n°1 · méduses repérées au large d'Hammamet le 04/10",
@@ -10,18 +110,18 @@
    "ne": "2026-10-04",
    "vu_pres": "au large d'Hammamet",
    "source": "iNaturalist",
-   "age_jours": 20,
-   "force": 0.245,
+   "age_jours": 21,
+   "force": 0.231,
    "confirmations": 0,
    "contradictions": 0,
    "dernier_vu": "2026-10-04",
    "position": {
-    "lat": 36.179,
-    "lon": 12.564,
-    "lieu": "au large de Linosa"
+    "lat": 35.96,
+    "lon": 12.62,
+    "lieu": "près de Linosa"
    },
-   "etalement_km": 51.2,
-   "distance_djerba_km": 304,
+   "etalement_km": 42.6,
+   "distance_djerba_km": 286,
    "tendance": "se rapproche",
    "cap": "rapproche",
    "message": "Se dirige vers Djerba, sans arriver sur nos plages dans les simulations à 8 jours.",
@@ -110,150 +210,62 @@
      "lat": 36.179,
      "lon": 12.564,
      "etalement": 51.2
+    },
+    {
+     "date": "2026-10-26",
+     "lat": 35.96,
+     "lon": 12.62,
+     "etalement": 42.6
     }
    ],
    "prevision": [
     {
-     "date": "2026-10-25",
-     "lat": 36.04,
-     "lon": 12.598,
-     "etalement": 46.7
-    },
-    {
      "date": "2026-10-26",
-     "lat": 35.849,
-     "lon": 12.703,
-     "etalement": 42.6
+     "lat": 35.873,
+     "lon": 12.679,
+     "etalement": 40.8
     },
     {
      "date": "2026-10-27",
-     "lat": 35.68,
-     "lon": 12.856,
-     "etalement": 45.6
+     "lat": 35.684,
+     "lon": 12.835,
+     "etalement": 43.4
     },
     {
      "date": "2026-10-28",
-     "lat": 35.565,
-     "lon": 12.979,
-     "etalement": 47.8
+     "lat": 35.501,
+     "lon": 12.94,
+     "etalement": 46.2
     },
     {
      "date": "2026-10-29",
-     "lat": 35.479,
-     "lon": 13.1,
-     "etalement": 50.1
+     "lat": 35.405,
+     "lon": 13.029,
+     "etalement": 45.8
     },
     {
      "date": "2026-10-30",
-     "lat": 35.418,
-     "lon": 13.181,
-     "etalement": 56.4
+     "lat": 35.306,
+     "lon": 13.098,
+     "etalement": 47.6
     },
     {
      "date": "2026-10-31",
-     "lat": 35.351,
-     "lon": 13.256,
-     "etalement": 64.8
+     "lat": 35.2,
+     "lon": 13.164,
+     "etalement": 50.9
     },
     {
      "date": "2026-11-01",
-     "lat": 35.252,
-     "lon": 13.261,
-     "etalement": 76.1
-    }
-   ]
-  },
-  {
-   "id": 3,
-   "nom": "Zone n°3 · méduses repérées près de Kélibia le 22/10",
-   "espece": "méduses",
-   "ne": "2026-10-22",
-   "vu_pres": "près de Kélibia",
-   "source": "iNaturalist",
-   "age_jours": 2,
-   "force": 0.702,
-   "confirmations": 0,
-   "contradictions": 0,
-   "dernier_vu": "2026-10-22",
-   "position": {
-    "lat": 36.585,
-    "lon": 11.303,
-    "lieu": "au large de Kélibia"
-   },
-   "etalement_km": 12.1,
-   "distance_djerba_km": 312,
-   "tendance": "se rapproche",
-   "cap": "rapproche",
-   "message": "Se dirige vers Djerba, sans arriver sur nos plages dans les simulations à 8 jours.",
-   "arrivees": [],
-   "trace": [
-    {
-     "date": "2026-10-23",
-     "lat": 36.753,
-     "lon": 11.132,
-     "etalement": 3.0
+     "lat": 35.115,
+     "lon": 13.224,
+     "etalement": 58.0
     },
     {
-     "date": "2026-10-24",
-     "lat": 36.737,
-     "lon": 11.17,
-     "etalement": 4.8
-    },
-    {
-     "date": "2026-10-25",
-     "lat": 36.585,
-     "lon": 11.303,
-     "etalement": 12.1
-    }
-   ],
-   "prevision": [
-    {
-     "date": "2026-10-25",
-     "lat": 36.444,
-     "lon": 11.334,
-     "etalement": 16.9
-    },
-    {
-     "date": "2026-10-26",
-     "lat": 36.167,
-     "lon": 11.435,
-     "etalement": 25.4
-    },
-    {
-     "date": "2026-10-27",
-     "lat": 35.896,
-     "lon": 11.493,
-     "etalement": 32.8
-    },
-    {
-     "date": "2026-10-28",
-     "lat": 35.738,
-     "lon": 11.624,
-     "etalement": 37.8
-    },
-    {
-     "date": "2026-10-29",
-     "lat": 35.586,
-     "lon": 11.757,
-     "etalement": 42.6
-    },
-    {
-     "date": "2026-10-30",
-     "lat": 35.483,
-     "lon": 11.815,
-     "etalement": 45.1
-    },
-    {
-     "date": "2026-10-31",
-     "lat": 35.348,
-     "lon": 11.872,
-     "etalement": 47.3
-    },
-    {
-     "date": "2026-11-01",
-     "lat": 35.127,
-     "lon": 11.908,
-     "etalement": 52.5
+     "date": "2026-11-02",
+     "lat": 35.05,
+     "lon": 13.264,
+     "etalement": 64.7
     }
    ]
   }
