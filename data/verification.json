@@ -1223,67 +1223,132 @@
   "2026-10-30|aghir": {
    "level": "Possible",
    "risk": 0.26,
-   "run": "2026-10-29"
+   "run": "2026-10-30"
   },
   "2026-10-30|bowling": {
    "level": "Possible",
-   "risk": 0.26,
-   "run": "2026-10-29"
+   "risk": 0.27,
+   "run": "2026-10-30"
   },
   "2026-10-30|hachen": {
    "level": "Possible",
    "risk": 0.23,
-   "run": "2026-10-29"
+   "run": "2026-10-30"
   },
   "2026-10-30|hadria": {
    "level": "Possible",
-   "risk": 0.27,
-   "run": "2026-10-29"
+   "risk": 0.31,
+   "run": "2026-10-30"
   },
   "2026-10-30|jazira": {
    "level": "Possible",
-   "risk": 0.23,
-   "run": "2026-10-29"
+   "risk": 0.29,
+   "run": "2026-10-30"
   },
   "2026-10-30|jmour": {
    "level": "Possible",
    "risk": 0.24,
-   "run": "2026-10-29"
+   "run": "2026-10-30"
   },
   "2026-10-30|mahrez": {
    "level": "Possible",
-   "risk": 0.28,
-   "run": "2026-10-29"
+   "risk": 0.3,
+   "run": "2026-10-30"
   },
   "2026-10-30|rmel": {
    "level": "Possible",
    "risk": 0.35,
-   "run": "2026-10-29"
+   "run": "2026-10-30"
   },
   "2026-10-30|seguia": {
    "level": "Possible",
-   "risk": 0.28,
-   "run": "2026-10-29"
+   "risk": 0.33,
+   "run": "2026-10-30"
   },
   "2026-10-30|taguermess": {
    "level": "Possible",
-   "risk": 0.28,
-   "run": "2026-10-29"
+   "risk": 0.29,
+   "run": "2026-10-30"
   },
   "2026-10-30|vincci": {
    "level": "Possible",
-   "risk": 0.23,
-   "run": "2026-10-29"
+   "risk": 0.28,
+   "run": "2026-10-30"
   },
   "2026-10-30|yahya": {
    "level": "Possible",
-   "risk": 0.32,
-   "run": "2026-10-29"
+   "risk": 0.31,
+   "run": "2026-10-30"
   },
   "2026-10-30|yati2": {
    "level": "Possible",
+   "risk": 0.28,
+   "run": "2026-10-30"
+  },
+  "2026-10-31|aghir": {
+   "level": "Possible",
+   "risk": 0.26,
+   "run": "2026-10-30"
+  },
+  "2026-10-31|bowling": {
+   "level": "Possible",
+   "risk": 0.24,
+   "run": "2026-10-30"
+  },
+  "2026-10-31|hachen": {
+   "level": "Possible",
+   "risk": 0.23,
+   "run": "2026-10-30"
+  },
+  "2026-10-31|hadria": {
+   "level": "Possible",
+   "risk": 0.26,
+   "run": "2026-10-30"
+  },
+  "2026-10-31|jazira": {
+   "level": "Possible",
+   "risk": 0.24,
+   "run": "2026-10-30"
+  },
+  "2026-10-31|jmour": {
+   "level": "Possible",
+   "risk": 0.28,
+   "run": "2026-10-30"
+  },
+  "2026-10-31|mahrez": {
+   "level": "Possible",
    "risk": 0.25,
-   "run": "2026-10-29"
+   "run": "2026-10-30"
+  },
+  "2026-10-31|rmel": {
+   "level": "Possible",
+   "risk": 0.33,
+   "run": "2026-10-30"
+  },
+  "2026-10-31|seguia": {
+   "level": "Possible",
+   "risk": 0.28,
+   "run": "2026-10-30"
+  },
+  "2026-10-31|taguermess": {
+   "level": "Possible",
+   "risk": 0.27,
+   "run": "2026-10-30"
+  },
+  "2026-10-31|vincci": {
+   "level": "Possible",
+   "risk": 0.28,
+   "run": "2026-10-30"
+  },
+  "2026-10-31|yahya": {
+   "level": "Possible",
+   "risk": 0.29,
+   "run": "2026-10-30"
+  },
+  "2026-10-31|yati2": {
+   "level": "Possible",
+   "risk": 0.25,
+   "run": "2026-10-30"
   }
  },
  "observations": [],
