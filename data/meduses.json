@@ -1,11 +1,11 @@
 {
- "generated": "2026-11-07T04:21:12Z",
+ "generated": "2026-11-08T04:26:09Z",
  "version": "v0.8",
  "mode": "derive",
  "calibration": null,
  "method": "Dérive (courants surface + 15 m, vent, vagues, jour/nuit, marée) × eau favorable × exposition + observations, presse, vent passé, saison. Indicateur non validé.",
  "sources": {
-  "iNaturalist": "ok (4)",
+  "iNaturalist": "ok (5)",
   "GBIF": "ok (0)",
   "OBIS": "ok (0)",
   "signalements": "ok (0)",
@@ -18,16 +18,16 @@
   "marée": "cmems_mod_med_phy-ssh_anfc_4.2km_PT15M-i",
   "eau favorable": "sst, sal, mld, chl",
   "fonds marins": "cmems_mod_med_phy_anfc_4.2km_static",
-  "bancs": "ok (5 zones suivies, 0 nouvelles, 0 recalées, 0 terminées)"
+  "bancs": "ok (6 zones suivies, 1 nouvelles, 0 recalées, 0 terminées)"
  },
  "particles": {
   "fond": 3290,
-  "observations": 4
+  "observations": 5
  },
  "days": [
-  "2026-11-07",
   "2026-11-08",
-  "2026-11-09"
+  "2026-11-09",
+  "2026-11-10"
  ],
  "beaches": {
   "rmel": {
@@ -37,45 +37,6 @@
     "depth5km": 6.7
    },
    "days": [
-    {
-     "date": "2026-11-07",
-     "level": "Faible",
-     "risk": 0.17,
-     "why": [
-      "peu de dérive vers la plage",
-      "mer calme ces derniers jours",
-      "eau favorable aux méduses"
-     ],
-     "observe": null,
-     "transport": [
-      "peu de dérive vers la plage",
-      "eau favorable aux méduses",
-      "plage qui retient ce qui flotte"
-     ],
-     "confiance": "insuffisant",
-     "factors": {
-      "drift": 0.18,
-      "obs": 0.0,
-      "wind_past": 0.09,
-      "calm": 0.91,
-      "news": 0.0,
-      "habitat": 0.82,
-      "arrivals": 8.2,
-      "from_obs": 0.0,
-      "drift_ref": "comparé à sa médiane (19.9)",
-      "exposure": 1.2,
-      "season": 0.3,
-      "strong_wind": false,
-      "wind_kmh": 7,
-      "moon_age": 27.1,
-      "habitat_detail": {
-       "sst": 23.2,
-       "chl": 0.099,
-       "sal": 37.96,
-       "mld": 6.4
-      }
-     }
-    },
     {
      "date": "2026-11-08",
      "level": "Faible",
@@ -101,16 +62,16 @@
       "habitat": 0.82,
       "arrivals": 0.0,
       "from_obs": 0.0,
-      "drift_ref": "comparé à sa médiane (19.9)",
+      "drift_ref": "comparé à sa médiane (19.2)",
       "exposure": 1.2,
       "season": 0.3,
       "strong_wind": false,
       "wind_kmh": 7,
       "moon_age": 28.1,
       "habitat_detail": {
-       "sst": 23.0,
-       "chl": 0.091,
-       "sal": 37.96,
+       "sst": 23.1,
+       "chl": 0.092,
+       "sal": 37.92,
        "mld": 6.4
       }
      }
@@ -134,13 +95,13 @@
      "factors": {
       "drift": 0.0,
       "obs": 0.0,
-      "wind_past": 0.12,
-      "calm": 0.88,
+      "wind_past": 0.13,
+      "calm": 0.87,
       "news": 0.0,
-      "habitat": 0.81,
+      "habitat": 0.82,
       "arrivals": 0.0,
       "from_obs": 0.0,
-      "drift_ref": "comparé à sa médiane (19.9)",
+      "drift_ref": "comparé à sa médiane (19.2)",
       "exposure": 1.2,
       "season": 0.3,
       "strong_wind": false,
@@ -148,9 +109,48 @@
       "moon_age": 29.1,
       "habitat_detail": {
        "sst": 23.0,
-       "chl": 0.085,
-       "sal": 37.96,
+       "chl": 0.086,
+       "sal": 37.93,
        "mld": 6.3
+      }
+     }
+    },
+    {
+     "date": "2026-11-10",
+     "level": "Faible",
+     "risk": 0.16,
+     "why": [
+      "peu de dérive vers la plage",
+      "mer calme ces derniers jours",
+      "eau favorable aux méduses"
+     ],
+     "observe": null,
+     "transport": [
+      "peu de dérive vers la plage",
+      "eau favorable aux méduses",
+      "plage qui retient ce qui flotte"
+     ],
+     "confiance": "insuffisant",
+     "factors": {
+      "drift": 0.0,
+      "obs": 0.0,
+      "wind_past": 0.06,
+      "calm": 0.94,
+      "news": 0.0,
+      "habitat": 0.81,
+      "arrivals": 0.0,
+      "from_obs": 0.0,
+      "drift_ref": "comparé à sa médiane (19.2)",
+      "exposure": 1.2,
+      "season": 0.3,
+      "strong_wind": false,
+      "wind_kmh": 16,
+      "moon_age": 0.5,
+      "habitat_detail": {
+       "sst": 22.9,
+       "chl": 0.081,
+       "sal": 37.93,
+       "mld": 6.2
       }
      }
     }
@@ -170,79 +170,40 @@
    },
    "days": [
     {
-     "date": "2026-11-07",
-     "level": "Faible",
-     "risk": 0.15,
-     "why": [
-      "peu de dérive vers la plage",
-      "mer calme ces derniers jours",
-      "eau favorable aux méduses"
-     ],
-     "observe": null,
-     "transport": [
-      "peu de dérive vers la plage",
-      "eau favorable aux méduses",
-      "hors saison"
-     ],
-     "confiance": "insuffisant",
-     "factors": {
-      "drift": 0.0,
-      "obs": 0.0,
-      "wind_past": 0.05,
-      "calm": 0.95,
-      "news": 0.0,
-      "habitat": 0.82,
-      "arrivals": 0.0,
-      "from_obs": 0.0,
-      "drift_ref": "comparé à sa médiane (0.0)",
-      "exposure": 1.1,
-      "season": 0.3,
-      "strong_wind": false,
-      "wind_kmh": 9,
-      "moon_age": 27.1,
-      "habitat_detail": {
-       "sst": 23.7,
-       "chl": 0.09,
-       "sal": 37.92,
-       "mld": 9.6
-      }
-     }
-    },
-    {
      "date": "2026-11-08",
-     "level": "Faible",
-     "risk": 0.14,
+     "level": "Possible",
+     "risk": 0.2,
      "why": [
-      "peu de dérive vers la plage",
+      "courant et vent poussent vers la plage",
       "eau favorable aux méduses",
       "hors saison"
      ],
      "observe": null,
      "transport": [
-      "peu de dérive vers la plage",
+      "courant et vent poussent vers la plage",
       "eau favorable aux méduses",
       "hors saison"
      ],
      "confiance": "insuffisant",
      "factors": {
-      "drift": 0.0,
+      "drift": 0.68,
       "obs": 0.0,
-      "wind_past": 0.12,
-      "calm": 0.88,
+      "wind_past": 0.11,
+      "calm": 0.89,
       "news": 0.0,
       "habitat": 0.82,
-      "arrivals": 0.0,
+      "arrivals": 1.1,
       "from_obs": 0.0,
       "drift_ref": "comparé à sa médiane (0.0)",
       "exposure": 1.1,
       "season": 0.3,
       "strong_wind": false,
-      "wind_kmh": 13,
+      "wind_kmh": 15,
       "moon_age": 28.1,
       "habitat_detail": {
        "sst": 23.6,
-       "chl": 0.083,
-       "sal": 37.92,
+       "chl": 0.084,
+       "sal": 37.9,
        "mld": 9.6
       }
      }
@@ -266,8 +227,47 @@
      "factors": {
       "drift": 0.0,
       "obs": 0.0,
-      "wind_past": 0.12,
-      "calm": 0.88,
+      "wind_past": 0.11,
+      "calm": 0.89,
+      "news": 0.0,
+      "habitat": 0.82,
+      "arrivals": 0.0,
+      "from_obs": 0.0,
+      "drift_ref": "comparé à sa médiane (0.0)",
+      "exposure": 1.1,
+      "season": 0.3,
+      "strong_wind": false,
+      "wind_kmh": 16,
+      "moon_age": 29.1,
+      "habitat_detail": {
+       "sst": 23.6,
+       "chl": 0.078,
+       "sal": 37.9,
+       "mld": 9.5
+      }
+     }
+    },
+    {
+     "date": "2026-11-10",
+     "level": "Faible",
+     "risk": 0.14,
+     "why": [
+      "peu de dérive vers la plage",
+      "mer calme ces derniers jours",
+      "eau favorable aux méduses"
+     ],
+     "observe": null,
+     "transport": [
+      "peu de dérive vers la plage",
+      "eau favorable aux méduses",
+      "hors saison"
+     ],
+     "confiance": "insuffisant",
+     "factors": {
+      "drift": 0.0,
+      "obs": 0.0,
+      "wind_past": 0.07,
+      "calm": 0.93,
       "news": 0.0,
       "habitat": 0.81,
       "arrivals": 0.0,
@@ -276,12 +276,12 @@
       "exposure": 1.1,
       "season": 0.3,
       "strong_wind": false,
-      "wind_kmh": 15,
-      "moon_age": 29.1,
+      "wind_kmh": 24,
+      "moon_age": 0.5,
       "habitat_detail": {
-       "sst": 23.6,
-       "chl": 0.077,
-       "sal": 37.92,
+       "sst": 23.5,
+       "chl": 0.074,
+       "sal": 37.9,
        "mld": 9.5
       }
      }
@@ -302,45 +302,6 @@
    },
    "days": [
     {
-     "date": "2026-11-07",
-     "level": "Faible",
-     "risk": 0.18,
-     "why": [
-      "un peu de dérive vers la plage",
-      "mer calme ces derniers jours",
-      "eau favorable aux méduses"
-     ],
-     "observe": null,
-     "transport": [
-      "un peu de dérive vers la plage",
-      "eau favorable aux méduses",
-      "hors saison"
-     ],
-     "confiance": "insuffisant",
-     "factors": {
-      "drift": 0.38,
-      "obs": 0.0,
-      "wind_past": 0.05,
-      "calm": 0.95,
-      "news": 0.0,
-      "habitat": 0.82,
-      "arrivals": 0.9,
-      "from_obs": 0.0,
-      "drift_ref": "comparé à sa médiane (0.5)",
-      "exposure": 1.11,
-      "season": 0.3,
-      "strong_wind": false,
-      "wind_kmh": 9,
-      "moon_age": 27.1,
-      "habitat_detail": {
-       "sst": 23.7,
-       "chl": 0.09,
-       "sal": 37.92,
-       "mld": 9.6
-      }
-     }
-    },
-    {
      "date": "2026-11-08",
      "level": "Faible",
      "risk": 0.14,
@@ -365,16 +326,16 @@
       "habitat": 0.82,
       "arrivals": 0.0,
       "from_obs": 0.0,
-      "drift_ref": "comparé à sa médiane (0.5)",
+      "drift_ref": "comparé à sa médiane (0.9)",
       "exposure": 1.11,
       "season": 0.3,
       "strong_wind": false,
-      "wind_kmh": 13,
+      "wind_kmh": 15,
       "moon_age": 28.1,
       "habitat_detail": {
        "sst": 23.6,
-       "chl": 0.083,
-       "sal": 37.92,
+       "chl": 0.084,
+       "sal": 37.9,
        "mld": 9.6
       }
      }
@@ -401,19 +362,58 @@
       "wind_past": 0.12,
       "calm": 0.88,
       "news": 0.0,
-      "habitat": 0.81,
+      "habitat": 0.82,
       "arrivals": 0.0,
       "from_obs": 0.0,
-      "drift_ref": "comparé à sa médiane (0.5)",
+      "drift_ref": "comparé à sa médiane (0.9)",
       "exposure": 1.11,
       "season": 0.3,
       "strong_wind": false,
-      "wind_kmh": 15,
+      "wind_kmh": 16,
       "moon_age": 29.1,
       "habitat_detail": {
        "sst": 23.6,
-       "chl": 0.077,
-       "sal": 37.92,
+       "chl": 0.078,
+       "sal": 37.9,
+       "mld": 9.5
+      }
+     }
+    },
+    {
+     "date": "2026-11-10",
+     "level": "Faible",
+     "risk": 0.14,
+     "why": [
+      "peu de dérive vers la plage",
+      "mer calme ces derniers jours",
+      "eau favorable aux méduses"
+     ],
+     "observe": null,
+     "transport": [
+      "peu de dérive vers la plage",
+      "eau favorable aux méduses",
+      "hors saison"
+     ],
+     "confiance": "insuffisant",
+     "factors": {
+      "drift": 0.0,
+      "obs": 0.0,
+      "wind_past": 0.08,
+      "calm": 0.92,
+      "news": 0.0,
+      "habitat": 0.81,
+      "arrivals": 0.0,
+      "from_obs": 0.0,
+      "drift_ref": "comparé à sa médiane (0.9)",
+      "exposure": 1.11,
+      "season": 0.3,
+      "strong_wind": false,
+      "wind_kmh": 24,
+      "moon_age": 0.5,
+      "habitat_detail": {
+       "sst": 23.5,
+       "chl": 0.074,
+       "sal": 37.9,
        "mld": 9.5
       }
      }
@@ -434,48 +434,9 @@
    },
    "days": [
     {
-     "date": "2026-11-07",
-     "level": "Faible",
-     "risk": 0.17,
-     "why": [
-      "un peu de dérive vers la plage",
-      "mer calme ces derniers jours",
-      "eau favorable aux méduses"
-     ],
-     "observe": null,
-     "transport": [
-      "un peu de dérive vers la plage",
-      "eau favorable aux méduses",
-      "hors saison"
-     ],
-     "confiance": "insuffisant",
-     "factors": {
-      "drift": 0.35,
-      "obs": 0.0,
-      "wind_past": 0.05,
-      "calm": 0.95,
-      "news": 0.0,
-      "habitat": 0.82,
-      "arrivals": 3.2,
-      "from_obs": 0.0,
-      "drift_ref": "comparé à sa médiane (3.2)",
-      "exposure": 1.09,
-      "season": 0.3,
-      "strong_wind": false,
-      "wind_kmh": 9,
-      "moon_age": 27.1,
-      "habitat_detail": {
-       "sst": 23.7,
-       "chl": 0.09,
-       "sal": 37.92,
-       "mld": 9.6
-      }
-     }
-    },
-    {
      "date": "2026-11-08",
      "level": "Faible",
-     "risk": 0.14,
+     "risk": 0.15,
      "why": [
       "peu de dérive vers la plage",
       "eau favorable aux méduses",
@@ -489,24 +450,24 @@
      ],
      "confiance": "insuffisant",
      "factors": {
-      "drift": 0.0,
+      "drift": 0.13,
       "obs": 0.0,
       "wind_past": 0.12,
       "calm": 0.88,
       "news": 0.0,
       "habitat": 0.82,
-      "arrivals": 0.0,
+      "arrivals": 1.1,
       "from_obs": 0.0,
       "drift_ref": "comparé à sa médiane (3.2)",
       "exposure": 1.09,
       "season": 0.3,
       "strong_wind": false,
-      "wind_kmh": 13,
+      "wind_kmh": 15,
       "moon_age": 28.1,
       "habitat_detail": {
        "sst": 23.6,
-       "chl": 0.083,
-       "sal": 37.92,
+       "chl": 0.084,
+       "sal": 37.9,
        "mld": 9.6
       }
      }
@@ -533,6 +494,45 @@
       "wind_past": 0.12,
       "calm": 0.88,
       "news": 0.0,
+      "habitat": 0.82,
+      "arrivals": 0.0,
+      "from_obs": 0.0,
+      "drift_ref": "comparé à sa médiane (3.2)",
+      "exposure": 1.09,
+      "season": 0.3,
+      "strong_wind": false,
+      "wind_kmh": 16,
+      "moon_age": 29.1,
+      "habitat_detail": {
+       "sst": 23.6,
+       "chl": 0.078,
+       "sal": 37.9,
+       "mld": 9.5
+      }
+     }
+    },
+    {
+     "date": "2026-11-10",
+     "level": "Faible",
+     "risk": 0.14,
+     "why": [
+      "peu de dérive vers la plage",
+      "mer calme ces derniers jours",
+      "eau favorable aux méduses"
+     ],
+     "observe": null,
+     "transport": [
+      "peu de dérive vers la plage",
+      "eau favorable aux méduses",
+      "hors saison"
+     ],
+     "confiance": "insuffisant",
+     "factors": {
+      "drift": 0.0,
+      "obs": 0.0,
+      "wind_past": 0.08,
+      "calm": 0.92,
+      "news": 0.0,
       "habitat": 0.81,
       "arrivals": 0.0,
       "from_obs": 0.0,
@@ -540,12 +540,12 @@
       "exposure": 1.09,
       "season": 0.3,
       "strong_wind": false,
-      "wind_kmh": 15,
-      "moon_age": 29.1,
+      "wind_kmh": 24,
+      "moon_age": 0.5,
       "habitat_detail": {
-       "sst": 23.6,
-       "chl": 0.077,
-       "sal": 37.92,
+       "sst": 23.5,
+       "chl": 0.074,
+       "sal": 37.9,
        "mld": 9.5
       }
      }
@@ -566,13 +566,52 @@
    },
    "days": [
     {
-     "date": "2026-11-07",
+     "date": "2026-11-08",
+     "level": "Faible",
+     "risk": 0.17,
+     "why": [
+      "un peu de dérive vers la plage",
+      "eau favorable aux méduses",
+      "hors saison"
+     ],
+     "observe": null,
+     "transport": [
+      "un peu de dérive vers la plage",
+      "eau favorable aux méduses",
+      "hors saison"
+     ],
+     "confiance": "insuffisant",
+     "factors": {
+      "drift": 0.31,
+      "obs": 0.0,
+      "wind_past": 0.15,
+      "calm": 0.85,
+      "news": 0.0,
+      "habitat": 0.81,
+      "arrivals": 1.1,
+      "from_obs": 0.0,
+      "drift_ref": "comparé à sa médiane (1.0)",
+      "exposure": 1.1,
+      "season": 0.3,
+      "strong_wind": false,
+      "wind_kmh": 15,
+      "moon_age": 28.1,
+      "habitat_detail": {
+       "sst": 23.6,
+       "chl": 0.078,
+       "sal": 37.92,
+       "mld": 7.7
+      }
+     }
+    },
+    {
+     "date": "2026-11-09",
      "level": "Faible",
      "risk": 0.14,
      "why": [
       "peu de dérive vers la plage",
-      "mer calme ces derniers jours",
-      "eau favorable aux méduses"
+      "eau favorable aux méduses",
+      "hors saison"
      ],
      "observe": null,
      "transport": [
@@ -584,8 +623,8 @@
      "factors": {
       "drift": 0.0,
       "obs": 0.0,
-      "wind_past": 0.05,
-      "calm": 0.95,
+      "wind_past": 0.15,
+      "calm": 0.85,
       "news": 0.0,
       "habitat": 0.81,
       "arrivals": 0.0,
@@ -594,51 +633,105 @@
       "exposure": 1.1,
       "season": 0.3,
       "strong_wind": false,
-      "wind_kmh": 9,
-      "moon_age": 27.1,
+      "wind_kmh": 16,
+      "moon_age": 29.1,
       "habitat_detail": {
-       "sst": 23.7,
-       "chl": 0.083,
-       "sal": 37.93,
-       "mld": 7.7
+       "sst": 23.6,
+       "chl": 0.073,
+       "sal": 37.92,
+       "mld": 7.6
       }
      }
     },
     {
-     "date": "2026-11-08",
+     "date": "2026-11-10",
      "level": "Faible",
-     "risk": 0.16,
+     "risk": 0.14,
      "why": [
-      "un peu de dérive vers la plage",
+      "peu de dérive vers la plage",
       "eau favorable aux méduses",
       "hors saison"
      ],
      "observe": null,
      "transport": [
-      "un peu de dérive vers la plage",
+      "peu de dérive vers la plage",
       "eau favorable aux méduses",
       "hors saison"
      ],
      "confiance": "insuffisant",
      "factors": {
-      "drift": 0.28,
+      "drift": 0.0,
       "obs": 0.0,
-      "wind_past": 0.15,
-      "calm": 0.85,
+      "wind_past": 0.1,
+      "calm": 0.9,
       "news": 0.0,
       "habitat": 0.81,
-      "arrivals": 1.0,
+      "arrivals": 0.0,
       "from_obs": 0.0,
       "drift_ref": "comparé à sa médiane (1.0)",
       "exposure": 1.1,
       "season": 0.3,
       "strong_wind": false,
-      "wind_kmh": 13,
+      "wind_kmh": 24,
+      "moon_age": 0.5,
+      "habitat_detail": {
+       "sst": 23.6,
+       "chl": 0.069,
+       "sal": 37.93,
+       "mld": 7.5
+      }
+     }
+    }
+   ],
+   "species": [
+    {
+     "name": "Pélagie (Pelagia noctiluca)",
+     "sting": "forte"
+    }
+   ]
+  },
+  "bowling": {
+   "name": "Bowling",
+   "exposure": {
+    "opening": 0.39,
+    "depth5km": 8.0
+   },
+   "days": [
+    {
+     "date": "2026-11-08",
+     "level": "Faible",
+     "risk": 0.19,
+     "why": [
+      "courant et vent poussent vers la plage",
+      "eau favorable aux méduses",
+      "hors saison"
+     ],
+     "observe": null,
+     "transport": [
+      "courant et vent poussent vers la plage",
+      "eau favorable aux méduses",
+      "hors saison"
+     ],
+     "confiance": "insuffisant",
+     "factors": {
+      "drift": 0.62,
+      "obs": 0.0,
+      "wind_past": 0.16,
+      "calm": 0.84,
+      "news": 0.0,
+      "habitat": 0.81,
+      "arrivals": 4.8,
+      "from_obs": 0.0,
+      "drift_ref": "comparé à sa médiane (2.0)",
+      "exposure": 1.07,
+      "season": 0.3,
+      "strong_wind": false,
+      "wind_kmh": 15,
       "moon_age": 28.1,
       "habitat_detail": {
        "sst": 23.6,
-       "chl": 0.077,
-       "sal": 37.94,
+       "chl": 0.078,
+       "sal": 37.92,
        "mld": 7.7
       }
      }
@@ -668,76 +761,22 @@
       "habitat": 0.81,
       "arrivals": 0.0,
       "from_obs": 0.0,
-      "drift_ref": "comparé à sa médiane (1.0)",
-      "exposure": 1.1,
-      "season": 0.3,
-      "strong_wind": false,
-      "wind_kmh": 15,
-      "moon_age": 29.1,
-      "habitat_detail": {
-       "sst": 23.6,
-       "chl": 0.072,
-       "sal": 37.95,
-       "mld": 7.6
-      }
-     }
-    }
-   ],
-   "species": [
-    {
-     "name": "Pélagie (Pelagia noctiluca)",
-     "sting": "forte"
-    }
-   ]
-  },
-  "bowling": {
-   "name": "Bowling",
-   "exposure": {
-    "opening": 0.39,
-    "depth5km": 8.0
-   },
-   "days": [
-    {
-     "date": "2026-11-07",
-     "level": "Faible",
-     "risk": 0.17,
-     "why": [
-      "un peu de dérive vers la plage",
-      "mer calme ces derniers jours",
-      "eau favorable aux méduses"
-     ],
-     "observe": null,
-     "transport": [
-      "un peu de dérive vers la plage",
-      "eau favorable aux méduses",
-      "hors saison"
-     ],
-     "confiance": "insuffisant",
-     "factors": {
-      "drift": 0.34,
-      "obs": 0.0,
-      "wind_past": 0.05,
-      "calm": 0.95,
-      "news": 0.0,
-      "habitat": 0.81,
-      "arrivals": 2.0,
-      "from_obs": 0.0,
-      "drift_ref": "comparé à sa médiane (1.9)",
+      "drift_ref": "comparé à sa médiane (2.0)",
       "exposure": 1.07,
       "season": 0.3,
       "strong_wind": false,
-      "wind_kmh": 9,
-      "moon_age": 27.1,
+      "wind_kmh": 16,
+      "moon_age": 29.1,
       "habitat_detail": {
-       "sst": 23.7,
-       "chl": 0.083,
-       "sal": 37.93,
-       "mld": 7.7
+       "sst": 23.6,
+       "chl": 0.073,
+       "sal": 37.92,
+       "mld": 7.6
       }
      }
     },
     {
-     "date": "2026-11-08",
+     "date": "2026-11-10",
      "level": "Faible",
      "risk": 0.14,
      "why": [
@@ -755,23 +794,209 @@
      "factors": {
       "drift": 0.0,
       "obs": 0.0,
-      "wind_past": 0.16,
-      "calm": 0.84,
+      "wind_past": 0.12,
+      "calm": 0.88,
       "news": 0.0,
       "habitat": 0.81,
       "arrivals": 0.0,
+      "from_obs": 0.0,
+      "drift_ref": "comparé à sa médiane (2.0)",
+      "exposure": 1.07,
+      "season": 0.3,
+      "strong_wind": false,
+      "wind_kmh": 24,
+      "moon_age": 0.5,
+      "habitat_detail": {
+       "sst": 23.6,
+       "chl": 0.069,
+       "sal": 37.93,
+       "mld": 7.5
+      }
+     }
+    }
+   ],
+   "species": [
+    {
+     "name": "Pélagie (Pelagia noctiluca)",
+     "sting": "forte"
+    }
+   ]
+  },
+  "taguermess": {
+   "name": "Yati 1",
+   "exposure": {
+    "opening": 0.53,
+    "depth5km": 11.5
+   },
+   "days": [
+    {
+     "date": "2026-11-08",
+     "level": "Faible",
+     "risk": 0.15,
+     "why": [
+      "un peu de dérive vers la plage",
+      "eau favorable aux méduses",
+      "hors saison"
+     ],
+     "observe": null,
+     "transport": [
+      "un peu de dérive vers la plage",
+      "eau favorable aux méduses",
+      "hors saison"
+     ],
+     "confiance": "insuffisant",
+     "factors": {
+      "drift": 0.21,
+      "obs": 0.0,
+      "wind_past": 0.26,
+      "calm": 0.74,
+      "news": 0.0,
+      "habitat": 0.8,
+      "arrivals": 7.7,
+      "from_obs": 0.0,
+      "drift_ref": "comparé à sa médiane (16.0)",
+      "exposure": 1.06,
+      "season": 0.3,
+      "strong_wind": false,
+      "wind_kmh": 15,
+      "moon_age": 28.1,
+      "habitat_detail": {
+       "sst": 23.5,
+       "chl": 0.071,
+       "sal": 37.98,
+       "mld": 7.0
+      }
+     }
+    },
+    {
+     "date": "2026-11-09",
+     "level": "Faible",
+     "risk": 0.15,
+     "why": [
+      "peu de dérive vers la plage",
+      "eau favorable aux méduses",
+      "hors saison"
+     ],
+     "observe": null,
+     "transport": [
+      "peu de dérive vers la plage",
+      "eau favorable aux méduses",
+      "hors saison"
+     ],
+     "confiance": "insuffisant",
+     "factors": {
+      "drift": 0.19,
+      "obs": 0.0,
+      "wind_past": 0.27,
+      "calm": 0.73,
+      "news": 0.0,
+      "habitat": 0.8,
+      "arrivals": 7.2,
+      "from_obs": 0.0,
+      "drift_ref": "comparé à sa médiane (16.0)",
+      "exposure": 1.06,
+      "season": 0.3,
+      "strong_wind": false,
+      "wind_kmh": 16,
+      "moon_age": 29.1,
+      "habitat_detail": {
+       "sst": 23.5,
+       "chl": 0.067,
+       "sal": 37.99,
+       "mld": 6.9
+      }
+     }
+    },
+    {
+     "date": "2026-11-10",
+     "level": "Faible",
+     "risk": 0.14,
+     "why": [
+      "peu de dérive vers la plage",
+      "eau favorable aux méduses",
+      "hors saison"
+     ],
+     "observe": null,
+     "transport": [
+      "peu de dérive vers la plage",
+      "eau favorable aux méduses",
+      "hors saison"
+     ],
+     "confiance": "insuffisant",
+     "factors": {
+      "drift": 0.06,
+      "obs": 0.0,
+      "wind_past": 0.21,
+      "calm": 0.79,
+      "news": 0.0,
+      "habitat": 0.8,
+      "arrivals": 2.1,
+      "from_obs": 0.0,
+      "drift_ref": "comparé à sa médiane (16.0)",
+      "exposure": 1.06,
+      "season": 0.3,
+      "strong_wind": false,
+      "wind_kmh": 24,
+      "moon_age": 0.5,
+      "habitat_detail": {
+       "sst": 23.5,
+       "chl": 0.064,
+       "sal": 38.01,
+       "mld": 6.8
+      }
+     }
+    }
+   ],
+   "species": [
+    {
+     "name": "Pélagie (Pelagia noctiluca)",
+     "sting": "forte"
+    }
+   ]
+  },
+  "yati2": {
+   "name": "Yati 2",
+   "exposure": {
+    "opening": 0.56,
+    "depth5km": 16.1
+   },
+   "days": [
+    {
+     "date": "2026-11-08",
+     "level": "Faible",
+     "risk": 0.19,
+     "why": [
+      "courant et vent poussent vers la plage",
+      "eau favorable aux méduses",
+      "hors saison"
+     ],
+     "observe": null,
+     "transport": [
+      "courant et vent poussent vers la plage",
+      "eau favorable aux méduses",
+      "hors saison"
+     ],
+     "confiance": "insuffisant",
+     "factors": {
+      "drift": 0.74,
+      "obs": 0.0,
+      "wind_past": 0.36,
+      "calm": 0.64,
+      "news": 0.0,
+      "habitat": 0.8,
+      "arrivals": 6.4,
       "from_obs": 0.0,
       "drift_ref": "comparé à sa médiane (1.9)",
       "exposure": 1.07,
       "season": 0.3,
       "strong_wind": false,
-      "wind_kmh": 13,
+      "wind_kmh": 15,
       "moon_age": 28.1,
       "habitat_detail": {
-       "sst": 23.6,
-       "chl": 0.077,
-       "sal": 37.94,
-       "mld": 7.7
+       "sst": 23.5,
+       "chl": 0.071,
+       "sal": 37.98,
+       "mld": 7.0
       }
      }
     },
@@ -794,123 +1019,30 @@
      "factors": {
       "drift": 0.18,
       "obs": 0.0,
-      "wind_past": 0.17,
-      "calm": 0.83,
+      "wind_past": 0.39,
+      "calm": 0.61,
       "news": 0.0,
-      "habitat": 0.81,
-      "arrivals": 0.9,
+      "habitat": 0.8,
+      "arrivals": 1.0,
       "from_obs": 0.0,
       "drift_ref": "comparé à sa médiane (1.9)",
       "exposure": 1.07,
       "season": 0.3,
       "strong_wind": false,
-      "wind_kmh": 15,
+      "wind_kmh": 16,
       "moon_age": 29.1,
       "habitat_detail": {
-       "sst": 23.6,
-       "chl": 0.072,
-       "sal": 37.95,
-       "mld": 7.6
-      }
-     }
-    }
-   ],
-   "species": [
-    {
-     "name": "Pélagie (Pelagia noctiluca)",
-     "sting": "forte"
-    }
-   ]
-  },
-  "taguermess": {
-   "name": "Yati 1",
-   "exposure": {
-    "opening": 0.53,
-    "depth5km": 11.5
-   },
-   "days": [
-    {
-     "date": "2026-11-07",
-     "level": "Faible",
-     "risk": 0.17,
-     "why": [
-      "un peu de dérive vers la plage",
-      "eau favorable aux méduses",
-      "hors saison"
-     ],
-     "observe": null,
-     "transport": [
-      "un peu de dérive vers la plage",
-      "eau favorable aux méduses",
-      "hors saison"
-     ],
-     "confiance": "insuffisant",
-     "factors": {
-      "drift": 0.42,
-      "obs": 0.0,
-      "wind_past": 0.12,
-      "calm": 0.88,
-      "news": 0.0,
-      "habitat": 0.81,
-      "arrivals": 18.0,
-      "from_obs": 0.0,
-      "drift_ref": "comparé à sa médiane (15.9)",
-      "exposure": 1.06,
-      "season": 0.3,
-      "strong_wind": false,
-      "wind_kmh": 9,
-      "moon_age": 27.1,
-      "habitat_detail": {
-       "sst": 23.7,
-       "chl": 0.075,
+       "sst": 23.5,
+       "chl": 0.067,
        "sal": 37.99,
-       "mld": 7.0
+       "mld": 6.9
       }
      }
     },
     {
-     "date": "2026-11-08",
+     "date": "2026-11-10",
      "level": "Faible",
-     "risk": 0.15,
-     "why": [
-      "un peu de dérive vers la plage",
-      "eau favorable aux méduses",
-      "hors saison"
-     ],
-     "observe": null,
-     "transport": [
-      "un peu de dérive vers la plage",
-      "eau favorable aux méduses",
-      "hors saison"
-     ],
-     "confiance": "insuffisant",
-     "factors": {
-      "drift": 0.24,
-      "obs": 0.0,
-      "wind_past": 0.25,
-      "calm": 0.75,
-      "news": 0.0,
-      "habitat": 0.8,
-      "arrivals": 9.0,
-      "from_obs": 0.0,
-      "drift_ref": "comparé à sa médiane (15.9)",
-      "exposure": 1.06,
-      "season": 0.3,
-      "strong_wind": false,
-      "wind_kmh": 13,
-      "moon_age": 28.1,
-      "habitat_detail": {
-       "sst": 23.6,
-       "chl": 0.071,
-       "sal": 38.01,
-       "mld": 7.0
-      }
-     }
-    },
-    {
-     "date": "2026-11-09",
-     "level": "Faible",
-     "risk": 0.14,
+     "risk": 0.13,
      "why": [
       "peu de dérive vers la plage",
       "eau favorable aux méduses",
@@ -924,157 +1056,25 @@
      ],
      "confiance": "insuffisant",
      "factors": {
-      "drift": 0.06,
+      "drift": 0.0,
       "obs": 0.0,
-      "wind_past": 0.27,
-      "calm": 0.73,
+      "wind_past": 0.33,
+      "calm": 0.67,
       "news": 0.0,
       "habitat": 0.8,
-      "arrivals": 2.0,
+      "arrivals": 0.0,
       "from_obs": 0.0,
-      "drift_ref": "comparé à sa médiane (15.9)",
-      "exposure": 1.06,
+      "drift_ref": "comparé à sa médiane (1.9)",
+      "exposure": 1.07,
       "season": 0.3,
       "strong_wind": false,
-      "wind_kmh": 15,
-      "moon_age": 29.1,
+      "wind_kmh": 24,
+      "moon_age": 0.5,
       "habitat_detail": {
        "sst": 23.5,
-       "chl": 0.067,
-       "sal": 38.02,
-       "mld": 6.9
-      }
-     }
-    }
-   ],
-   "species": [
-    {
-     "name": "Pélagie (Pelagia noctiluca)",
-     "sting": "forte"
-    }
-   ]
-  },
-  "yati2": {
-   "name": "Yati 2",
-   "exposure": {
-    "opening": 0.56,
-    "depth5km": 16.1
-   },
-   "days": [
-    {
-     "date": "2026-11-07",
-     "level": "Faible",
-     "risk": 0.19,
-     "why": [
-      "courant et vent poussent vers la plage",
-      "eau favorable aux méduses",
-      "hors saison"
-     ],
-     "observe": null,
-     "transport": [
-      "courant et vent poussent vers la plage",
-      "eau favorable aux méduses",
-      "hors saison"
-     ],
-     "confiance": "insuffisant",
-     "factors": {
-      "drift": 0.68,
-      "obs": 0.0,
-      "wind_past": 0.22,
-      "calm": 0.78,
-      "news": 0.0,
-      "habitat": 0.81,
-      "arrivals": 4.6,
-      "from_obs": 0.0,
-      "drift_ref": "comparé à sa médiane (1.5)",
-      "exposure": 1.07,
-      "season": 0.3,
-      "strong_wind": false,
-      "wind_kmh": 9,
-      "moon_age": 27.1,
-      "habitat_detail": {
-       "sst": 23.7,
-       "chl": 0.075,
-       "sal": 37.99,
-       "mld": 7.0
-      }
-     }
-    },
-    {
-     "date": "2026-11-08",
-     "level": "Faible",
-     "risk": 0.19,
-     "why": [
-      "courant et vent poussent vers la plage",
-      "eau favorable aux méduses",
-      "hors saison"
-     ],
-     "observe": null,
-     "transport": [
-      "courant et vent poussent vers la plage",
-      "eau favorable aux méduses",
-      "hors saison"
-     ],
-     "confiance": "insuffisant",
-     "factors": {
-      "drift": 0.69,
-      "obs": 0.0,
-      "wind_past": 0.35,
-      "calm": 0.65,
-      "news": 0.0,
-      "habitat": 0.8,
-      "arrivals": 4.6,
-      "from_obs": 0.0,
-      "drift_ref": "comparé à sa médiane (1.5)",
-      "exposure": 1.07,
-      "season": 0.3,
-      "strong_wind": false,
-      "wind_kmh": 13,
-      "moon_age": 28.1,
-      "habitat_detail": {
-       "sst": 23.6,
-       "chl": 0.071,
+       "chl": 0.064,
        "sal": 38.01,
-       "mld": 7.0
-      }
-     }
-    },
-    {
-     "date": "2026-11-09",
-     "level": "Faible",
-     "risk": 0.15,
-     "why": [
-      "un peu de dérive vers la plage",
-      "eau favorable aux méduses",
-      "hors saison"
-     ],
-     "observe": null,
-     "transport": [
-      "un peu de dérive vers la plage",
-      "eau favorable aux méduses",
-      "hors saison"
-     ],
-     "confiance": "insuffisant",
-     "factors": {
-      "drift": 0.21,
-      "obs": 0.0,
-      "wind_past": 0.37,
-      "calm": 0.63,
-      "news": 0.0,
-      "habitat": 0.8,
-      "arrivals": 1.0,
-      "from_obs": 0.0,
-      "drift_ref": "comparé à sa médiane (1.5)",
-      "exposure": 1.07,
-      "season": 0.3,
-      "strong_wind": false,
-      "wind_kmh": 15,
-      "moon_age": 29.1,
-      "habitat_detail": {
-       "sst": 23.5,
-       "chl": 0.067,
-       "sal": 38.02,
-       "mld": 6.9
+       "mld": 6.8
       }
      }
     }
@@ -1094,7 +1094,7 @@
    },
    "days": [
     {
-     "date": "2026-11-07",
+     "date": "2026-11-08",
      "level": "Faible",
      "risk": 0.19,
      "why": [
@@ -1110,63 +1110,24 @@
      ],
      "confiance": "insuffisant",
      "factors": {
-      "drift": 0.74,
+      "drift": 0.69,
       "obs": 0.0,
-      "wind_past": 0.3,
-      "calm": 0.7,
-      "news": 0.0,
-      "habitat": 0.81,
-      "arrivals": 8.6,
-      "from_obs": 0.0,
-      "drift_ref": "comparé à sa médiane (2.7)",
-      "exposure": 1.07,
-      "season": 0.3,
-      "strong_wind": false,
-      "wind_kmh": 9,
-      "moon_age": 27.1,
-      "habitat_detail": {
-       "sst": 23.7,
-       "chl": 0.075,
-       "sal": 37.99,
-       "mld": 7.0
-      }
-     }
-    },
-    {
-     "date": "2026-11-08",
-     "level": "Faible",
-     "risk": 0.16,
-     "why": [
-      "un peu de dérive vers la plage",
-      "eau favorable aux méduses",
-      "hors saison"
-     ],
-     "observe": null,
-     "transport": [
-      "un peu de dérive vers la plage",
-      "eau favorable aux méduses",
-      "hors saison"
-     ],
-     "confiance": "insuffisant",
-     "factors": {
-      "drift": 0.37,
-      "obs": 0.0,
-      "wind_past": 0.39,
-      "calm": 0.61,
+      "wind_past": 0.41,
+      "calm": 0.59,
       "news": 0.0,
       "habitat": 0.8,
-      "arrivals": 2.9,
+      "arrivals": 7.5,
       "from_obs": 0.0,
       "drift_ref": "comparé à sa médiane (2.7)",
       "exposure": 1.07,
       "season": 0.3,
       "strong_wind": false,
-      "wind_kmh": 13,
+      "wind_kmh": 15,
       "moon_age": 28.1,
       "habitat_detail": {
-       "sst": 23.6,
+       "sst": 23.5,
        "chl": 0.071,
-       "sal": 38.01,
+       "sal": 37.98,
        "mld": 7.0
       }
      }
@@ -1188,10 +1149,10 @@
      ],
      "confiance": "insuffisant",
      "factors": {
-      "drift": 0.36,
+      "drift": 0.35,
       "obs": 0.0,
-      "wind_past": 0.41,
-      "calm": 0.59,
+      "wind_past": 0.44,
+      "calm": 0.56,
       "news": 0.0,
       "habitat": 0.8,
       "arrivals": 2.8,
@@ -1200,13 +1161,52 @@
       "exposure": 1.07,
       "season": 0.3,
       "strong_wind": false,
-      "wind_kmh": 15,
+      "wind_kmh": 16,
       "moon_age": 29.1,
       "habitat_detail": {
        "sst": 23.5,
        "chl": 0.067,
-       "sal": 38.02,
+       "sal": 37.99,
        "mld": 6.9
+      }
+     }
+    },
+    {
+     "date": "2026-11-10",
+     "level": "Faible",
+     "risk": 0.15,
+     "why": [
+      "un peu de dérive vers la plage",
+      "eau favorable aux méduses",
+      "hors saison"
+     ],
+     "observe": null,
+     "transport": [
+      "un peu de dérive vers la plage",
+      "eau favorable aux méduses",
+      "hors saison"
+     ],
+     "confiance": "insuffisant",
+     "factors": {
+      "drift": 0.25,
+      "obs": 0.0,
+      "wind_past": 0.4,
+      "calm": 0.6,
+      "news": 0.0,
+      "habitat": 0.8,
+      "arrivals": 1.9,
+      "from_obs": 0.0,
+      "drift_ref": "comparé à sa médiane (2.7)",
+      "exposure": 1.07,
+      "season": 0.3,
+      "strong_wind": false,
+      "wind_kmh": 24,
+      "moon_age": 0.5,
+      "habitat_detail": {
+       "sst": 23.5,
+       "chl": 0.064,
+       "sal": 38.01,
+       "mld": 6.8
       }
      }
     }
@@ -1226,77 +1226,40 @@
    },
    "days": [
     {
-     "date": "2026-11-07",
-     "level": "Faible",
-     "risk": 0.2,
-     "why": [
-      "courant et vent poussent vers la plage",
-      "eau favorable aux méduses",
-      "hors saison"
-     ],
-     "observe": null,
-     "transport": [
-      "courant et vent poussent vers la plage",
-      "eau favorable aux méduses",
-      "hors saison"
-     ],
-     "confiance": "insuffisant",
-     "factors": {
-      "drift": 0.78,
-      "obs": 0.0,
-      "wind_past": 0.34,
-      "calm": 0.66,
-      "news": 0.0,
-      "habitat": 0.8,
-      "arrivals": 15.4,
-      "from_obs": 0.0,
-      "drift_ref": "comparé à sa médiane (4.5)",
-      "exposure": 1.09,
-      "season": 0.3,
-      "strong_wind": false,
-      "wind_kmh": 9,
-      "moon_age": 27.1,
-      "habitat_detail": {
-       "sst": 23.6,
-       "chl": 0.074,
-       "sal": 38.04,
-       "mld": 7.0
-      }
-     }
-    },
-    {
      "date": "2026-11-08",
-     "level": "Faible",
+     "level": "Possible",
      "risk": 0.2,
      "why": [
       "courant et vent poussent vers la plage",
+      "eau favorable aux méduses",
       "hors saison"
      ],
      "observe": null,
      "transport": [
       "courant et vent poussent vers la plage",
+      "eau favorable aux méduses",
       "hors saison"
      ],
      "confiance": "insuffisant",
      "factors": {
-      "drift": 0.8,
+      "drift": 0.85,
       "obs": 0.0,
-      "wind_past": 0.41,
-      "calm": 0.59,
+      "wind_past": 0.43,
+      "calm": 0.57,
       "news": 0.0,
       "habitat": 0.8,
-      "arrivals": 16.3,
+      "arrivals": 21.5,
       "from_obs": 0.0,
-      "drift_ref": "comparé à sa médiane (4.5)",
+      "drift_ref": "comparé à sa médiane (5.2)",
       "exposure": 1.09,
       "season": 0.3,
       "strong_wind": false,
-      "wind_kmh": 13,
+      "wind_kmh": 15,
       "moon_age": 28.1,
       "habitat_detail": {
-       "sst": 23.5,
+       "sst": 23.4,
        "chl": 0.07,
-       "sal": 38.06,
+       "sal": 38.04,
        "mld": 7.0
       }
      }
@@ -1304,7 +1267,44 @@
     {
      "date": "2026-11-09",
      "level": "Faible",
-     "risk": 0.17,
+     "risk": 0.19,
+     "why": [
+      "courant et vent poussent vers la plage",
+      "hors saison"
+     ],
+     "observe": null,
+     "transport": [
+      "courant et vent poussent vers la plage",
+      "hors saison"
+     ],
+     "confiance": "insuffisant",
+     "factors": {
+      "drift": 0.72,
+      "obs": 0.0,
+      "wind_past": 0.46,
+      "calm": 0.54,
+      "news": 0.0,
+      "habitat": 0.8,
+      "arrivals": 14.6,
+      "from_obs": 0.0,
+      "drift_ref": "comparé à sa médiane (5.2)",
+      "exposure": 1.09,
+      "season": 0.3,
+      "strong_wind": false,
+      "wind_kmh": 16,
+      "moon_age": 29.1,
+      "habitat_detail": {
+       "sst": 23.4,
+       "chl": 0.066,
+       "sal": 38.05,
+       "mld": 6.9
+      }
+     }
+    },
+    {
+     "date": "2026-11-10",
+     "level": "Faible",
+     "risk": 0.16,
      "why": [
       "un peu de dérive vers la plage",
       "hors saison"
@@ -1316,25 +1316,25 @@
      ],
      "confiance": "insuffisant",
      "factors": {
-      "drift": 0.47,
+      "drift": 0.36,
       "obs": 0.0,
-      "wind_past": 0.42,
-      "calm": 0.58,
+      "wind_past": 0.44,
+      "calm": 0.56,
       "news": 0.0,
       "habitat": 0.8,
-      "arrivals": 6.3,
+      "arrivals": 5.1,
       "from_obs": 0.0,
-      "drift_ref": "comparé à sa médiane (4.5)",
+      "drift_ref": "comparé à sa médiane (5.2)",
       "exposure": 1.09,
       "season": 0.3,
       "strong_wind": false,
-      "wind_kmh": 15,
-      "moon_age": 29.1,
+      "wind_kmh": 24,
+      "moon_age": 0.5,
       "habitat_detail": {
        "sst": 23.4,
-       "chl": 0.066,
-       "sal": 38.07,
-       "mld": 6.9
+       "chl": 0.063,
+       "sal": 38.06,
+       "mld": 6.8
       }
      }
     }
@@ -1354,43 +1354,6 @@
    },
    "days": [
     {
-     "date": "2026-11-07",
-     "level": "Faible",
-     "risk": 0.2,
-     "why": [
-      "courant et vent poussent vers la plage",
-      "hors saison"
-     ],
-     "observe": null,
-     "transport": [
-      "courant et vent poussent vers la plage",
-      "hors saison"
-     ],
-     "confiance": "insuffisant",
-     "factors": {
-      "drift": 0.82,
-      "obs": 0.0,
-      "wind_past": 0.55,
-      "calm": 0.45,
-      "news": 0.0,
-      "habitat": 0.79,
-      "arrivals": 4.7,
-      "from_obs": 0.0,
-      "drift_ref": "comparé à sa médiane (0.9)",
-      "exposure": 1.09,
-      "season": 0.3,
-      "strong_wind": false,
-      "wind_kmh": 9,
-      "moon_age": 27.1,
-      "habitat_detail": {
-       "sst": 23.2,
-       "chl": 0.074,
-       "sal": 38.17,
-       "mld": 6.4
-      }
-     }
-    },
-    {
      "date": "2026-11-08",
      "level": "Possible",
      "risk": 0.21,
@@ -1405,24 +1368,24 @@
      ],
      "confiance": "insuffisant",
      "factors": {
-      "drift": 0.96,
+      "drift": 1.0,
       "obs": 0.0,
-      "wind_past": 0.47,
-      "calm": 0.53,
+      "wind_past": 0.49,
+      "calm": 0.51,
       "news": 0.0,
       "habitat": 0.79,
-      "arrivals": 8.6,
+      "arrivals": 16.8,
       "from_obs": 0.0,
-      "drift_ref": "comparé à sa médiane (0.9)",
+      "drift_ref": "comparé à sa médiane (1.0)",
       "exposure": 1.09,
       "season": 0.3,
       "strong_wind": false,
-      "wind_kmh": 13,
+      "wind_kmh": 15,
       "moon_age": 28.1,
       "habitat_detail": {
        "sst": 23.0,
        "chl": 0.071,
-       "sal": 38.17,
+       "sal": 38.14,
        "mld": 6.4
       }
      }
@@ -1444,23 +1407,60 @@
      "factors": {
       "drift": 0.98,
       "obs": 0.0,
-      "wind_past": 0.45,
-      "calm": 0.55,
+      "wind_past": 0.51,
+      "calm": 0.49,
       "news": 0.0,
       "habitat": 0.79,
-      "arrivals": 10.5,
+      "arrivals": 12.1,
       "from_obs": 0.0,
-      "drift_ref": "comparé à sa médiane (0.9)",
+      "drift_ref": "comparé à sa médiane (1.0)",
       "exposure": 1.09,
       "season": 0.3,
       "strong_wind": false,
-      "wind_kmh": 15,
+      "wind_kmh": 16,
       "moon_age": 29.1,
       "habitat_detail": {
-       "sst": 22.9,
+       "sst": 23.0,
        "chl": 0.067,
-       "sal": 38.18,
+       "sal": 38.15,
        "mld": 6.3
+      }
+     }
+    },
+    {
+     "date": "2026-11-10",
+     "level": "Faible",
+     "risk": 0.18,
+     "why": [
+      "courant et vent poussent vers la plage",
+      "hors saison"
+     ],
+     "observe": null,
+     "transport": [
+      "courant et vent poussent vers la plage",
+      "hors saison"
+     ],
+     "confiance": "insuffisant",
+     "factors": {
+      "drift": 0.65,
+      "obs": 0.0,
+      "wind_past": 0.6,
+      "calm": 0.4,
+      "news": 0.0,
+      "habitat": 0.79,
+      "arrivals": 3.1,
+      "from_obs": 0.0,
+      "drift_ref": "comparé à sa médiane (1.0)",
+      "exposure": 1.09,
+      "season": 0.3,
+      "strong_wind": false,
+      "wind_kmh": 24,
+      "moon_age": 0.5,
+      "habitat_detail": {
+       "sst": 22.9,
+       "chl": 0.064,
+       "sal": 38.15,
+       "mld": 6.2
       }
      }
     }
@@ -1480,7 +1480,7 @@
    },
    "days": [
     {
-     "date": "2026-11-07",
+     "date": "2026-11-08",
      "level": "Faible",
      "risk": 0.16,
      "why": [
@@ -1497,60 +1497,22 @@
      "factors": {
       "drift": 0.32,
       "obs": 0.0,
-      "wind_past": 0.1,
-      "calm": 0.9,
+      "wind_past": 0.07,
+      "calm": 0.93,
       "news": 0.0,
       "habitat": 0.77,
-      "arrivals": 4.6,
+      "arrivals": 4.4,
       "from_obs": 0.0,
-      "drift_ref": "comparé à sa médiane (5.6)",
-      "exposure": 1.08,
-      "season": 0.3,
-      "strong_wind": false,
-      "wind_kmh": 7,
-      "moon_age": 27.1,
-      "habitat_detail": {
-       "sst": 22.6,
-       "chl": 0.1,
-       "sal": 38.59,
-       "mld": 6.4
-      }
-     }
-    },
-    {
-     "date": "2026-11-08",
-     "level": "Faible",
-     "risk": 0.14,
-     "why": [
-      "peu de dérive vers la plage",
-      "mer calme ces derniers jours",
-      "hors saison"
-     ],
-     "observe": null,
-     "transport": [
-      "peu de dérive vers la plage",
-      "hors saison"
-     ],
-     "confiance": "insuffisant",
-     "factors": {
-      "drift": 0.0,
-      "obs": 0.0,
-      "wind_past": 0.06,
-      "calm": 0.94,
-      "news": 0.0,
-      "habitat": 0.77,
-      "arrivals": 0.0,
-      "from_obs": 0.0,
-      "drift_ref": "comparé à sa médiane (5.6)",
+      "drift_ref": "comparé à sa médiane (5.3)",
       "exposure": 1.08,
       "season": 0.3,
       "strong_wind": false,
       "wind_kmh": 7,
       "moon_age": 28.1,
       "habitat_detail": {
-       "sst": 22.5,
-       "chl": 0.092,
-       "sal": 38.6,
+       "sst": 22.6,
+       "chl": 0.093,
+       "sal": 38.54,
        "mld": 6.4
       }
      }
@@ -1576,20 +1538,58 @@
       "wind_past": 0.05,
       "calm": 0.95,
       "news": 0.0,
-      "habitat": 0.76,
+      "habitat": 0.77,
       "arrivals": 0.0,
       "from_obs": 0.0,
-      "drift_ref": "comparé à sa médiane (5.6)",
+      "drift_ref": "comparé à sa médiane (5.3)",
       "exposure": 1.08,
       "season": 0.3,
       "strong_wind": false,
       "wind_kmh": 8,
       "moon_age": 29.1,
       "habitat_detail": {
-       "sst": 22.4,
-       "chl": 0.084,
-       "sal": 38.61,
+       "sst": 22.5,
+       "chl": 0.085,
+       "sal": 38.55,
        "mld": 6.3
+      }
+     }
+    },
+    {
+     "date": "2026-11-10",
+     "level": "Faible",
+     "risk": 0.16,
+     "why": [
+      "un peu de dérive vers la plage",
+      "mer calme ces derniers jours",
+      "hors saison"
+     ],
+     "observe": null,
+     "transport": [
+      "un peu de dérive vers la plage",
+      "hors saison"
+     ],
+     "confiance": "insuffisant",
+     "factors": {
+      "drift": 0.32,
+      "obs": 0.0,
+      "wind_past": 0.06,
+      "calm": 0.94,
+      "news": 0.0,
+      "habitat": 0.77,
+      "arrivals": 4.5,
+      "from_obs": 0.0,
+      "drift_ref": "comparé à sa médiane (5.3)",
+      "exposure": 1.08,
+      "season": 0.3,
+      "strong_wind": false,
+      "wind_kmh": 16,
+      "moon_age": 0.5,
+      "habitat_detail": {
+       "sst": 22.4,
+       "chl": 0.079,
+       "sal": 38.57,
+       "mld": 6.2
       }
      }
     }
@@ -1609,7 +1609,7 @@
    },
    "days": [
     {
-     "date": "2026-11-07",
+     "date": "2026-11-08",
      "level": "Faible",
      "risk": 0.16,
      "why": [
@@ -1624,62 +1624,24 @@
      ],
      "confiance": "insuffisant",
      "factors": {
-      "drift": 0.31,
-      "obs": 0.0,
-      "wind_past": 0.09,
-      "calm": 0.91,
-      "news": 0.0,
-      "habitat": 0.78,
-      "arrivals": 4.7,
-      "from_obs": 0.0,
-      "drift_ref": "comparé à sa médiane (5.9)",
-      "exposure": 1.07,
-      "season": 0.3,
-      "strong_wind": false,
-      "wind_kmh": 7,
-      "moon_age": 27.1,
-      "habitat_detail": {
-       "sst": 22.8,
-       "chl": 0.101,
-       "sal": 38.45,
-       "mld": 6.4
-      }
-     }
-    },
-    {
-     "date": "2026-11-08",
-     "level": "Faible",
-     "risk": 0.14,
-     "why": [
-      "peu de dérive vers la plage",
-      "mer calme ces derniers jours",
-      "hors saison"
-     ],
-     "observe": null,
-     "transport": [
-      "peu de dérive vers la plage",
-      "hors saison"
-     ],
-     "confiance": "insuffisant",
-     "factors": {
-      "drift": 0.0,
+      "drift": 0.25,
       "obs": 0.0,
       "wind_past": 0.07,
       "calm": 0.93,
       "news": 0.0,
       "habitat": 0.78,
-      "arrivals": 0.0,
+      "arrivals": 3.5,
       "from_obs": 0.0,
-      "drift_ref": "comparé à sa médiane (5.9)",
+      "drift_ref": "comparé à sa médiane (5.7)",
       "exposure": 1.07,
       "season": 0.3,
       "strong_wind": false,
       "wind_kmh": 7,
       "moon_age": 28.1,
       "habitat_detail": {
-       "sst": 22.6,
-       "chl": 0.093,
-       "sal": 38.49,
+       "sst": 22.7,
+       "chl": 0.094,
+       "sal": 38.43,
        "mld": 6.4
       }
      }
@@ -1702,23 +1664,61 @@
      "factors": {
       "drift": 0.0,
       "obs": 0.0,
-      "wind_past": 0.06,
-      "calm": 0.94,
+      "wind_past": 0.05,
+      "calm": 0.95,
       "news": 0.0,
-      "habitat": 0.77,
+      "habitat": 0.78,
       "arrivals": 0.0,
       "from_obs": 0.0,
-      "drift_ref": "comparé à sa médiane (5.9)",
+      "drift_ref": "comparé à sa médiane (5.7)",
       "exposure": 1.07,
       "season": 0.3,
       "strong_wind": false,
       "wind_kmh": 8,
       "moon_age": 29.1,
       "habitat_detail": {
-       "sst": 22.5,
-       "chl": 0.086,
-       "sal": 38.52,
+       "sst": 22.6,
+       "chl": 0.087,
+       "sal": 38.45,
        "mld": 6.3
+      }
+     }
+    },
+    {
+     "date": "2026-11-10",
+     "level": "Possible",
+     "risk": 0.21,
+     "why": [
+      "courant et vent poussent vers la plage",
+      "mer calme ces derniers jours",
+      "hors saison"
+     ],
+     "observe": null,
+     "transport": [
+      "courant et vent poussent vers la plage",
+      "hors saison"
+     ],
+     "confiance": "insuffisant",
+     "factors": {
+      "drift": 0.84,
+      "obs": 0.0,
+      "wind_past": 0.06,
+      "calm": 0.94,
+      "news": 0.0,
+      "habitat": 0.77,
+      "arrivals": 22.4,
+      "from_obs": 0.0,
+      "drift_ref": "comparé à sa médiane (5.7)",
+      "exposure": 1.07,
+      "season": 0.3,
+      "strong_wind": false,
+      "wind_kmh": 16,
+      "moon_age": 0.5,
+      "habitat_detail": {
+       "sst": 22.6,
+       "chl": 0.081,
+       "sal": 38.48,
+       "mld": 6.2
       }
      }
     }
@@ -1733,9 +1733,16 @@
  },
  "observations": {
   "count": {
-   "iNaturalist": 4
+   "iNaturalist": 5
   },
   "recent": [
+   {
+    "date": "2026-11-07",
+    "lat": 36.765,
+    "lon": 10.298,
+    "source": "iNaturalist",
+    "taxon": "Rhizostoma pulmo"
+   },
    {
     "date": "2026-11-03",
     "lat": 38.054,
@@ -1768,5 +1775,5 @@
  },
  "news": [],
  "reputation": null,
- "bancs_suivis": 5
+ "bancs_suivis": 6
 }
