@@ -1,5 +1,5 @@
 {
- "generated": "2026-11-15T11:26:43Z",
+ "generated": "2026-11-16T12:01:55Z",
  "version": "v0.8",
  "horizon_jours": 8,
  "actifs": [
@@ -10,19 +10,19 @@
    "ne": "2026-10-22",
    "vu_pres": "près de Kélibia",
    "source": "iNaturalist",
-   "age_jours": 23,
-   "force": 0.504,
+   "age_jours": 24,
+   "force": 0.476,
    "confirmations": 1,
    "contradictions": 0,
    "dernier_vu": "2026-10-23",
    "position": {
-    "lat": 35.358,
-    "lon": 12.887,
+    "lat": 35.368,
+    "lon": 12.96,
     "lieu": "au large de Lampedusa"
    },
-   "etalement_km": 55.9,
-   "distance_djerba_km": 250,
-   "tendance": "stable",
+   "etalement_km": 56.8,
+   "distance_djerba_km": 256,
+   "tendance": "s'éloigne",
    "cap": "eloigne",
    "message": "S'éloigne de Djerba (direction : en pleine mer).",
    "arrivees": [],
@@ -170,56 +170,62 @@
      "lat": 35.358,
      "lon": 12.887,
      "etalement": 55.9
+    },
+    {
+     "date": "2026-11-16",
+     "lat": 35.368,
+     "lon": 12.96,
+     "etalement": 56.8
     }
    ],
    "prevision": [
     {
-     "date": "2026-11-15",
-     "lat": 35.385,
-     "lon": 12.912,
-     "etalement": 55.6
-    },
-    {
      "date": "2026-11-16",
-     "lat": 35.396,
-     "lon": 12.997,
-     "etalement": 57.0
+     "lat": 35.393,
+     "lon": 13.006,
+     "etalement": 57.1
     },
     {
      "date": "2026-11-17",
-     "lat": 35.369,
-     "lon": 13.123,
-     "etalement": 59.4
+     "lat": 35.372,
+     "lon": 13.127,
+     "etalement": 59.7
     },
     {
      "date": "2026-11-18",
-     "lat": 35.393,
-     "lon": 13.279,
-     "etalement": 61.3
+     "lat": 35.402,
+     "lon": 13.269,
+     "etalement": 61.7
     },
     {
      "date": "2026-11-19",
-     "lat": 35.363,
-     "lon": 13.43,
-     "etalement": 64.4
+     "lat": 35.385,
+     "lon": 13.414,
+     "etalement": 64.9
     },
     {
      "date": "2026-11-20",
-     "lat": 35.299,
-     "lon": 13.518,
-     "etalement": 67.6
+     "lat": 35.297,
+     "lon": 13.531,
+     "etalement": 68.1
     },
     {
      "date": "2026-11-21",
-     "lat": 35.189,
-     "lon": 13.631,
-     "etalement": 70.5
+     "lat": 35.179,
+     "lon": 13.633,
+     "etalement": 70.8
     },
     {
      "date": "2026-11-22",
-     "lat": 35.159,
-     "lon": 13.667,
-     "etalement": 72.9
+     "lat": 35.143,
+     "lon": 13.683,
+     "etalement": 73.4
+    },
+    {
+     "date": "2026-11-23",
+     "lat": 35.195,
+     "lon": 13.762,
+     "etalement": 76.3
     }
    ]
   },
@@ -230,18 +236,18 @@
    "ne": "2026-11-07",
    "vu_pres": "au large d'Hammamet",
    "source": "iNaturalist",
-   "age_jours": 7,
-   "force": 0.524,
+   "age_jours": 8,
+   "force": 0.495,
    "confirmations": 0,
    "contradictions": 0,
    "dernier_vu": "2026-11-07",
    "position": {
-    "lat": 36.834,
-    "lon": 10.5,
+    "lat": 36.845,
+    "lon": 10.516,
     "lieu": "au large d'Hammamet"
    },
-   "etalement_km": 13.9,
-   "distance_djerba_km": 340,
+   "etalement_km": 16.4,
+   "distance_djerba_km": 341,
    "tendance": "stable",
    "cap": "reste",
    "message": "Reste dans sa zone, pas de menace pour Djerba d'ici 8 jours.",
@@ -294,49 +300,49 @@
      "lat": 36.834,
      "lon": 10.5,
      "etalement": 13.9
+    },
+    {
+     "date": "2026-11-16",
+     "lat": 36.845,
+     "lon": 10.516,
+     "etalement": 16.4
     }
    ],
    "prevision": [
     {
-     "date": "2026-11-15",
-     "lat": 36.844,
-     "lon": 10.506,
-     "etalement": 15.4
-    },
-    {
      "date": "2026-11-16",
-     "lat": 36.846,
-     "lon": 10.513,
-     "etalement": 17.0
+     "lat": 36.844,
+     "lon": 10.522,
+     "etalement": 16.6
     },
     {
      "date": "2026-11-17",
-     "lat": 36.803,
-     "lon": 10.462,
+     "lat": 36.804,
+     "lon": 10.471,
      "etalement": 4.3
     },
     {
      "date": "2026-11-18",
-     "lat": 36.808,
-     "lon": 10.477,
-     "etalement": 4.7
-    },
-    {
-     "date": "2026-11-19",
-     "lat": 36.8,
-     "lon": 10.473,
+     "lat": 36.812,
+     "lon": 10.484,
      "etalement": 5.0
     },
     {
+     "date": "2026-11-19",
+     "lat": 36.801,
+     "lon": 10.46,
+     "etalement": 5.4
+    },
+    {
      "date": "2026-11-20",
-     "lat": 36.783,
-     "lon": 10.465,
-     "etalement": 3.6
+     "lat": 36.777,
+     "lon": 10.436,
+     "etalement": 2.6
     },
     {
      "date": "2026-11-21",
-     "lat": 36.782,
-     "lon": 10.5,
+     "lat": 36.777,
+     "lon": 10.493,
      "etalement": 0.0
     }
    ]
@@ -348,18 +354,18 @@
    "ne": "2026-11-12",
    "vu_pres": "près de Malte",
    "source": "iNaturalist",
-   "age_jours": 2,
-   "force": 0.696,
+   "age_jours": 3,
+   "force": 0.657,
    "confirmations": 0,
    "contradictions": 0,
    "dernier_vu": "2026-11-12",
    "position": {
-    "lat": 35.674,
-    "lon": 14.876,
+    "lat": 35.583,
+    "lon": 15.002,
     "lieu": "au large de Malte"
    },
-   "etalement_km": 9.7,
-   "distance_djerba_km": 418,
+   "etalement_km": 13.1,
+   "distance_djerba_km": 423,
    "tendance": "s'éloigne",
    "cap": "reste",
    "message": "Reste dans sa zone, pas de menace pour Djerba d'ici 8 jours.",
@@ -382,44 +388,62 @@
      "lat": 35.674,
      "lon": 14.876,
      "etalement": 9.7
+    },
+    {
+     "date": "2026-11-16",
+     "lat": 35.583,
+     "lon": 15.002,
+     "etalement": 13.1
     }
    ],
    "prevision": [
     {
-     "date": "2026-11-15",
-     "lat": 35.663,
-     "lon": 14.884,
-     "etalement": 10.4
-    },
-    {
      "date": "2026-11-16",
-     "lat": 35.553,
-     "lon": 15.071,
-     "etalement": 15.6
+     "lat": 35.568,
+     "lon": 15.048,
+     "etalement": 15.2
     },
     {
      "date": "2026-11-17",
-     "lat": 35.298,
-     "lon": 15.448,
+     "lat": 35.347,
+     "lon": 15.382,
      "etalement": 24.4
     },
     {
      "date": "2026-11-18",
-     "lat": 35.458,
-     "lon": 14.909,
-     "etalement": 8.7
+     "lat": 35.43,
+     "lon": 15.047,
+     "etalement": 36.4
     },
     {
      "date": "2026-11-19",
-     "lat": 35.329,
-     "lon": 15.237,
-     "etalement": 8.3
+     "lat": 35.371,
+     "lon": 14.972,
+     "etalement": 4.0
     },
     {
      "date": "2026-11-20",
-     "lat": 35.147,
-     "lon": 15.57,
-     "etalement": 9.0
+     "lat": 35.279,
+     "lon": 15.139,
+     "etalement": 7.6
+    },
+    {
+     "date": "2026-11-21",
+     "lat": 35.16,
+     "lon": 15.298,
+     "etalement": 7.1
+    },
+    {
+     "date": "2026-11-22",
+     "lat": 35.012,
+     "lon": 15.435,
+     "etalement": 6.8
+    },
+    {
+     "date": "2026-11-23",
+     "lat": 34.941,
+     "lon": 15.441,
+     "etalement": 8.9
     }
    ]
   },
@@ -430,19 +454,19 @@
    "ne": "2026-11-03",
    "vu_pres": "au large de sud de la Sicile",
    "source": "iNaturalist",
-   "age_jours": 11,
-   "force": 0.413,
+   "age_jours": 12,
+   "force": 0.39,
    "confirmations": 0,
    "contradictions": 0,
    "dernier_vu": "2026-11-03",
    "position": {
-    "lat": 36.131,
-    "lon": 15.204,
+    "lat": 36.041,
+    "lon": 15.292,
     "lieu": "au large de Malte"
    },
-   "etalement_km": 28.7,
-   "distance_djerba_km": 469,
-   "tendance": "se rapproche",
+   "etalement_km": 35.2,
+   "distance_djerba_km": 471,
+   "tendance": "stable",
    "cap": "reste",
    "message": "Reste dans sa zone, pas de menace pour Djerba d'ici 8 jours.",
    "arrivees": [],
@@ -518,204 +542,44 @@
      "lat": 36.131,
      "lon": 15.204,
      "etalement": 28.7
+    },
+    {
+     "date": "2026-11-16",
+     "lat": 36.041,
+     "lon": 15.292,
+     "etalement": 35.2
     }
    ],
    "prevision": [
     {
-     "date": "2026-11-15",
-     "lat": 36.105,
-     "lon": 15.236,
-     "etalement": 31.1
-    },
-    {
      "date": "2026-11-16",
-     "lat": 35.976,
-     "lon": 15.298,
-     "etalement": 36.2
+     "lat": 35.978,
+     "lon": 15.302,
+     "etalement": 36.9
     },
     {
      "date": "2026-11-17",
-     "lat": 35.766,
-     "lon": 15.39,
-     "etalement": 35.5
+     "lat": 35.664,
+     "lon": 15.344,
+     "etalement": 24.8
     },
     {
      "date": "2026-11-18",
-     "lat": 35.594,
-     "lon": 15.467,
-     "etalement": 26.3
+     "lat": 35.537,
+     "lon": 15.469,
+     "etalement": 20.3
     },
     {
      "date": "2026-11-19",
-     "lat": 35.662,
-     "lon": 15.446,
-     "etalement": 19.9
+     "lat": 35.49,
+     "lon": 15.559,
+     "etalement": 8.8
     },
     {
      "date": "2026-11-20",
-     "lat": 35.534,
-     "lon": 15.517,
-     "etalement": 12.5
-    },
-    {
-     "date": "2026-11-21",
-     "lat": 35.47,
-     "lon": 15.554,
-     "etalement": 8.3
-    },
-    {
-     "date": "2026-11-22",
-     "lat": 35.396,
-     "lon": 15.658,
-     "etalement": 0.0
-    }
-   ]
-  },
-  {
-   "id": 7,
-   "nom": "Zone n°7 · pélagies repérées en pleine mer le 03/11",
-   "espece": "pélagies",
-   "ne": "2026-11-03",
-   "vu_pres": "en pleine mer",
-   "source": "iNaturalist",
-   "age_jours": 11,
-   "force": 0.621,
-   "confirmations": 1,
-   "contradictions": 0,
-   "dernier_vu": "2026-11-08",
-   "position": {
-    "lat": 38.205,
-    "lon": 13.049,
-    "lieu": "en pleine mer"
-   },
-   "etalement_km": 6.6,
-   "distance_djerba_km": 526,
-   "tendance": "se rapproche",
-   "cap": "rapproche",
-   "message": "Se dirige vers Djerba, sans arriver sur nos plages dans les simulations à 8 jours.",
-   "arrivees": [],
-   "trace": [
-    {
-     "date": "2026-11-04",
-     "lat": 38.103,
-     "lon": 12.957,
-     "etalement": 2.6
-    },
-    {
-     "date": "2026-11-05",
-     "lat": 38.124,
-     "lon": 12.89,
-     "etalement": 4.2
-    },
-    {
-     "date": "2026-11-06",
-     "lat": 38.201,
-     "lon": 12.8,
-     "etalement": 6.3
-    },
-    {
-     "date": "2026-11-07",
-     "lat": 38.229,
-     "lon": 12.835,
-     "etalement": 4.1
-    },
-    {
-     "date": "2026-11-08",
-     "lat": 38.23,
-     "lon": 12.869,
-     "etalement": 4.0
-    },
-    {
-     "date": "2026-11-09",
-     "lat": 38.225,
-     "lon": 12.88,
-     "etalement": 3.7
-    },
-    {
-     "date": "2026-11-10",
-     "lat": 38.145,
-     "lon": 12.924,
-     "etalement": 4.6
-    },
-    {
-     "date": "2026-11-11",
-     "lat": 38.194,
-     "lon": 12.986,
-     "etalement": 3.4
-    },
-    {
-     "date": "2026-11-12",
-     "lat": 38.209,
-     "lon": 13.002,
-     "etalement": 3.6
-    },
-    {
-     "date": "2026-11-13",
-     "lat": 38.239,
-     "lon": 13.035,
-     "etalement": 2.7
-    },
-    {
-     "date": "2026-11-14",
-     "lat": 38.243,
-     "lon": 13.111,
-     "etalement": 5.1
-    },
-    {
-     "date": "2026-11-15",
-     "lat": 38.205,
-     "lon": 13.049,
-     "etalement": 6.6
-    }
-   ],
-   "prevision": [
-    {
-     "date": "2026-11-15",
-     "lat": 38.188,
-     "lon": 13.004,
-     "etalement": 5.8
-    },
-    {
-     "date": "2026-11-16",
-     "lat": 38.151,
-     "lon": 12.983,
-     "etalement": 3.9
-    },
-    {
-     "date": "2026-11-17",
-     "lat": 38.109,
-     "lon": 12.963,
-     "etalement": 3.3
-    },
-    {
-     "date": "2026-11-18",
-     "lat": 38.13,
-     "lon": 12.937,
-     "etalement": 3.9
-    },
-    {
-     "date": "2026-11-19",
-     "lat": 38.139,
-     "lon": 12.928,
-     "etalement": 2.6
-    },
-    {
-     "date": "2026-11-20",
-     "lat": 38.12,
-     "lon": 12.944,
-     "etalement": 2.7
-    },
-    {
-     "date": "2026-11-21",
-     "lat": 38.106,
-     "lon": 12.914,
-     "etalement": 2.0
-    },
-    {
-     "date": "2026-11-22",
-     "lat": 38.111,
-     "lon": 12.892,
-     "etalement": 2.6
+     "lat": 35.508,
+     "lon": 15.618,
+     "etalement": 2.5
     }
    ]
   }
@@ -738,6 +602,12 @@
    "nom": "Zone n°4 · méduses chou-fleur repérées près d'Hammamet le 26/10",
    "fin": "2026-11-12",
    "raison": "trop dispersé : on ne peut plus dire où il est"
+  },
+  {
+   "id": 7,
+   "nom": "Zone n°7 · pélagies repérées en pleine mer le 03/11",
+   "fin": "2026-11-16",
+   "raison": "arrivé à la côte ou sorti de la zone (en pleine mer)"
   }
  ],
  "carnet": {
