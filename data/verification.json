@@ -2522,68 +2522,133 @@
   },
   "2026-11-19|aghir": {
    "level": "Faible",
-   "risk": 0.14,
-   "run": "2026-11-18"
+   "risk": 0.15,
+   "run": "2026-11-19"
   },
   "2026-11-19|bowling": {
    "level": "Faible",
    "risk": 0.14,
-   "run": "2026-11-18"
+   "run": "2026-11-19"
   },
   "2026-11-19|hachen": {
    "level": "Faible",
    "risk": 0.15,
-   "run": "2026-11-18"
+   "run": "2026-11-19"
   },
   "2026-11-19|hadria": {
    "level": "Faible",
-   "risk": 0.14,
-   "run": "2026-11-18"
+   "risk": 0.16,
+   "run": "2026-11-19"
   },
   "2026-11-19|jazira": {
    "level": "Faible",
    "risk": 0.15,
-   "run": "2026-11-18"
+   "run": "2026-11-19"
   },
   "2026-11-19|jmour": {
    "level": "Possible",
    "risk": 0.21,
-   "run": "2026-11-18"
+   "run": "2026-11-19"
   },
   "2026-11-19|mahrez": {
    "level": "Faible",
    "risk": 0.14,
-   "run": "2026-11-18"
+   "run": "2026-11-19"
   },
   "2026-11-19|rmel": {
    "level": "Faible",
    "risk": 0.16,
-   "run": "2026-11-18"
+   "run": "2026-11-19"
   },
   "2026-11-19|seguia": {
    "level": "Faible",
-   "risk": 0.14,
-   "run": "2026-11-18"
+   "risk": 0.15,
+   "run": "2026-11-19"
   },
   "2026-11-19|taguermess": {
    "level": "Faible",
-   "risk": 0.14,
-   "run": "2026-11-18"
+   "risk": 0.15,
+   "run": "2026-11-19"
   },
   "2026-11-19|vincci": {
    "level": "Faible",
    "risk": 0.15,
-   "run": "2026-11-18"
+   "run": "2026-11-19"
   },
   "2026-11-19|yahya": {
    "level": "Faible",
-   "risk": 0.18,
-   "run": "2026-11-18"
+   "risk": 0.2,
+   "run": "2026-11-19"
   },
   "2026-11-19|yati2": {
    "level": "Faible",
    "risk": 0.14,
-   "run": "2026-11-18"
+   "run": "2026-11-19"
+  },
+  "2026-11-20|aghir": {
+   "level": "Faible",
+   "risk": 0.14,
+   "run": "2026-11-19"
+  },
+  "2026-11-20|bowling": {
+   "level": "Faible",
+   "risk": 0.14,
+   "run": "2026-11-19"
+  },
+  "2026-11-20|hachen": {
+   "level": "Faible",
+   "risk": 0.15,
+   "run": "2026-11-19"
+  },
+  "2026-11-20|hadria": {
+   "level": "Faible",
+   "risk": 0.14,
+   "run": "2026-11-19"
+  },
+  "2026-11-20|jazira": {
+   "level": "Faible",
+   "risk": 0.2,
+   "run": "2026-11-19"
+  },
+  "2026-11-20|jmour": {
+   "level": "Faible",
+   "risk": 0.15,
+   "run": "2026-11-19"
+  },
+  "2026-11-20|mahrez": {
+   "level": "Faible",
+   "risk": 0.14,
+   "run": "2026-11-19"
+  },
+  "2026-11-20|rmel": {
+   "level": "Faible",
+   "risk": 0.2,
+   "run": "2026-11-19"
+  },
+  "2026-11-20|seguia": {
+   "level": "Faible",
+   "risk": 0.14,
+   "run": "2026-11-19"
+  },
+  "2026-11-20|taguermess": {
+   "level": "Faible",
+   "risk": 0.15,
+   "run": "2026-11-19"
+  },
+  "2026-11-20|vincci": {
+   "level": "Faible",
+   "risk": 0.17,
+   "run": "2026-11-19"
+  },
+  "2026-11-20|yahya": {
+   "level": "Faible",
+   "risk": 0.15,
+   "run": "2026-11-19"
+  },
+  "2026-11-20|yati2": {
+   "level": "Faible",
+   "risk": 0.14,
+   "run": "2026-11-19"
   }
  },
  "observations": [],
