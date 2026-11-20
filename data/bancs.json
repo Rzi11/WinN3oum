@@ -1,181 +1,8 @@
 {
- "generated": "2026-11-19T12:05:07Z",
+ "generated": "2026-11-20T12:07:47Z",
  "version": "v0.8",
  "horizon_jours": 8,
- "actifs": [
-  {
-   "id": 6,
-   "nom": "Zone n°6 · pélagies repérées au large de sud de la Sicile le 03/11",
-   "espece": "pélagies",
-   "ne": "2026-11-03",
-   "vu_pres": "au large de sud de la Sicile",
-   "source": "iNaturalist",
-   "age_jours": 15,
-   "force": 0.328,
-   "confirmations": 0,
-   "contradictions": 0,
-   "dernier_vu": "2026-11-03",
-   "position": {
-    "lat": 35.527,
-    "lon": 15.587,
-    "lieu": "en pleine mer"
-   },
-   "etalement_km": 8.5,
-   "distance_djerba_km": 469,
-   "tendance": "s'éloigne",
-   "cap": "eloigne",
-   "message": "S'éloigne de Djerba (direction : en pleine mer).",
-   "arrivees": [],
-   "trace": [
-    {
-     "date": "2026-11-04",
-     "lat": 36.627,
-     "lon": 14.554,
-     "etalement": 4.1
-    },
-    {
-     "date": "2026-11-05",
-     "lat": 36.395,
-     "lon": 14.905,
-     "etalement": 4.2
-    },
-    {
-     "date": "2026-11-06",
-     "lat": 36.458,
-     "lon": 15.033,
-     "etalement": 4.1
-    },
-    {
-     "date": "2026-11-07",
-     "lat": 36.547,
-     "lon": 14.952,
-     "etalement": 5.9
-    },
-    {
-     "date": "2026-11-08",
-     "lat": 36.55,
-     "lon": 14.868,
-     "etalement": 6.0
-    },
-    {
-     "date": "2026-11-09",
-     "lat": 36.51,
-     "lon": 14.827,
-     "etalement": 8.7
-    },
-    {
-     "date": "2026-11-10",
-     "lat": 36.442,
-     "lon": 14.906,
-     "etalement": 14.5
-    },
-    {
-     "date": "2026-11-11",
-     "lat": 36.384,
-     "lon": 15.03,
-     "etalement": 19.4
-    },
-    {
-     "date": "2026-11-12",
-     "lat": 36.376,
-     "lon": 15.105,
-     "etalement": 21.6
-    },
-    {
-     "date": "2026-11-13",
-     "lat": 36.384,
-     "lon": 15.17,
-     "etalement": 24.2
-    },
-    {
-     "date": "2026-11-14",
-     "lat": 36.265,
-     "lon": 15.184,
-     "etalement": 25.0
-    },
-    {
-     "date": "2026-11-15",
-     "lat": 36.131,
-     "lon": 15.204,
-     "etalement": 28.7
-    },
-    {
-     "date": "2026-11-16",
-     "lat": 36.041,
-     "lon": 15.292,
-     "etalement": 35.2
-    },
-    {
-     "date": "2026-11-17",
-     "lat": 35.87,
-     "lon": 15.388,
-     "etalement": 40.2
-    },
-    {
-     "date": "2026-11-18",
-     "lat": 35.564,
-     "lon": 15.432,
-     "etalement": 16.4
-    },
-    {
-     "date": "2026-11-19",
-     "lat": 35.527,
-     "lon": 15.587,
-     "etalement": 8.5
-    }
-   ],
-   "prevision": [
-    {
-     "date": "2026-11-19",
-     "lat": 35.541,
-     "lon": 15.584,
-     "etalement": 6.6
-    },
-    {
-     "date": "2026-11-20",
-     "lat": 35.618,
-     "lon": 15.618,
-     "etalement": 3.7
-    },
-    {
-     "date": "2026-11-21",
-     "lat": 35.654,
-     "lon": 15.616,
-     "etalement": 3.0
-    },
-    {
-     "date": "2026-11-22",
-     "lat": 35.753,
-     "lon": 15.577,
-     "etalement": 5.2
-    },
-    {
-     "date": "2026-11-23",
-     "lat": 35.883,
-     "lon": 15.53,
-     "etalement": 4.9
-    },
-    {
-     "date": "2026-11-24",
-     "lat": 36.019,
-     "lon": 15.485,
-     "etalement": 4.9
-    },
-    {
-     "date": "2026-11-25",
-     "lat": 36.196,
-     "lon": 15.47,
-     "etalement": 7.3
-    },
-    {
-     "date": "2026-11-26",
-     "lat": 36.358,
-     "lon": 15.57,
-     "etalement": 8.3
-    }
-   ]
-  }
- ],
+ "actifs": [],
  "termines": [
   {
    "id": 1,
@@ -217,6 +44,12 @@
    "id": 11,
    "nom": "Zone n°11 · pélagies repérées près de Malte le 12/11",
    "fin": "2026-11-19",
+   "raison": "arrivé à la côte ou sorti de la zone (en pleine mer)"
+  },
+  {
+   "id": 6,
+   "nom": "Zone n°6 · pélagies repérées au large de sud de la Sicile le 03/11",
+   "fin": "2026-11-20",
    "raison": "arrivé à la côte ou sorti de la zone (en pleine mer)"
   }
  ],
